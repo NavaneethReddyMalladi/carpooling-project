@@ -1,0 +1,10 @@
+# Ignore unnecessary files in Git:
+
+# gitignore
+# Copy
+# Edit
+# venv/
+# __pycache__/
+# *.pyc
+# .env
+# *.db

@@ -1,0 +1,37 @@
+# List of Python dependencies:
+
+# php
+# Copy
+# Edit
+# fastapi
+# uvicorn
+# sqlalchemy
+# psycopg2-binary
+# python-dotenv
+# Adjust based on your framework (e.g., Flask, Pydantic, etc.)
+
+
+
+
+
+
+
+# ✅ Summary
+# Your structure is excellent — now each file has a clear role:
+
+# Folder/File	Purpose
+# config/	Settings, DB setup
+# controllers/	Route handlers
+# models/	Database models
+# schemas/ or dto/	Data validation and transfer objects
+# services/	Business logic
+# utils/	Helpers/utilities
+# tests/	Test cases
+# .env	Environment config
+# Dockerfile	Containerization
+# init_db.py	DB setup/initialization
+# manage.py	App launcher
+
+
+
+
