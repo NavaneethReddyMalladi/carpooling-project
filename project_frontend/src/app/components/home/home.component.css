@@ -222,6 +222,10 @@
     text-decoration: none;
     color: #444;
   }
+  .logo{
+    height: 50px;
+    width:150px ;
+  }
   
   footer a:hover {
     color: #1d7aa2;

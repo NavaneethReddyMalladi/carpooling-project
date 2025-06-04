@@ -1,0 +1,44 @@
+<div class="navbar">
+    <div class="navbar-brand">Driver Dashboard</div>
+    <div class="navbar-profile">
+      <span class="profile-name">{{ driverDetails.driver_name }}</span>
+      <button class="profile-btn" (click)="toggleProfileMenu()">▼</button>
+      <!-- <app-driver-profile ></app-driver-profile> -->
+      <!-- [token]="token" [userId]="userId" -->
+
+      <ul *ngIf="showProfileMenu" class="dropdown-menu">
+        <li><a href="#" (click)="logout()">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="dashboard-container">
+    <h2>Create a New Ride</h2>
+  
+    <form (ngSubmit)="createRide()" #rideForm="ngForm">
+      <label>Origin Stop:</label>
+      <select [(ngModel)]="ride.origin_stop_id" name="origin_stop_id" required>
+        <option *ngFor="let stop of stops" [value]="stop.stop_id">{{ stop.stop_name }}</option>
+      </select>
+  
+      <label>Destination Stop:</label>
+      <select [(ngModel)]="ride.destination_stop_id" name="destination_stop_id" required>
+        <option *ngFor="let stop of stops" [value]="stop.stop_id">{{ stop.stop_name }}</option>
+      </select>
+  
+      <label>Departure Time:</label>
+      <input type="datetime-local" [(ngModel)]="ride.departure_time" name="departure_time" required />
+  
+      <label>Available Seats:</label>
+      <input type="number" [(ngModel)]="ride.available_seats" name="available_seats" min="1" required />
+  
+      <label>Route ID (optional):</label>
+      <input type="number" [(ngModel)]="ride.route_id" name="route_id" />
+  
+      <button type="submit">Create Ride</button>
+    </form>
+  
+    <div class="message" *ngIf="message">{{ message }}</div>
+    <div class="error" *ngIf="error">{{ error }}</div>
+  </div>
+  

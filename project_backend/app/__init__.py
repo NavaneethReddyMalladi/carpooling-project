@@ -20,8 +20,9 @@ app.config.from_object(DevConfig)  # <-- apply the config
 
 db = SQLAlchemy(app)
 # bcrypt = Bcrypt(app)
-jwt = JWTManager(app)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+jwt = JWTManager(app)
+
 
 from app.main.controllers.user import user_bp
 app.register_blueprint(user_bp)

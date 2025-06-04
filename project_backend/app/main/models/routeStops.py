@@ -1,7 +1,7 @@
 from app import db
 
 class RouteStop(db.Model):
-    __tablename__ = 'routes'
+    __tablename__ = 'route_stops'
 
     route_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 

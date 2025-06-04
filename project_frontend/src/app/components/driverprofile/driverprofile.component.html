@@ -1,0 +1,43 @@
+<div class="profile-section">
+    <h2>Driver Profile</h2>
+  
+    <div *ngIf="!isEditingProfile">
+      <p><strong>Name:</strong> {{ driverDetails.driver_name }}</p>
+      <p><strong>Experience:</strong> {{ driverDetails.experience || 'N/A' }} years</p>
+      <p><strong>License Number:</strong> {{ driverDetails.license_number || 'N/A' }}</p>
+      <p><strong>Gender:</strong> {{ driverDetails.gender || 'N/A' }}</p>
+      <button (click)="onEditProfile()">Edit</button>
+    </div>
+  
+    <div *ngIf="isEditingProfile">
+      <form (ngSubmit)="onSaveProfile()" #profileForm="ngForm">
+  
+        <label>
+          Name:
+          <input type="text" [(ngModel)]="driverDetails.driver_name" name="driver_name" required />
+        </label><br />
+  
+        <label>
+          Experience (years):
+          <input type="number" [(ngModel)]="driverDetails.experience" name="experience" min="0" />
+        </label><br />
+  
+        <label>
+          License Number:
+          <input type="text" [(ngModel)]="driverDetails.license_number" name="license_number" />
+        </label><br />
+  
+        <label>
+          Gender:
+          <input type="text" [(ngModel)]="driverDetails.gender" name="gender" />
+        </label><br />
+  
+        <button type="submit" [disabled]="!profileForm.form.valid">Save</button>
+        <button type="button" (click)="onCancelEdit()">Cancel</button>
+      </form>
+    </div>
+  
+    <div *ngIf="message" class="success-message">{{ message }}</div>
+    <div *ngIf="error" class="error-message">{{ error }}</div>
+  </div>
+  

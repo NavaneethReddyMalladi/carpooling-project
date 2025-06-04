@@ -11,26 +11,32 @@ def is_valid_email(email):
 
 def is_valid_phone(phone):
     return re.match(r"^\d{1,}$", phone)
-
 def get_user_by_id(user_id):
     try:
-        user=User.query.get(user_id)
+        user = User.query.get(user_id)
         if not user:
-            return jsonify({"message":"User not found"}),404
-        user_data={
-                    "user_id":user.user_id,
-                    "user_name":user.user_name,
-                    "email":user.email,
-                    "phone_number":user.phone_number,
-                    "is_verified":user.is_verified,
-                    "gender":user.gender,
-                    "role_id":user.role_id,
-                    "create_datetime":user.create_datetime
-                }
-        return jsonify(user_data),200
+            return jsonify({"message": "User not found"}), 404
+
+        # Fetch driver details using user_id
+        driver = Drivers.query.filter_by(user_id=user_id).first()
+
+        user_data = {
+            "user_id": user.user_id,
+            "user_name": user.user_name,
+            "email": user.email,
+            "phone_number": user.phone_number,
+            "is_verified": user.is_verified,
+            "gender": user.gender,
+            "role_id": user.role_id,
+            "create_datetime": user.create_datetime,
+            "driver_id": driver.driver_id if driver else None  # Add driver_id if exists
+        }
+
+        return jsonify(user_data), 200
     except Exception as e:
         print(e)
-        return jsonify({"messgae":"Internal Server Error"}),500
+        return jsonify({"message": "Internal Server Error"}), 500
+
     
 def get_all_users():
     try:

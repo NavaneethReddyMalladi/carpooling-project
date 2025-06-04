@@ -3,6 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 
+# now i need rider dash board 
+# i rider canselect  the routes which are mentioned in routestops and stops table.
+# the rider can select all the intermidiate and source stops but nmot destinations.basd on the source selected then show the destiinations torider.
+# for example if rider selects d as source soq him e nad f not previpus  a,b,c.
+# and then rider can search the available rides
+
 app=Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI']="postgres://navaneeth:Mittu1821@localhost:5432/test"

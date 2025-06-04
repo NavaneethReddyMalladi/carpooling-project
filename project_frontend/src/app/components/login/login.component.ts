@@ -26,6 +26,7 @@ export class LoginComponent {
       next: (response) => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('role_id', response.role_id)
+        localStorage.setItem('user_id',response.user_id)
 
         if(response.role_id===1){
           this.router.navigate(['/driver'])

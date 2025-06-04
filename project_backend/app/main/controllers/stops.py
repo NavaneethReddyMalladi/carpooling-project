@@ -35,3 +35,4 @@ def update(stop_id):
 @stops_bp.route('/stops/<int:stop_id>', methods=['DELETE'])
 def delete(stop_id):
     return delete_stop(stop_id)
+

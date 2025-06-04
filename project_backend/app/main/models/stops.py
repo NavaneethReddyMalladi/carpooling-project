@@ -16,7 +16,7 @@ class Stops(db.Model):
     stop_name = db.Column(db.String(100), nullable=False)
     
     stop_type = db.Column(db.Enum(StopTypeEnum), nullable=False, default=StopTypeEnum.INTERMEDIATE)
-# origin, intermediate, destination
+# origin, intermediate, destaination
     route_id = db.Column(db.Integer, nullable=False)
     stop_order = db.Column(db.Integer, nullable=False)
     create_datetime = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)

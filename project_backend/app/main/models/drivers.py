@@ -18,4 +18,4 @@ class Drivers(db.Model):
 
     # 🔗 Relationships
     # user = db.relationship('User', backref=db.backref('driver', uselist=False, lazy=True))
-    # rides = db.relationship('Rides', backref='driver', lazy=True)
+    rides = db.relationship('Rides', backref='driver', lazy=True)
