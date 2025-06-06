@@ -487,8 +487,12 @@ export class RiderDashboardComponent implements OnInit {
   stops: any[] = [];
   isLoading = false;
   isBooking = false;
+  isEditingProfile = false; 
   message = '';
   messageType: 'success' | 'error' = 'success';
+
+  // NEW: Profile menu state
+  isProfileMenuOpen = false;
 
   riderDetails: RiderDetails = {
     rider_name: '',
@@ -503,6 +507,10 @@ export class RiderDashboardComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: object,
     private router: Router
   ) {}
+
+  // navigateToPublish(){
+  //   this.router.navigate(['/publish'])
+  // }
 
   ngOnInit() {
     this.loadStopsAndSources();
@@ -679,7 +687,7 @@ export class RiderDashboardComponent implements OnInit {
     };
 
     // API call to book the ride
-    this.http.post('http://127.0.0.1:42099/bookings', bookingData, {
+    this.http.post('http://127.0.0.1:42099/ride-requests', bookingData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -727,6 +735,152 @@ export class RiderDashboardComponent implements OnInit {
     setTimeout(() => {
       this.message = '';
     }, 5000);
+  }
+
+  // NEW: Profile menu methods
+  toggleProfileMenu() {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  closeProfileMenu() {
+    this.isProfileMenuOpen = false;
+  }
+  
+
+  manageAccount() {
+    this.closeProfileMenu();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.showMessage('Authentication required. Please login again.', 'error');
+      this.router.navigate(['/login']);
+      return;
+    }
+  
+    // Assuming rider_id is already known in riderDetails
+    if (!this.riderDetails.rider_id) {
+      this.showMessage('User ID missing', 'error');
+      return;
+    }
+  
+    // Fetch full rider details from backend
+    this.http.get<any>(`http://127.0.0.1:42099/users/${this.riderDetails.rider_id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (data) => {
+        this.riderDetails = {
+          rider_id: data.user_id,
+          rider_name: data.user_name || data.name || '',
+          start_stop_id: data.start_stop_id || '',
+          destination_stop_id: data.destination_stop_id || '',
+          gender: data.gender || ''
+        };
+        this.isEditingProfile = false;
+      },
+      error: (err) => {
+        console.error('Failed to load rider details:', err);
+        this.showMessage('Failed to load account details', 'error');
+      }
+    });
+  }
+  
+  // Called on Edit button click
+  editProfile() {
+    this.isEditingProfile = true;
+  }
+  
+  // Called on Save button click
+  saveProfile() {
+    if (!this.riderDetails.rider_id) {
+      this.showMessage('User ID missing', 'error');
+      return;
+    }
+  
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.showMessage('Authentication required. Please login again.', 'error');
+      this.router.navigate(['/login']);
+      return;
+    }
+  
+    // Prepare the payload to update rider info (adjust as per your API)
+    const updatePayload = {
+      user_name: this.riderDetails.rider_name,
+      start_stop_id: this.riderDetails.start_stop_id,
+      destination_stop_id: this.riderDetails.destination_stop_id,
+      gender: this.riderDetails.gender
+    };
+  
+    this.http.put(`http://127.0.0.1:42099/users/${this.riderDetails.rider_id}`, updatePayload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }).subscribe({
+      next: (res) => {
+        this.showMessage('Profile updated successfully!', 'success');
+        this.isEditingProfile = false;
+        this.manageAccount(); // Reload fresh data after update
+      },
+      error: (err) => {
+        console.error('Failed to update profile:', err);
+        this.showMessage('Failed to update profile', 'error');
+      }
+    });
+  }
+  
+  // Optional: Cancel editing to revert back
+  cancelEdit() {
+    this.isEditingProfile = false;
+    this.manageAccount();
+  }
+
+  viewRides() {
+    console.log('Navigate to view rides');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/my-rides']);
+  }
+
+  driveAndDeliver() {
+    console.log('Navigate to drive & deliver');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/drive-deliver']);
+  }
+
+  openUberEats() {
+    console.log('Navigate to Uber Eats');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/uber-eats']);
+  }
+
+  openUberBusiness() {
+    console.log('Navigate to Uber for Business');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/uber-business']);
+  }
+
+  openHelp() {
+    console.log('Navigate to help');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/help']);
+  }
+
+  openWallet() {
+    console.log('Navigate to wallet');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/wallet']);
+  }
+
+  openActivity() {
+    console.log('Navigate to activity');
+    this.closeProfileMenu();
+    // Add your navigation logic here
+    // this.router.navigate(['/activity']);
   }
 
   logout() {

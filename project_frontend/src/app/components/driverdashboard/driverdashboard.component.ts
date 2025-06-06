@@ -12,7 +12,7 @@ import { DriverProfileComponent } from '../driverprofile/driverprofile.component
   templateUrl: './driverdashboard.component.html',
   styleUrls: ['./driverdashboard.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule,DriverProfileComponent]
+  imports: [CommonModule, FormsModule]
 })
 export class DriverDashboardComponent implements OnInit {
   stops: any[] = [];

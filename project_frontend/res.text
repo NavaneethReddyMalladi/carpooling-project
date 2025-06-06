@@ -1,0 +1,296 @@
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+import { forkJoin } from 'rxjs';
+
+const BASE_URL = 'http://127.0.0.1:42099';
+
+interface Stop {
+  stop_id: string;
+  stop_name: string;
+}
+
+interface Ride {
+  ride_id?: string;
+  driver_name: string;
+  driver_id?: string;
+  origin_stop_id: string;
+  destination_stop_id: string;
+  departure_time: string;
+  available_seats?: number;
+  seats?: number;
+  price?: number;
+  status?: string;
+}
+
+interface RiderDetails {
+  rider_name: string;
+  rider_id: string;
+  start_stop_id: string;
+  destination_stop_id: string;
+  gender: string;
+}
+
+@Component({
+  selector: 'app-rider-dashboard',
+  templateUrl: './riderdashboard.component.html',
+  styleUrls: ['./riderdashboard.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
+})
+export class RiderDashboardComponent implements OnInit {
+  sourceStops: Stop[] = [];
+  destStops: Stop[] = [];
+  rides: Ride[] = [];
+  selectedRide: Ride | null = null;
+
+  selectedSource = '';
+  selectedDest = '';
+  stops: Stop[] = [];
+
+  isLoading = false;
+  isBooking = false;
+  message = '';
+  messageType: 'success' | 'error' = 'success';
+  isProfileMenuOpen = false;
+
+  riderDetails: RiderDetails = {
+    rider_name: '',
+    rider_id: '',
+    start_stop_id: '',
+    destination_stop_id: '',
+    gender: ''
+  };
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: object,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.loadStopsAndSources();
+
+    if (isPlatformBrowser(this.platformId)) {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const decoded: any = jwtDecode(token);
+          const riderId = decoded?.user_id || decoded?.sub?.user_id || decoded?.sub;
+          if (riderId) {
+            this.loadRiderDetails(riderId, token);
+          } else {
+            this.showMessage('Authentication error. Please login again.', 'error');
+          }
+        } catch (err) {
+          console.error('Token decode failed:', err);
+          this.showMessage('Invalid token. Please login again.', 'error');
+        }
+      } else {
+        this.router.navigate(['/login']);
+      }
+    }
+  }
+
+  loadStopsAndSources() {
+    forkJoin({
+      stops: this.http.get<Stop[]>(`${BASE_URL}/stops`),
+      sources: this.http.get<Stop[]>(`${BASE_URL}/route-stops/sources`)
+    }).subscribe({
+      next: ({ stops, sources }) => {
+        this.stops = stops || [];
+        this.sourceStops = sources.map(stop => ({
+          stop_id: stop.stop_id,
+          stop_name: stop.stop_name
+        }));
+      },
+      error: (err) => {
+        console.error('Stops/sources load error:', err);
+        this.showMessage('Failed to load stop data', 'error');
+      }
+    });
+  }
+
+  loadRiderDetails(riderId: string, token: string) {
+    this.http.get<any>(`${BASE_URL}/users/${riderId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (rider) => {
+        this.riderDetails = {
+          rider_id: rider.user_id,
+          rider_name: rider.user_name || rider.name || 'Unknown',
+          start_stop_id: '',
+          destination_stop_id: '',
+          gender: rider.gender || 'Not specified'
+        };
+      },
+      error: (err) => {
+        console.error('User load failed:', err);
+        this.showMessage('Failed to load user info', 'error');
+      }
+    });
+  }
+
+  onSourceChange() {
+    this.selectedDest = '';
+    this.destStops = [];
+    this.rides = [];
+
+    if (this.selectedSource) {
+      this.http.get<any>(`${BASE_URL}/route-stops/destinations`, {
+        params: new HttpParams().set('source_stop_id', this.selectedSource)
+      }).subscribe({
+        next: (destData) => {
+          const destArray = Array.isArray(destData)
+            ? destData
+            : destData?.destinations || [];
+
+          const uniqueDestIds = [...new Set(destArray.map((d: any) => String(d.stop_id || d.end_stop_id)))];
+
+          this.destStops = uniqueDestIds.map(id => {
+            const match = this.stops.find(s => String(s.stop_id) === id);
+            return {
+              stop_id: id,
+              stop_name: match?.stop_name || `Stop ${id}`
+            };
+          });
+        },
+        error: (err) => {
+          console.error('Destination fetch failed:', err);
+          this.showMessage('Failed to load destinations', 'error');
+        }
+      });
+    }
+  }
+
+  searchRides() {
+    if (this.selectedSource && this.selectedDest) {
+      this.isLoading = true;
+      this.rides = [];
+
+      const params = new HttpParams()
+        .set('origin_stop_id', this.selectedSource)
+        .set('destination_stop_id', this.selectedDest);
+
+      this.http.get<Ride[]>(`${BASE_URL}/rides/search`, { params }).subscribe({
+        next: (rides) => {
+          this.rides = rides || [];
+          this.isLoading = false;
+
+          if (!this.rides.length) {
+            this.showMessage('No rides found for this route.', 'error');
+          }
+        },
+        error: (err) => {
+          console.error('Ride search failed:', err);
+          this.showMessage('Failed to search for rides.', 'error');
+          this.isLoading = false;
+        }
+      });
+    }
+  }
+
+  bookRide(ride: Ride) {
+    this.selectedRide = ride;
+    this.riderDetails.start_stop_id = ride.origin_stop_id;
+    this.riderDetails.destination_stop_id = ride.destination_stop_id;
+  }
+
+  closeBookingModal() {
+    this.selectedRide = null;
+  }
+
+  confirmBooking() {
+    if (!this.selectedRide) return;
+
+    this.isBooking = true;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.showMessage('Please login to continue.', 'error');
+      this.isBooking = false;
+      return;
+    }
+
+    const { rider_id, rider_name, start_stop_id, destination_stop_id, gender } = this.riderDetails;
+    if (!rider_id || !start_stop_id || !destination_stop_id || !this.selectedRide.ride_id) {
+      this.showMessage('Booking data missing. Try again.', 'error');
+      this.isBooking = false;
+      return;
+    }
+
+    const payload = {
+      ride_id: this.selectedRide.ride_id,
+      rider_id,
+      rider_name,
+      start_stop_id,
+      destination_stop_id,
+      gender,
+      booking_time: new Date().toISOString()
+    };
+
+    this.http.post(`${BASE_URL}/bookings`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }).subscribe({
+      next: () => {
+        this.showMessage('Ride booked successfully!', 'success');
+        this.closeBookingModal();
+        this.searchRides();
+        this.isBooking = false;
+      },
+      error: (err) => {
+        console.error('Booking failed:', err);
+        this.showMessage(err.error?.message || 'Booking failed.', 'error');
+        this.isBooking = false;
+      }
+    });
+  }
+
+  getStopName(stopId: string): string {
+    return this.stops.find(s => s.stop_id === stopId)?.stop_name || `Stop ${stopId}`;
+  }
+
+  formatDateTime(dateStr: string): string {
+    try {
+      const date = new Date(dateStr);
+      return `${date.toLocaleDateString()}, ${date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      })}`;
+    } catch {
+      return dateStr;
+    }
+  }
+
+  showMessage(text: string, type: 'success' | 'error') {
+    this.message = text;
+    this.messageType = type;
+    setTimeout(() => (this.message = ''), 5000);
+  }
+
+  toggleProfileMenu() {
+    this.isProfileMenuOpen = !this.isProfileMenuOpen;
+  }
+
+  closeProfileMenu() {
+    this.isProfileMenuOpen = false;
+  }
+
+  navigateTo(path: string) {
+    this.closeProfileMenu();
+    this.router.navigate([path]);
+  }
+
+  logout() {
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      this.router.navigate(['/login']);
+    }
+  }
+}
