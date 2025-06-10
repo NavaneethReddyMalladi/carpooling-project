@@ -1,44 +1,331 @@
-<div class="navbar">
-    <div class="navbar-brand">Driver Dashboard</div>
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <div class="brand-logo">🚗</div>
+      <span class="brand-text">RideShare Driver</span>
+    </div>
+    
+    <div class="navbar-center">
+      <div class="online-status">
+        <label class="switch">
+          <input type="checkbox" [checked]="isOnline" (change)="toggleOnlineStatus()">
+          <span class="slider"></span>
+        </label>
+        <span class="status-text" [class.online]="isOnline" [class.offline]="!isOnline">
+          {{ isOnline ? 'Online' : 'Offline' }}
+        </span>
+      </div>
+    </div>
+    
     <div class="navbar-profile">
-      <span class="profile-name">{{ driverDetails.driver_name }}</span>
-      <button class="profile-btn" (click)="toggleProfileMenu()">▼</button>
-      <!-- <app-driver-profile ></app-driver-profile> -->
-      <!-- [token]="token" [userId]="userId" -->
-
+      <div class="profile-info">
+        <span class="profile-name">{{ driverDetails.driver_name }}</span>
+        <div class="rating">
+          <span class="stars">★★★★★</span>
+          <span class="rating-text">{{ driverDetails.rating }}</span>
+        </div>
+      </div>
+      <button class="profile-btn" (click)="toggleProfileMenu()">
+        <div class="profile-avatar">{{ driverDetails.driver_name.charAt(0) }}</div>
+        <span class="dropdown-arrow">▼</span>
+      </button>
+      
       <ul *ngIf="showProfileMenu" class="dropdown-menu">
+        <li><a href="#" (click)="viewProfile()">View Profile</a></li>
         <li><a href="#" (click)="logout()">Logout</a></li>
       </ul>
     </div>
   </div>
-  
-  <div class="dashboard-container">
-    <h2>Create a New Ride</h2>
-  
-    <form (ngSubmit)="createRide()" #rideForm="ngForm">
-      <label>Origin Stop:</label>
-      <select [(ngModel)]="ride.origin_stop_id" name="origin_stop_id" required>
-        <option *ngFor="let stop of stops" [value]="stop.stop_id">{{ stop.stop_name }}</option>
-      </select>
-  
-      <label>Destination Stop:</label>
-      <select [(ngModel)]="ride.destination_stop_id" name="destination_stop_id" required>
-        <option *ngFor="let stop of stops" [value]="stop.stop_id">{{ stop.stop_name }}</option>
-      </select>
-  
-      <label>Departure Time:</label>
-      <input type="datetime-local" [(ngModel)]="ride.departure_time" name="departure_time" required />
-  
-      <label>Available Seats:</label>
-      <input type="number" [(ngModel)]="ride.available_seats" name="available_seats" min="1" required />
-  
-      <label>Route ID (optional):</label>
-      <input type="number" [(ngModel)]="ride.route_id" name="route_id" />
-  
-      <button type="submit">Create Ride</button>
-    </form>
-  
-    <div class="message" *ngIf="message">{{ message }}</div>
-    <div class="error" *ngIf="error">{{ error }}</div>
+</nav>
+
+<!-- Main Dashboard Container -->
+<div class="dashboard-container">
+  <!-- Sidebar Navigation -->
+  <div class="sidebar">
+    <div class="sidebar-menu">
+      <button 
+        class="menu-item" 
+        [class.active]="activeTab === 'dashboard'"
+        (click)="setActiveTab('dashboard')">
+        <span class="icon">📊</span>
+        Dashboard
+      </button>
+      <button 
+        class="menu-item" 
+        [class.active]="activeTab === 'create-ride'"
+        (click)="setActiveTab('create-ride')">
+        <span class="icon">➕</span>
+        Create Ride
+      </button>
+      <button 
+        class="menu-item" 
+        [class.active]="activeTab === 'rides'"
+        (click)="setActiveTab('rides')">
+        <span class="icon">🚗</span>
+        My Rides
+      </button>
+      <button 
+        class="menu-item" 
+        [class.active]="activeTab === 'profile'"
+        (click)="setActiveTab('profile')">
+        <span class="icon">👤</span>
+        Profile
+      </button>
+    </div>
   </div>
-  
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Success/Error Messages -->
+    <div class="message success" *ngIf="message">
+      <span class="icon">✅</span>
+      {{ message }}
+    </div>
+    <div class="message error" *ngIf="error">
+      <span class="icon">❌</span>
+      {{ error }}
+    </div>
+
+    <!-- Dashboard Tab -->
+    <div *ngIf="activeTab === 'dashboard'" class="content-section">
+      <div class="section-header">
+        <h2>Dashboard Overview</h2>
+        <p>Welcome back, {{ driverDetails.driver_name }}!</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card earnings">
+          <div class="stat-icon">💰</div>
+          <div class="stat-info">
+            <h3>₹{{ dashboardStats.todayEarnings }}</h3>
+            <p>Today's Earnings</p>
+          </div>
+        </div>
+        
+        <div class="stat-card rides">
+          <div class="stat-icon">🚗</div>
+          <div class="stat-info">
+            <h3>{{ dashboardStats.totalRides }}</h3>
+            <p>Total Rides</p>
+          </div>
+        </div>
+        
+        <div class="stat-card rating">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-info">
+            <h3>{{ dashboardStats.rating }}</h3>
+            <p>Average Rating</p>
+          </div>
+        </div>
+        
+        <div class="stat-card hours">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-info">
+            <h3>{{ dashboardStats.onlineHours }}h</h3>
+            <p>Online Today</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Rides -->
+      <div class="recent-rides">
+        <h3>Recent Rides</h3>
+        <div class="rides-list">
+          <div *ngFor="let ride of recentRides" class="ride-item" [class]="ride.status">
+            <div class="ride-info">
+              <div class="route">
+                <span class="origin">{{ ride.origin }}</span>
+                <span class="arrow">→</span>
+                <span class="destination">{{ ride.destination }}</span>
+              </div>
+              <div class="ride-meta">
+                <span class="time">{{ ride.time }}</span>
+                <span class="status">{{ ride.status | titlecase }}</span>
+              </div>
+            </div>
+            <div class="ride-details">
+              <div class="fare">₹{{ ride.fare }}</div>
+              <div class="rating" *ngIf="ride.rating > 0">
+                <span class="stars">★</span>
+                <span>{{ ride.rating }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Ride Tab -->
+    <div *ngIf="activeTab === 'create-ride'" class="content-section">
+      <div class="section-header">
+        <h2>Create a New Ride</h2>
+        <p>Share your ride and earn money!</p>
+      </div>
+
+      <div class="create-ride-form">
+        <form (ngSubmit)="createRide()" #rideForm="ngForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="origin">From</label>
+              <select 
+                id="origin"
+                [(ngModel)]="ride.origin_stop_id" 
+                name="origin_stop_id" 
+                required
+                class="form-control"
+                (change)="onOriginStopChange()">
+                <option value="">Select origin stop</option>
+                <option *ngFor="let stop of sourceStops" [value]="stop.id">
+                  {{ stop.name }}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="destination">To</label>
+              <select 
+                id="destination"
+                [(ngModel)]="ride.destination_stop_id" 
+                name="destination_stop_id" 
+                required
+                class="form-control"
+                [disabled]="!ride.origin_stop_id">
+                <option value="">
+                  {{ !ride.origin_stop_id ? 'Select origin first' : 'Select destination stop' }}
+                </option>
+                <option *ngFor="let stop of destStops" [value]="stop.id">
+                  {{ stop.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="departure">Departure Time</label>
+              <input 
+                type="datetime-local" 
+                id="departure"
+                [(ngModel)]="ride.departure_time" 
+                name="departure_time" 
+                required
+                class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label for="seats">Available Seats</label>
+              <input 
+                type="number" 
+                id="seats"
+                [(ngModel)]="ride.available_seats" 
+                name="available_seats" 
+                min="1" 
+                max="8"
+                required
+                class="form-control" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="route">Route ID (Optional)</label>
+            <input 
+              type="number" 
+              id="route"
+              [(ngModel)]="ride.route_id" 
+              name="route_id"
+              class="form-control"
+              placeholder="Enter route ID if available" />
+          </div>
+
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="isLoading || !rideForm.form.valid">
+            <span *ngIf="isLoading" class="spinner"></span>
+            {{ isLoading ? 'Creating...' : 'Create Ride' }}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- My Rides Tab -->
+    <div *ngIf="activeTab === 'rides'" class="content-section">
+      <div class="section-header">
+        <h2>My Rides</h2>
+        <p>Manage your active and completed rides</p>
+      </div>
+
+      <div class="rides-section">
+        <div class="tabs">
+          <button class="tab active">Active Rides</button>
+          <button class="tab">Completed</button>
+          <button class="tab">Cancelled</button>
+        </div>
+
+        <div class="rides-content">
+          <div class="empty-state">
+            <div class="empty-icon">🚗</div>
+            <h3>No active rides</h3>
+            <p>Create a new ride to start earning!</p>
+            <button class="btn btn-secondary" (click)="setActiveTab('create-ride')">
+              Create Ride
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div *ngIf="activeTab === 'profile'" class="content-section">
+      <div class="section-header">
+        <h2>Driver Profile</h2>
+        <p>Manage your profile information</p>
+      </div>
+
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar large">{{ driverDetails.driver_name.charAt(0) }}</div>
+          <div class="profile-info">
+            <h3>{{ driverDetails.driver_name }}</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-text">{{ driverDetails.rating }} ({{ dashboardStats.totalRides }} rides)</span>
+            </div>
+            <div class="status-badge" [class.online]="isOnline" [class.offline]="!isOnline">
+              {{ isOnline ? 'Online' : 'Offline' }}
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-details">
+          <div class="detail-item">
+            <span class="label">Driver ID:</span>
+            <span class="value">{{ driverDetails.driver_id }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Gender:</span>
+            <span class="value">{{ driverDetails.gender | titlecase }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Phone:</span>
+            <span class="value">{{ driverDetails.phone }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ driverDetails.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Total Rides:</span>
+            <span class="value">{{ dashboardStats.totalRides }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Completed Rides:</span>
+            <span class="value">{{ dashboardStats.completedRides }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

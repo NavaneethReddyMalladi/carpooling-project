@@ -13,6 +13,7 @@ export const routes: Routes = [
   { path: 'register', component: RegistrationComponent },
   {path:'',component:HomeComponent},
   {path:'rider',component:RiderDashboardComponent},
+  
   {path:'driver',component:DriverDashboardComponent
   },
   {path:'driver/profile',component:DriverProfileComponent}

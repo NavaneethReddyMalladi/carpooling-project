@@ -1,406 +1,145 @@
-<!-- Navbar
-<nav class="navbar">
-  <div class="navbar-left">
-    <img src="" alt="Logo" class="logo" />
-    <span class="welcome-text">Welcome, {{riderDetails.rider_name}}</span>
-  </div>
-  <div class="navbar-right">
-    <a class="nav-link" routerLink="/publish">Publish a ride</a>
-    <a class="nav-link" routerLink="/logout">Logout</a>
-    <div class="profile-icon">👤</div>
-  </div>
-</nav>
 
-<div class="dashboard-container">
-  <h1>Rider Dashboard</h1>
-
-
-  <div class="form-grid">
-    <select [(ngModel)]="selectedSource" (change)="onSourceChange()">
-      <option value="" disabled>Select Source Stop</option>
-      <option *ngFor="let stop of sourceStops" [value]="stop.id">{{ stop.name }}</option>
-    </select>
-
-    <select [(ngModel)]="selectedDest" [disabled]="!selectedSource">
-      <option value="" disabled>Select Destination Stop</option>
-      <option *ngFor="let stop of destStops" [value]="stop.id">{{ stop.name }}</option>
-    </select>
-  </div>
-
-  <button (click)="searchRides()" class="search-btn" [disabled]="!selectedSource || !selectedDest">
-    Search Rides
-  </button> -->
-<!-- 
-  <div class="ride-list">
-    <h2>Available Rides</h2>
-    <p *ngIf="rides.length === 0">No rides found.</p>
-    <ul *ngIf="rides.length > 0">
-      <li *ngFor="let ride of rides" class="ride-card">
-        <p>
-          <strong>Driver:</strong> {{ ride.driver_name }} | 
-          <strong>From:</strong> {{ ride.origin_name }} → {{ ride.destination_name }}
-        </p> -->
-        <!-- <p>
-          <strong>Departure:</strong> {{ ride.departure_time | date: 'short' }} | 
-          <strong>Seats:</strong> {{ ride.available_seats }}
-        </p>
-        <button (click)="bookRide(ride)">Book</button>
-      </li>
-    </ul>
-  </div>
-</div> -->
-
-
-
-
-
-
-<!-- 
- <div class="rider-dashboard">
-
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Rider Dashboard</h1>
-            <p class="dashboard-subtitle">Find and book rides to your destination</p>
-        </div>
-
-        <div class="search-section">
-            <form class="search-form">
-                <div class="form-group">
-                    <label for="source">From</label>
-                    <select id="source" class="form-control">
-                        <option value="">Select source location</option>
-                        <option value="kondapur">Kondapur</option>
-                        <option value="madapur">Madapur</option>
-                        <option value="jubilee-hills">Jubilee Hills</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="destination">To</label>
-                    <select id="destination" class="form-control">
-                        <option value="">Select destination</option>
-                        <option value="durgamcheruvu">Durgamcheruvu</option>
-                        <option value="jubilee-hills">Jubilee Hills</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="search-btn">Search Rides</button>
-            </form>
-        </div>
-
-
-        <div class="rides-section">
-            <div class="section-header">
-                <h3 class="section-title">Available Rides</h3>
-                <span class="rides-count">4 rides</span>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="logo.png" alt="Logo" class="logo">
+                <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
             </div>
-
-            <div class="rides-container">
-   
-                <div class="ride-card">
-                    <div class="ride-header">
-                        <div>
-                            <div class="driver-info">
-                                <span class="driver-prefix">Driver:</span>
-                                <span class="driver-name">dnavaneeth</span>
-                            </div>
-                            <div class="route-info">
-                                <div class="route-visual">
-                                    <div class="location-dot origin"></div>
-                                    <div class="route-line"></div>
-                                    <div class="location-dot destination"></div>
-                                </div>
-                                <div class="route-locations">
-                                    <span class="origin-name">kondapur</span>
-                                    <span class="destination-name">jubileehills</span>
-                                </div>
-                            </div>
-                        </div>
+            <div class="header-actions">
+                <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button>
+                <button class="header-btn" (click)="logout()">Logout</button>
+                <div class="profile-section" (click)="toggleProfileMenu()">
+                    <div class="profile-avatar">
+                        <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
                     </div>
-
-                    <div class="ride-details">
-                        <div class="ride-info">
-                            <div class="info-item">
-                                <span class="info-label">Departure</span>
-                                <span class="info-value">6/10/25, 8:30 AM</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Seats</span>
-                                <span class="info-value">3</span>
-                            </div>
+                    <div class="profile-menu" [class.show]="isProfileMenuOpen" (click)="$event.stopPropagation()">
+                        <div class="profile-header">
+                            <h3>{{ riderDetails.rider_name || 'Unknown' }}</h3>
+                            <div class="rating">★ 4.74</div>
                         </div>
-                        <button class="book-btn">Book</button>
-                    </div>
-                </div>
-
-  
-                <div class="ride-card">
-                    <div class="ride-header">
-                        <div>
-                            <div class="driver-info">
-                                <span class="driver-prefix">Driver:</span>
-                                <span class="driver-name">dmittu</span>
-                            </div>
-                            <div class="route-info">
-                                <div class="route-visual">
-                                    <div class="location-dot origin"></div>
-                                    <div class="route-line"></div>
-                                    <div class="location-dot destination"></div>
-                                </div>
-                                <div class="route-locations">
-                                    <span class="origin-name">kondapur</span>
-                                    <span class="destination-name">jubileehills</span>
-                                </div>
-                            </div>
+                        
+                        <div class="quick-actions">
+                            <div class="action-item" (click)="openHelp()">🛟 Help</div>
+                            <div class="action-item" (click)="openWallet()">💳 Wallet</div>
+                            <div class="action-item" (click)="openActivity()">📋 Activity</div>
                         </div>
-                    </div>
 
-                    <div class="ride-details">
-                        <div class="ride-info">
-                            <div class="info-item">
-                                <span class="info-label">Departure</span>
-                                <span class="info-value">6/10/25, 8:30 AM</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Seats</span>
-                                <span class="info-value">3</span>
-                            </div>
+                        <div class="menu-items">
+                            <div class="menu-item" (click)="manageAccount()">👤 Manage account</div>
+                            <div class="menu-item" (click)="viewRides()">🚗 Rides</div>
+                            <div class="menu-item" (click)="driveAndDeliver()">🚙 Drive & deliver</div>
+                            <div class="menu-item" (click)="openUberEats()">🍽 Uber Eats</div>
+                            <div class="menu-item" (click)="openUberBusiness()">💼 Uber for Business</div>
                         </div>
-                        <button class="book-btn">Book</button>
-                    </div>
-                </div>
 
-                <div class="ride-card">
-                    <div class="ride-header">
-                        <div>
-                            <div class="driver-info">
-                                <span class="driver-prefix">Driver:</span>
-                                <span class="driver-name">dmittu</span>
-                            </div>
-                            <div class="route-info">
-                                <div class="route-visual">
-                                    <div class="location-dot origin"></div>
-                                    <div class="route-line"></div>
-                                    <div class="location-dot destination"></div>
-                                </div>
-                                <div class="route-locations">
-                                    <span class="origin-name">kondapur</span>
-                                    <span class="destination-name">durgamcheruvu</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="ride-details">
-                        <div class="ride-info">
-                            <div class="info-item">
-                                <span class="info-label">Departure</span>
-                                <span class="info-value">6/20/25, 3:56 PM</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Seats</span>
-                                <span class="info-value">1</span>
-                            </div>
-                        </div>
-                        <button class="book-btn">Book</button>
-                    </div>
-                </div>
-
-
-                <div class="ride-card">
-                    <div class="ride-header">
-                        <div>
-                            <div class="driver-info">
-                                <span class="driver-prefix">Driver:</span>
-                                <span class="driver-name">dmittu</span>
-                            </div>
-                            <div class="route-info">
-                                <div class="route-visual">
-                                    <div class="location-dot origin"></div>
-                                    <div class="route-line"></div>
-                                    <div class="location-dot destination"></div>
-                                </div>
-                                <div class="route-locations">
-                                    <span class="origin-name">madapur</span>
-                                    <span class="destination-name">durgamcheruvu</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="ride-details">
-                        <div class="ride-info">
-                            <div class="info-item">
-                                <span class="info-label">Departure</span>
-                                <span class="info-value">6/3/25, 3:35 PM</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Seats</span>
-                                <span class="info-value">1</span>
-                            </div>
-                        </div>
-                        <button class="book-btn">Book</button>
+                        <div class="menu-footer" (click)="logout()">Sign out</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
+    <div class="profile-overlay" [class.show]="isProfileMenuOpen" (click)="closeProfileMenu()"></div>
 
-    <div class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Confirm Booking</h3>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to book this ride?</p>
-                <div class="ride-summary">
-                    
+    <div class="dashboard-container">
+        <div class="dashboard-content">
+            <!-- Profile Management Panel - Only shows when showProfileManagement is true -->
+            <div *ngIf="showProfileManagement" class="profile-panel">
+                <h2>Manage Account</h2>
+                <form *ngIf="isEditingProfile" (ngSubmit)="saveProfile()">
+                    <label>Name: 
+                        <input type="text" [(ngModel)]="riderDetails.rider_name" name="name">
+                    </label>
+                    <label>Source Stop: 
+                        <select [(ngModel)]="riderDetails.start_stop_id" name="start_stop" (change)="onSourceChange()">
+                            <option value="">Select Source</option>
+                            <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
+                        </select>
+                    </label>
+                    <label>Destination Stop: 
+                        <select [(ngModel)]="riderDetails.destination_stop_id" name="dest_stop">
+                            <option value="">Select Destination</option>
+                            <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
+                        </select>
+                    </label>
+                    <label>Gender: 
+                        <select [(ngModel)]="riderDetails.gender" name="gender">
+                            <option value="">Select Gender</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                            <option>Not specified</option>
+                        </select>
+                    </label>
+                    <div>
+                        <button type="submit" class="btn">Save</button>
+                        <button type="button" class="btn cancel" (click)="cancelEdit()">Cancel</button>
+                    </div>
+                </form>
+
+                <div *ngIf="!isEditingProfile" class="profile-info">
+                    <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+                    <p><strong>Source Stop:</strong> {{ getStopName(riderDetails.start_stop_id) }}</p>
+                    <p><strong>Destination Stop:</strong> {{ getStopName(riderDetails.destination_stop_id) }}</p>
+                    <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+                    <div>
+                        <button class="btn" (click)="editProfile()">Edit Profile</button>
+                        <button class="btn cancel" (click)="hideProfileManagement()">Close</button>
+                    </div>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="btn-secondary">Cancel</button>
-                <button class="book-btn">Confirm Booking</button>
+
+            <!-- Search & Rides Section -->
+            <h1 class="dashboard-title">Find a Ride</h1>
+            <div class="search-section">
+                <select [(ngModel)]="selectedSource" (change)="onSourceChange()">
+                    <option value="">Select Source</option>
+                    <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
+                </select>
+                <select [(ngModel)]="selectedDest" [disabled]="!selectedSource">
+                    <option value="">Select Destination</option>
+                    <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
+                </select>
+                <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest">Search</button>
             </div>
+
+            <div *ngIf="isLoading" class="loading">Searching for rides…</div>
+            
+            <ul *ngIf="rides && rides.length > 0" class="ride-list">
+                <li *ngFor="let r of rides" class="ride-card">
+                    <p><strong>Driver:</strong> {{ r.driver_name }}</p>
+                    <p><strong>Route:</strong> {{ getStopName(r.origin_stop_id) }} → {{ getStopName(r.destination_stop_id) }}</p>
+                    <p><strong>Departure:</strong> {{ formatDateTime(r.departure_time) }}</p>
+                    <p><strong>Seats:</strong> {{ r.available_seats || r.seats }}</p>
+                    <p *ngIf="r.price"><strong>Price:</strong> ₹{{ r.price }}</p>
+                    <button (click)="bookRide(r)">Book</button>
+                </li>
+            </ul>
+            
+            <p *ngIf="!isLoading && (!rides?.length)" style="text-align: center; padding: 3rem; color: #666; font-size: 1.1rem;">
+                No rides found. Try changing stops.
+            </p>
+
+            <!-- Booking Confirmation Modal -->
+            <div class="modal-overlay" *ngIf="selectedRide">
+                <div class="modal">
+                    <h3>Confirm Booking</h3>
+                    <p><strong>Driver:</strong> {{ selectedRide.driver_name }}</p>
+                    <p><strong>Route:</strong> {{ getStopName(selectedRide.origin_stop_id) }} → {{ getStopName(selectedRide.destination_stop_id) }}</p>
+                    <p><strong>Departure:</strong> {{ formatDateTime(selectedRide.departure_time) }}</p>
+                    <p><strong>Seats:</strong> {{ selectedRide.available_seats || selectedRide.seats }}</p>
+                    <p *ngIf="selectedRide.price"><strong>Price:</strong> ₹{{ selectedRide.price }}</p>
+
+                    <h4>Your Details</h4>
+                    <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+                    <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+
+                    <button (click)="confirmBooking()" [disabled]="isBooking">
+                        {{ isBooking ? 'Booking…' : 'Confirm' }}
+                    </button>
+                    <button (click)="closeBookingModal()">Cancel</button>
+                </div>
+            </div>
+
+            <div *ngIf="message" class="message" [ngClass]="messageType">{{ message }}</div>
         </div>
-    </div> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-<header class="header">
-  <div class="header-content">
-    <div class="logo-section">
-      <img src="logo.png" alt="Logo" class="logo">
-      <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
     </div>
-    <div class="header-actions">
-      <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button>
-      <button class="header-btn" (click)="logout()">Logout</button>
-      <div class="profile-section" (click)="toggleProfileMenu()">
-        <div class="profile-avatar">
-          <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
-        </div>
-        <div class="profile-menu" [class.show]="isProfileMenuOpen" (click)="$event.stopPropagation()">
-          <div class="profile-header">
-            <h3>{{ riderDetails.rider_name || 'Unknown' }}</h3>
-            <div class="rating">★ 4.74</div>
-          </div>
-          
-          <div class="quick-actions">
-            <div class="action-item" (click)="openHelp()">🛟 Help</div>
-            <div class="action-item" (click)="openWallet()">💳 Wallet</div>
-            <div class="action-item" (click)="openActivity()">📋 Activity</div>
-          </div>
-
-          <div class="menu-items">
-            <div class="menu-item" (click)="manageAccount()">👤 Manage account</div>
-            <div class="menu-item" (click)="viewRides()">🚗 Rides</div>
-            <div class="menu-item" (click)="driveAndDeliver()">🚙 Drive & deliver</div>
-            <div class="menu-item" (click)="openUberEats()">🍽 Uber Eats</div>
-            <div class="menu-item" (click)="openUberBusiness()">💼 Uber for Business</div>
-          </div>
-
-          <div class="menu-footer" (click)="logout()">Sign out</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</header>
-<div class="profile-overlay" [class.show]="isProfileMenuOpen" (click)="closeProfileMenu()"></div>
-
-<div class="dashboard-container">
-  <div class="dashboard-content">
-    <!-- Profile Management Panel -->
-    <div *ngIf="riderDetails.rider_id" class="profile-panel">
-      <h2>Manage Account</h2>
-      <form *ngIf="isEditingProfile" (ngSubmit)="saveProfile()">
-        <label>Name: <input type="text" [(ngModel)]="riderDetails.rider_name" name="name"></label>
-        <label>Source Stop: 
-          <select [(ngModel)]="riderDetails.start_stop_id" name="start_stop">
-            <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
-          </select>
-        </label>
-        <label>Destination Stop: 
-          <select [(ngModel)]="riderDetails.destination_stop_id" name="dest_stop">
-            <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
-          </select>
-        </label>
-        <label>Gender: 
-          <select [(ngModel)]="riderDetails.gender" name="gender">
-            <option>Male</option><option>Female</option><option>Other</option><option>Not specified</option>
-          </select>
-        </label>
-        <button type="submit" class="btn">Save</button>
-        <button type="button" class="btn cancel" (click)="cancelEdit()">Cancel</button>
-      </form>
-
-      <div *ngIf="!isEditingProfile" class="profile-info">
-        <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
-        <p><strong>Source Stop:</strong> {{ getStopName(riderDetails.start_stop_id) }}</p>
-        <p><strong>Destination Stop:</strong> {{ getStopName(riderDetails.destination_stop_id) }}</p>
-        <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
-        <button class="btn" (click)="editProfile()">Edit Profile</button>
-      </div>
-    </div>
-
-    <!-- Search & Rides Section -->
-    <h1 class="dashboard-title">Find a Ride</h1>
-    <div class="search-section">
-      <select [(ngModel)]="selectedSource" (change)="onSourceChange()">
-        <option value="">Select Source</option>
-        <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
-      </select>
-      <select [(ngModel)]="selectedDest" [disabled]="!selectedSource">
-        <option value="">Select Destination</option>
-        <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
-      </select>
-      <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest">Search</button>
-    </div>
-
-    <div *ngIf="isLoading" class="loading">Searching for rides…</div>
-    <ul *ngIf="rides?.length > 0" class="ride-list">
-      <li *ngFor="let r of rides" class="ride-card">
-        <p><strong>Driver:</strong> {{ r.driver_name }}</p>
-        <p><strong>Route:</strong> {{ getStopName(r.origin_stop_id) }} → {{ getStopName(r.destination_stop_id) }}</p>
-        <p><strong>Departure:</strong> {{ formatDateTime(r.departure_time) }}</p>
-        <p><strong>Seats:</strong> {{ r.available_seats || r.seats }}</p>
-        <p *ngIf="r.price"><strong>Price:</strong> ₹{{ r.price }}</p>
-        <button (click)="bookRide(r)">Book</button>
-      </li>
-    </ul>
-    <p *ngIf="!isLoading && (!rides?.length)">No rides found. Try changing stops.</p>
-
-    <!-- Booking Confirmation Modal -->
-    <div class="modal-overlay" *ngIf="selectedRide">
-      <div class="modal">
-        <h3>Confirm Booking</h3>
-        <p><strong>Driver:</strong> {{ selectedRide.driver_name }}</p>
-        <p><strong>Route:</strong> {{ getStopName(selectedRide.origin_stop_id) }} → {{ getStopName(selectedRide.destination_stop_id) }}</p>
-        <p><strong>Departure:</strong> {{ formatDateTime(selectedRide.departure_time) }}</p>
-        <p><strong>Seats:</strong> {{ selectedRide.available_seats || selectedRide.seats }}</p>
-        <p *ngIf="selectedRide.price"><strong>Price:</strong> ₹{{ selectedRide.price }}</p>
-
-        <h4>Your Details</h4>
-        <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
-        <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
-
-        <button (click)="confirmBooking()" [disabled]="isBooking">
-          {{ isBooking ? 'Booking…' : 'Confirm' }}
-        </button>
-        <button (click)="closeBookingModal()">Cancel</button>
-      </div>
-    </div>
-
-    <div *ngIf="message" class="message" [ngClass]="messageType">{{ message }}</div>
-  </div>
-</div>

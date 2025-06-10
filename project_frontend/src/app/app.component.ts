@@ -5,6 +5,7 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { CommonModule } from '@angular/common';
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule } from '@angular/forms';
+import { RiderDashboardComponent } from './components/riderdashboard/riderdashboard.component';
 
 
 @Component({
