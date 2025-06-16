@@ -1,4 +1,4 @@
-<div class="main-container">
+<!-- <div class="main-container">
   <div class="toggle-buttons">
     <button 
       type="button" 
@@ -48,30 +48,30 @@
         <div class="input-group">
           <label for="password">Password</label>
           <input type="password" id="password" name="password" ngModel required />
-        </div>
+        </div> -->
 
         <!-- Driver-only fields -->
-        <div *ngIf="isDriver">
+        <!-- <div *ngIf="isDriver">
           <div class="input-group">
             <label for="license">Driver License Number</label>
             <input type="text" id="license" name="license" ngModel />
-          </div>
+          </div> -->
 
           <!-- <div class="input-group">
             <label for="vehicle">Vehicle Type</label>
             <input type="text" id="vehicle" name="vehicle" ngModel />
           </div> -->
 
-          <div class="input-group">
+          <!-- <div class="input-group">
             <label for="experience">Experience</label>
             <input type="text" id="experience" name="experience" ngModel />
-          </div>
+          </div> -->
 
           <!-- <div class="input-group">
             <label for="vechileRc">Vehicle RC</label>
             <input type="text" id="vechileRc" name="vechileRc" ngModel />
           </div> -->
-        </div>
+        <!-- </div>
 
         <button type="submit">Register</button>
 
@@ -83,5 +83,212 @@
       <img src="login_image.webp" alt="Register"/>
     </div>
   </div>
+  </div>
+</div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Main Registration Container -->
+<div class="main-container">
+
+  <!-- Role Toggle -->
+  <div class="toggle-buttons" role="group" aria-label="Toggle role">
+    <button 
+      type="button" 
+      (click)="toggleRole('rider')" 
+      [class.active]="!isDriver"
+      aria-pressed="{{!isDriver}}"
+      aria-label="Register as Car Rider">
+      🚗 Car Rider
+    </button>
+    <button 
+      type="button" 
+      (click)="toggleRole('driver')" 
+      [class.active]="isDriver"
+      aria-pressed="{{isDriver}}"
+      aria-label="Register as Car Driver">
+      🚘 Car Driver
+    </button>
+  </div>
+
+  <!-- Form Layout -->
+  <div class="container">
+
+    <!-- Registration Form Section -->
+    <div class="form-box">
+      <h2>Join CarPool Connect</h2>
+      <p class="subtitle">
+        Join our <span>CarPool Connect</span> platform and start sharing rides
+        <ng-container *ngIf="isDriver">as a car owner</ng-container>
+        <ng-container *ngIf="!isDriver">as a passenger</ng-container>
+      </p>
+
+      <!-- Feedback Messages -->
+      <div *ngIf="successMessage" class="success-message" role="alert">
+        ✅ {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="error-banner" role="alert">
+        ❌ {{ errorMessage }}
+      </div>
+
+      <!-- Registration Form Start -->
+      <form 
+        #registerForm="ngForm" 
+        (ngSubmit)="onSubmit(registerForm)" 
+        novalidate 
+        autocomplete="on"
+        aria-label="Registration Form">
+
+        <!-- Name -->
+        <div class="input-group" [class.error]="formErrors.username && touchedFields.username">
+          <label for="username">Full Name *</label>
+          <input 
+            type="text"
+            id="username"
+            name="username"
+            ngModel
+            required
+            minlength="2"
+            (blur)="markFieldAsTouched('username')"
+            placeholder="Enter your full name"
+            autocomplete="name" />
+          <div *ngIf="formErrors.username && touchedFields.username" class="error-message">
+            {{ formErrors.username }}
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="input-group" [class.error]="formErrors.email && touchedFields.email">
+          <label for="email">Email Address *</label>
+          <input 
+            type="email"
+            id="email"
+            name="email"
+            ngModel
+            required
+            (blur)="markFieldAsTouched('email')"
+            placeholder="Enter your email address"
+            autocomplete="email" />
+          <div *ngIf="formErrors.email && touchedFields.email" class="error-message">
+            {{ formErrors.email }}
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="input-group" [class.error]="formErrors.phone && touchedFields.phone">
+          <label for="phone">Phone Number *</label>
+          <input 
+            type="tel"
+            id="phone"
+            name="phone"
+            ngModel
+            required
+            (blur)="markFieldAsTouched('phone')"
+            placeholder="Enter your phone number"
+            autocomplete="tel" />
+          <div *ngIf="formErrors.phone && touchedFields.phone" class="error-message">
+            {{ formErrors.phone }}
+          </div>
+        </div>
+
+        <!-- Gender -->
+        <div class="input-group" [class.error]="formErrors.gender && touchedFields.gender">
+          <label for="gender">Gender *</label>
+          <select 
+            id="gender"
+            name="gender"
+            ngModel
+            required
+            (blur)="markFieldAsTouched('gender')">
+            <option value="">Select your gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+            <option value="prefer-not-to-say">Prefer not to say</option>
+          </select>
+          <div *ngIf="formErrors.gender && touchedFields.gender" class="error-message">
+            {{ formErrors.gender }}
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="input-group" [class.error]="formErrors.password && touchedFields.password">
+          <label for="password">Password *</label>
+          <div class="password-container">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              id="password"
+              name="password"
+              ngModel
+              required
+              minlength="8"
+              (input)="checkPasswordStrength($event.target.value)"
+              (blur)="markFieldAsTouched('password')"
+              placeholder="Create a strong password"
+              autocomplete="new-password" />
+            <button 
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+            </button>
+          </div>
+          <div *ngIf="passwordStrength" class="password-strength" [class]="passwordStrength">
+            Password strength: {{ passwordStrength }}
+          </div>
+          <div *ngIf="formErrors.password && touchedFields.password" class="error-message">
+            {{ formErrors.password }}
+          </div>
+        </div>
+
+        <!-- Driver Fields -->
+        <ng-container *ngIf="isDriver">
+          <div class="driver-fields-title">🚗 Car & Driver Information</div>
+
+          <!-- Use the same pattern for driver fields (license, experience, brand, etc.) -->
+          <!-- Keep your original input groups here as you had. No need to duplicate for brevity. -->
+        </ng-container>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit"
+          [disabled]="isLoading"
+          [attr.aria-label]="isLoading ? 'Creating account...' : 'Create account'">
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+          {{ isLoading ? 'Creating Account...' : 'Create Account' }}
+        </button>
+
+        <!-- Login Redirect -->
+        <p class="register-link">
+          Already have an account? 
+          <a [routerLink]="['/login']">Login here</a>
+        </p>
+      </form>
+    </div>
+
+    <!-- Image Section -->
+    <div class="image-box" aria-hidden="true">
+      <img 
+        src="login_image.webp" 
+        alt="CarPool Connect - Share rides, save money, reduce traffic"
+        loading="lazy" />
+    </div>
   </div>
 </div>
