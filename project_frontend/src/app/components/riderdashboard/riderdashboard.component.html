@@ -1,145 +1,188 @@
-
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <img src="logo.png" alt="Logo" class="logo">
-                <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
-            </div>
-            <div class="header-actions">
-                <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button>
-                <button class="header-btn" (click)="logout()">Logout</button>
-                <div class="profile-section" (click)="toggleProfileMenu()">
-                    <div class="profile-avatar">
-                        <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
-                    </div>
-                    <div class="profile-menu" [class.show]="isProfileMenuOpen" (click)="$event.stopPropagation()">
-                        <div class="profile-header">
-                            <h3>{{ riderDetails.rider_name || 'Unknown' }}</h3>
-                            <div class="rating">★ 4.74</div>
-                        </div>
-                        
-                        <div class="quick-actions">
-                            <div class="action-item" (click)="openHelp()">🛟 Help</div>
-                            <div class="action-item" (click)="openWallet()">💳 Wallet</div>
-                            <div class="action-item" (click)="openActivity()">📋 Activity</div>
-                        </div>
-
-                        <div class="menu-items">
-                            <div class="menu-item" (click)="manageAccount()">👤 Manage account</div>
-                            <div class="menu-item" (click)="viewRides()">🚗 Rides</div>
-                            <div class="menu-item" (click)="driveAndDeliver()">🚙 Drive & deliver</div>
-                            <div class="menu-item" (click)="openUberEats()">🍽 Uber Eats</div>
-                            <div class="menu-item" (click)="openUberBusiness()">💼 Uber for Business</div>
-                        </div>
-
-                        <div class="menu-footer" (click)="logout()">Sign out</div>
-                    </div>
-                </div>
-            </div>
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger-btn" (click)="toggleSidebar()">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </button>
+            <img src="logo.png" alt="Logo" class="logo">
+            <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
         </div>
-    </header>
-    <div class="profile-overlay" [class.show]="isProfileMenuOpen" (click)="closeProfileMenu()"></div>
-
-    <div class="dashboard-container">
-        <div class="dashboard-content">
-            <!-- Profile Management Panel - Only shows when showProfileManagement is true -->
-            <div *ngIf="showProfileManagement" class="profile-panel">
-                <h2>Manage Account</h2>
-                <form *ngIf="isEditingProfile" (ngSubmit)="saveProfile()">
-                    <label>Name: 
-                        <input type="text" [(ngModel)]="riderDetails.rider_name" name="name">
-                    </label>
-                    <label>Source Stop: 
-                        <select [(ngModel)]="riderDetails.start_stop_id" name="start_stop" (change)="onSourceChange()">
-                            <option value="">Select Source</option>
-                            <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
-                        </select>
-                    </label>
-                    <label>Destination Stop: 
-                        <select [(ngModel)]="riderDetails.destination_stop_id" name="dest_stop">
-                            <option value="">Select Destination</option>
-                            <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
-                        </select>
-                    </label>
-                    <label>Gender: 
-                        <select [(ngModel)]="riderDetails.gender" name="gender">
-                            <option value="">Select Gender</option>
-                            <option>Male</option>
-                            <option>Female</option>
-                            <option>Other</option>
-                            <option>Not specified</option>
-                        </select>
-                    </label>
-                    <div>
-                        <button type="submit" class="btn">Save</button>
-                        <button type="button" class="btn cancel" (click)="cancelEdit()">Cancel</button>
+        <div class="header-actions">
+            <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button>
+            <button class="header-btn" (click)="logout()">Logout</button>
+            <div class="profile-section" (click)="toggleProfileMenu()">
+                <div class="profile-avatar">
+                    <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
+                </div>
+                <div class="profile-menu" [class.show]="isProfileMenuOpen" (click)="$event.stopPropagation()">
+                    <div class="profile-header">
+                        <h3>{{ riderDetails.rider_name || 'Unknown' }}</h3>
+                        <div class="rating">★ 4.74</div>
                     </div>
-                </form>
-
-                <div *ngIf="!isEditingProfile" class="profile-info">
-                    <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
-                    <p><strong>Source Stop:</strong> {{ getStopName(riderDetails.start_stop_id) }}</p>
-                    <p><strong>Destination Stop:</strong> {{ getStopName(riderDetails.destination_stop_id) }}</p>
-                    <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
-                    <div>
-                        <button class="btn" (click)="editProfile()">Edit Profile</button>
-                        <button class="btn cancel" (click)="hideProfileManagement()">Close</button>
+                    
+                    <div class="quick-actions">
+                        <div class="action-item" (click)="openHelp()">🛟 Help</div>
+                        <div class="action-item" (click)="openWallet()">💳 Wallet</div>
+                        <div class="action-item" (click)="openActivity()">📋 Activity</div>
                     </div>
+
+                    <div class="menu-items">
+                        <div class="menu-item" (click)="manageAccount()">👤 Manage account</div>
+                        <div class="menu-item" (click)="viewRides()">🚗 Rides</div>
+                        <div class="menu-item" (click)="driveAndDeliver()">🚙 Drive & deliver</div>
+                        <div class="menu-item" (click)="openUberEats()">🍽 Uber Eats</div>
+                        <div class="menu-item" (click)="openUberBusiness()">💼 Uber for Business</div>
+                    </div>
+
+                    <div class="menu-footer" (click)="logout()">Sign out</div>
                 </div>
             </div>
-
-            <!-- Search & Rides Section -->
-            <h1 class="dashboard-title">Find a Ride</h1>
-            <div class="search-section">
-                <select [(ngModel)]="selectedSource" (change)="onSourceChange()">
-                    <option value="">Select Source</option>
-                    <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
-                </select>
-                <select [(ngModel)]="selectedDest" [disabled]="!selectedSource">
-                    <option value="">Select Destination</option>
-                    <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
-                </select>
-                <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest">Search</button>
-            </div>
-
-            <div *ngIf="isLoading" class="loading">Searching for rides…</div>
-            
-            <ul *ngIf="rides && rides.length > 0" class="ride-list">
-                <li *ngFor="let r of rides" class="ride-card">
-                    <p><strong>Driver:</strong> {{ r.driver_name }}</p>
-                    <p><strong>Route:</strong> {{ getStopName(r.origin_stop_id) }} → {{ getStopName(r.destination_stop_id) }}</p>
-                    <p><strong>Departure:</strong> {{ formatDateTime(r.departure_time) }}</p>
-                    <p><strong>Seats:</strong> {{ r.available_seats || r.seats }}</p>
-                    <p *ngIf="r.price"><strong>Price:</strong> ₹{{ r.price }}</p>
-                    <button (click)="bookRide(r)">Book</button>
-                </li>
-            </ul>
-            
-            <p *ngIf="!isLoading && (!rides?.length)" style="text-align: center; padding: 3rem; color: #666; font-size: 1.1rem;">
-                No rides found. Try changing stops.
-            </p>
-
-            <!-- Booking Confirmation Modal -->
-            <div class="modal-overlay" *ngIf="selectedRide">
-                <div class="modal">
-                    <h3>Confirm Booking</h3>
-                    <p><strong>Driver:</strong> {{ selectedRide.driver_name }}</p>
-                    <p><strong>Route:</strong> {{ getStopName(selectedRide.origin_stop_id) }} → {{ getStopName(selectedRide.destination_stop_id) }}</p>
-                    <p><strong>Departure:</strong> {{ formatDateTime(selectedRide.departure_time) }}</p>
-                    <p><strong>Seats:</strong> {{ selectedRide.available_seats || selectedRide.seats }}</p>
-                    <p *ngIf="selectedRide.price"><strong>Price:</strong> ₹{{ selectedRide.price }}</p>
-
-                    <h4>Your Details</h4>
-                    <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
-                    <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
-
-                    <button (click)="confirmBooking()" [disabled]="isBooking">
-                        {{ isBooking ? 'Booking…' : 'Confirm' }}
-                    </button>
-                    <button (click)="closeBookingModal()">Cancel</button>
-                </div>
-            </div>
-
-            <div *ngIf="message" class="message" [ngClass]="messageType">{{ message }}</div>
         </div>
     </div>
+</header>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" [class.show]="isSidebarOpen" (click)="closeSidebar()"></div>
+
+<!-- Sidebar Menu -->
+<div class="sidebar" [class.show]="isSidebarOpen">
+    <div class="sidebar-header">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar">
+                <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
+            </div>
+            <div class="sidebar-user-info">
+                <h3>{{ riderDetails.rider_name || 'Navaneeth' }}</h3>
+                <p>+91{{ riderDetails.phone || '9908245918' }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <div class="sidebar-menu-item" (click)="viewRides()">
+            <span class="sidebar-icon">🚗</span>
+            <span>My Rides</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openSupport()">
+            <span class="sidebar-icon">❓</span>
+            <span>Support</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openTermsConditions()">
+            <span class="sidebar-icon">📄</span>
+            <span>Terms & Conditions</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="logout()">
+            <span class="sidebar-icon">🚪</span>
+            <span>Logout</span>
+        </div>
+    </div>
+</div>
+
+<div class="profile-overlay" [class.show]="isProfileMenuOpen" (click)="closeProfileMenu()"></div>
+
+<div class="dashboard-container">
+    <div class="dashboard-content">
+        <!-- Profile Management Panel - Only shows when showProfileManagement is true -->
+        <div *ngIf="showProfileManagement" class="profile-panel">
+            <h2>Manage Account</h2>
+            <form *ngIf="isEditingProfile" (ngSubmit)="saveProfile()">
+                <label>Name: 
+                    <input type="text" [(ngModel)]="riderDetails.rider_name" name="name">
+                </label>
+                <label>Source Stop: 
+                    <select [(ngModel)]="riderDetails.start_stop_id" name="start_stop" (change)="onSourceChange()">
+                        <option value="">Select Source</option>
+                        <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
+                    </select>
+                </label>
+                <label>Destination Stop: 
+                    <select [(ngModel)]="riderDetails.destination_stop_id" name="dest_stop">
+                        <option value="">Select Destination</option>
+                        <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
+                    </select>
+                </label>
+                <label>Gender: 
+                    <select [(ngModel)]="riderDetails.gender" name="gender">
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                        <option>Not specified</option>
+                    </select>
+                </label>
+                <div>
+                    <button type="submit" class="btn">Save</button>
+                    <button type="button" class="btn cancel" (click)="cancelEdit()">Cancel</button>
+                </div>
+            </form>
+
+            <div *ngIf="!isEditingProfile" class="profile-info">
+                <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+                <p><strong>Source Stop:</strong> {{ getStopName(riderDetails.start_stop_id) }}</p>
+                <p><strong>Destination Stop:</strong> {{ getStopName(riderDetails.destination_stop_id) }}</p>
+                <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+                <div>
+                    <button class="btn" (click)="editProfile()">Edit Profile</button>
+                    <button class="btn cancel" (click)="hideProfileManagement()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Rides Section -->
+        <h1 class="dashboard-title">Find a Ride</h1>
+        <div class="search-section">
+            <select [(ngModel)]="selectedSource" (change)="onSourceChange()">
+                <option value="">Select Source</option>
+                <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
+            </select>
+            <select [(ngModel)]="selectedDest" [disabled]="!selectedSource">
+                <option value="">Select Destination</option>
+                <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
+            </select>
+            <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest">Search</button>
+        </div>
+
+        <div *ngIf="isLoading" class="loading">Searching for rides…</div>
+        
+        <ul *ngIf="rides && rides.length > 0" class="ride-list">
+            <li *ngFor="let r of rides" class="ride-card">
+                <p><strong>Driver:</strong> {{ r.driver_name }}</p>
+                <p><strong>Route:</strong> {{ getStopName(r.origin_stop_id) }} → {{ getStopName(r.destination_stop_id) }}</p>
+                <p><strong>Departure:</strong> {{ formatDateTime(r.departure_time) }}</p>
+                <p><strong>Seats:</strong> {{ r.available_seats || r.seats }}</p>
+                <p *ngIf="r.price"><strong>Price:</strong> ₹{{ r.price }}</p>
+                <button (click)="bookRide(r)">Book</button>
+            </li>
+        </ul>
+        
+        <p *ngIf="!isLoading && (!rides?.length)" style="text-align: center; padding: 3rem; color: #666; font-size: 1.1rem;">
+            No rides found. Try changing stops.
+        </p>
+
+        <!-- Booking Confirmation Modal -->
+        <div class="modal-overlay" *ngIf="selectedRide">
+            <div class="modal">
+                <h3>Confirm Booking</h3>
+                <p><strong>Driver:</strong> {{ selectedRide.driver_name }}</p>
+                <p><strong>Route:</strong> {{ getStopName(selectedRide.origin_stop_id) }} → {{ getStopName(selectedRide.destination_stop_id) }}</p>
+                <p><strong>Departure:</strong> {{ formatDateTime(selectedRide.departure_time) }}</p>
+                <p><strong>Seats:</strong> {{ selectedRide.available_seats || selectedRide.seats }}</p>
+                <p *ngIf="selectedRide.price"><strong>Price:</strong> ₹{{ selectedRide.price }}</p>
+
+                <h4>Your Details</h4>
+                <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+                <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+
+                <button (click)="confirmBooking()" [disabled]="isBooking">
+                    {{ isBooking ? 'Booking…' : 'Confirm' }}
+                </button>
+                <button (click)="closeBookingModal()">Cancel</button>
+            </div>
+        </div>
+
+        <div *ngIf="message" class="message" [ngClass]="messageType">{{ message }}</div>
+    </div>
+</div>

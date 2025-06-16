@@ -29,6 +29,7 @@ interface RiderDetails {
   start_stop_id: string;
   destination_stop_id: string;
   gender: string;
+  phone?: string;
 }
 
 @Component({
@@ -58,7 +59,10 @@ export class RiderDashboardComponent implements OnInit {
   // Profile menu state
   isProfileMenuOpen = false;
   
-  // NEW: State to control when to show profile management
+  // NEW: Sidebar state
+  isSidebarOpen = false;
+  
+  // State to control when to show profile management
   showProfileManagement = false;
 
   riderDetails: RiderDetails = {
@@ -66,7 +70,8 @@ export class RiderDashboardComponent implements OnInit {
     rider_id: '',
     start_stop_id: '',
     destination_stop_id: '',
-    gender: ''
+    gender: '',
+    phone: ''
   };
   
   constructor(
@@ -112,6 +117,7 @@ export class RiderDashboardComponent implements OnInit {
         this.riderDetails.rider_id = rider.user_id;
         this.riderDetails.rider_name = rider.user_name || rider.name || 'Unknown User';
         this.riderDetails.gender = rider.gender || 'Not specified';
+        this.riderDetails.phone = rider.phone || '';
         // Don't load start_stop_id and destination_stop_id here unless needed for display
       },
       error: (err) => {
@@ -299,6 +305,15 @@ export class RiderDashboardComponent implements OnInit {
     }, 5000);
   }
 
+  // NEW: Sidebar methods
+  toggleSidebar() {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  closeSidebar() {
+    this.isSidebarOpen = false;
+  }
+
   // Profile menu methods
   toggleProfileMenu() {
     this.isProfileMenuOpen = !this.isProfileMenuOpen;
@@ -308,10 +323,11 @@ export class RiderDashboardComponent implements OnInit {
     this.isProfileMenuOpen = false;
   }
   
-  // UPDATED: Show profile management and load full details
+  // Show profile management and load full details
   manageAccount() {
     this.closeProfileMenu();
-    this.showProfileManagement = true; // Show the profile management section
+    this.closeSidebar(); // Close sidebar when opening profile management
+    this.showProfileManagement = true;
     
     const token = localStorage.getItem('token');
     if (!token) {
@@ -335,7 +351,8 @@ export class RiderDashboardComponent implements OnInit {
           rider_name: data.user_name || data.name || '',
           start_stop_id: data.start_stop_id || '',
           destination_stop_id: data.destination_stop_id || '',
-          gender: data.gender || ''
+          gender: data.gender || '',
+          phone: data.phone || ''
         };
         this.isEditingProfile = false;
         
@@ -404,10 +421,10 @@ export class RiderDashboardComponent implements OnInit {
     this.manageAccount(); // Reload original data
   }
 
-
+  // Updated sidebar menu methods
   viewRides() {
     console.log('Navigate to view rides');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/my-rides']);
   }
@@ -452,6 +469,21 @@ export class RiderDashboardComponent implements OnInit {
     this.closeProfileMenu();
     // Add your navigation logic here
     // this.router.navigate(['/activity']);
+  }
+
+  // NEW: Sidebar menu methods
+  openSupport() {
+    console.log('Navigate to support');
+    this.closeSidebar();
+    // Add your navigation logic here
+    // this.router.navigate(['/support']);
+  }
+
+  openTermsConditions() {
+    console.log('Navigate to terms & conditions');
+    this.closeSidebar();
+    // Add your navigation logic here
+    // this.router.navigate(['/terms-conditions']);
   }
 
   logout() {

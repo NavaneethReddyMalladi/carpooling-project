@@ -1,119 +1,289 @@
-<!-- home.component.html -->
-
-<header>
-    <div class="logo">
-      <img src="logo.png" alt="" class="logo">
+  <!-- home.component.html -->
+<header class="header">
+  <div class="header-container">
+    <div class="logo-section">
+      <img src="logo.png" alt="CarConnect" class="logo-img">
+      <span class="logo-text">CarConnect</span>
     </div>
-    <nav>
-      <a [routerLink]="['/']">Home</a>
-      <a [routerLink]="['/register']">Register</a>
-      <a [routerLink]="['/login']">Login</a>
-    </nav>
-  </header>
-  
-  <section class="hero">
-    <div class="hero-box">
-      <div class="tabs">
-     
-            <button [routerLink]="['/register']" [queryParams]="{ role: 'driver' }">Drive</button>
-            <button [routerLink]="['/register']" [queryParams]="{ role: 'rider' }">Ride</button>
-        </div>
-          
-      <div class="hero-text">
-        <h1>Get in the driver's seat and get paid</h1>
-        <p>Drive on the platform with the largest network of active riders.</p>
-        <button class="primary-btn" [routerLink]="['/login']">Get Started</button>
-        <p class="learn-more">Learn more about driving and delivering</p>
-      </div>
-    </div>
-      <div>
-      <img
-        src="login_image.webp"
-        alt="Car Illustration"
-        class="car-image"
-      />
-      </div>
-
     
+    <nav class="nav-menu">
+      <a [routerLink]="['/']" class="nav-link">Home</a>
+      <a [routerLink]="['/rides']" class="nav-link">Find Rides</a>
+      <a [routerLink]="['/safety']" class="nav-link">Safety</a>
+    </nav>
+
+    <!-- Profile Section -->
+    <div class="profile-section">
+      <div *ngIf="!isLoggedIn" class="auth-buttons">
+        <button [routerLink]="['/login']" class="login-btn">Login</button>
+        <button [routerLink]="['/register']" class="signup-btn">Sign Up</button>
+      </div>
+      
+      <div *ngIf="isLoggedIn" class="profile-dropdown" (click)="toggleProfileDropdown()">
+        <img [src]="userProfile.profileImage || 'assets/default-avatar.png'" 
+             alt="Profile" class="profile-avatar">
+        <span class="profile-name">{{ userProfile.name }}</span>
+        <i class="dropdown-arrow">▼</i>
+        
+        <div class="dropdown-menu" [class.show]="showProfileDropdown">
+          <div class="dropdown-header">
+            <img [src]="userProfile.profileImage || 'assets/default-avatar.png'" 
+                 alt="Profile" class="dropdown-avatar">
+            <div class="dropdown-user-info">
+              <h4>{{ userProfile.name }}</h4>
+              <p>{{ userProfile.email }}</p>
+              <div class="rating">
+                <span class="stars">★★★★★</span>
+                <span class="rating-text">{{ userProfile.rating || '4.8' }}</span>
+              </div>
+            </div>
+          </div>
+          <hr class="dropdown-divider">
+          <a [routerLink]="['/profile']" class="dropdown-item">
+            <i class="icon">👤</i>View Profile
+          </a>
+          <a [routerLink]="['/my-rides']" class="dropdown-item">
+            <i class="icon">🚗</i>My Rides
+          </a>
+          <a [routerLink]="['/payment']" class="dropdown-item">
+            <i class="icon">💳</i>Payment Methods
+          </a>
+          <a [routerLink]="['/settings']" class="dropdown-item">
+            <i class="icon">⚙️</i>Settings
+          </a>
+          <hr class="dropdown-divider">
+          <button (click)="logout()" class="dropdown-item logout-item">
+            <i class="icon">🚪</i>Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" [class.show]="showMobileMenu">
+    <a [routerLink]="['/']" class="mobile-nav-link" (click)="closeMobileMenu()">Home</a>
+    <a [routerLink]="['/rides']" class="mobile-nav-link" (click)="closeMobileMenu()">Find Rides</a>
+    <a [routerLink]="['/safety']" class="mobile-nav-link" (click)="closeMobileMenu()">Safety</a>
+    <div class="mobile-auth-section" *ngIf="!isLoggedIn">
+      <button [routerLink]="['/login']" class="mobile-auth-btn login">Login</button>
+      <button [routerLink]="['/register']" class="mobile-auth-btn signup">Sign Up</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-title">Go anywhere with CarConnect</h1>
+          <p class="hero-subtitle">Request a ride, hop in, and go.</p>
+          
+          <div class="service-tabs">
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'ride'"
+              (click)="setActiveTab('ride')">
+              🚗 Ride
+            </button>
+            <button 
+              class="tab-btn" 
+              [class.active]="activeTab === 'drive'"
+              (click)="setActiveTab('drive')">
+              💰 Drive & Earn
+            </button>
+          </div>
+
+          <!-- Ride Tab Content -->
+          <div class="tab-content" *ngIf="activeTab === 'ride'">
+            <div class="location-input-group">
+              <div class="input-wrapper">
+                <i class="location-icon from">📍</i>
+                <input type="text" placeholder="Pickup location" class="location-input">
+              </div>
+              <div class="input-wrapper">
+                <i class="location-icon to">🎯</i>
+                <input type="text" placeholder="Where to?" class="location-input">
+              </div>
+            </div>
+            <button class="cta-btn primary">Find a Ride</button>
+          </div>
+
+          <!-- Drive Tab Content -->
+          <div class="tab-content" *ngIf="activeTab === 'drive'">
+            <div class="drive-benefits">
+              <div class="benefit-item">
+                <span class="benefit-icon">💵</span>
+                <span>Earn money on your schedule</span>
+              </div>
+              <div class="benefit-item">
+                <span class="benefit-icon">⏰</span>
+                <span>Drive when you want</span>
+              </div>
+            </div>
+            <button class="cta-btn secondary" [routerLink]="['/register']" [queryParams]="{ role: 'driver' }">
+              Start Earning
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img src="login_image.webp" alt="CarConnect Hero" class="hero-img">
+      </div>
+    </div>
   </section>
-  
+
+  <!-- Features Section -->
   <section class="features">
-    <div class="feature-card">
-      <img
-        src="home_carimage2.jpeg"
-        alt="Safety"
-        class="home_carimage1"
-      />
-      <h3>Our Commitment to your safety</h3>
-      <p>
-        With every safety feature and every standard in our Community Guidelines,
-        we’re committed to helping to create a safe environment for our users.
-      </p>
-      <a href="#">See all safety features</a>
-    </div>
-    <div class="feature-card">
-      <img
-        src="home_carimage1.jpeg"
-        alt="Cities"
-        class="home_carimage1"
-      />
-      <h3>Setting 10,000+ cities in motion</h3>
-      <p>
-        The app is available in thousands of cities worldwide, so you can ride
-        even when you're far from home.
-      </p>
-      <a href="#">View all cities</a>
+    <div class="container">
+      <h2 class="section-title">Why choose CarConnect?</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Safety First</h3>
+          <p>Your safety is our priority. Every ride is tracked with 24/7 support and safety features.</p>
+          <a href="#" class="feature-link">Learn more about safety</a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">🏙️</div>
+          <h3>Available Everywhere</h3>
+          <p>Available in 10,000+ cities worldwide. Get a ride wherever you are, whenever you need it.</p>
+          <a href="#" class="feature-link">View all cities</a>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon">💳</div>
+          <h3>Easy Payment</h3>
+          <p>Multiple payment options including cards, digital wallets, and cash in select cities.</p>
+          <a href="#" class="feature-link">Payment options</a>
+        </div>
+      </div>
     </div>
   </section>
-  
-  <section class="info-links">
-    <div class="info-links-card1">
-      <h4>About Us</h4>
-      <p>
-        Find out how we started, what drives us, and how we're reimagining
-        carpooling.
-      </p>
-      <a href="#">Learn more</a>
-    </div>
-    <div class="info-links-card2">
-      <h4>Newsroom</h4>
-      <p>
-        See announcements about our latest releases, initiatives, and
-        partnerships.
-      </p>
-      <a href="#">Learn more</a>
+
+  <!-- Service Options -->
+  <section class="service-options">
+    <div class="container">
+      <h2 class="section-title">Choose your ride</h2>
+      <div class="service-grid">
+        <div class="service-card">
+          <img src="home_carimage1.jpeg" alt="CarConnect Go" class="service-image">
+          <div class="service-info">
+            <h3>CarConnect Go</h3>
+            <p>Affordable, everyday rides</p>
+            <div class="service-features">
+              <span class="feature-tag">4 seats</span>
+              <span class="feature-tag">Affordable</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="service-card">
+          <img src="home_carimage2.jpeg" alt="CarConnect Premium" class="service-image">
+          <div class="service-info">
+            <h3>CarConnect Premium</h3>
+            <p>High-end cars, professional drivers</p>
+            <div class="service-features">
+              <span class="feature-tag">Luxury</span>
+              <span class="feature-tag">Professional</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
-  
-  <footer>
-    <div class="footer-columns">
-      <div>
-        <h5>CARCONNECT</h5>
-        <ul>
-          <li>🌐 English</li>
-          <li><a href="#">Visit Help Center</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Company</h5>
-        <ul>
-          <li><a href="#">About us</a></li>
-          <li><a href="#">Newsroom</a></li>
-          <li><a href="#">Blog</a></li>
-          <li><a href="#">Careers</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>Products</h5>
-        <ul>
-          <li><a href="#">Ride</a></li>
-          <li><a href="#">Drive</a></li>
-          <li><a href="#">CarConnect for Business</a></li>
-        </ul>
+
+  <!-- Info Section -->
+  <section class="info-section">
+    <div class="container">
+      <div class="info-grid">
+        <div class="info-card">
+          <h3>About CarConnect</h3>
+          <p>Discover how we started, what drives us, and how we're reimagining urban mobility for everyone.</p>
+          <a href="#" class="info-link">Learn our story</a>
+        </div>
+        
+        <div class="info-card">
+          <h3>Newsroom</h3>
+          <p>Stay updated with our latest announcements, product releases, and community initiatives.</p>
+          <a href="#" class="info-link">Read latest news</a>
+        </div>
       </div>
     </div>
-    <div class="footer-note">
-      <p>© 2025 CarConnect Technologies Inc.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <div class="footer-logo">
+          <img src="logo.png" alt="CarConnect" class="footer-logo-img">
+          <span class="footer-logo-text">CarConnect</span>
+        </div>
+        <p class="footer-description">Making transportation accessible, reliable, and safe for everyone.</p>
+        <div class="social-links">
+          <a href="#" class="social-link">📘</a>
+          <a href="#" class="social-link">🐦</a>
+          <a href="#" class="social-link">📷</a>
+          <a href="#" class="social-link">💼</a>
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Products</h4>
+          <ul>
+            <li><a href="#">Ride</a></li>
+            <li><a href="#">Drive</a></li>
+            <li><a href="#">Business</a></li>
+            <li><a href="#">Freight</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Safety</a></li>
+            <li><a href="#">Accessibility</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </footer>
+
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <p>&copy; 2025 CarConnect Technologies Inc. All rights reserved.</p>
+        <div class="legal-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
   

@@ -1,0 +1,199 @@
+<div class="main-container">
+    <div class="container">
+      <!-- Left side - Login Form -->
+      <div class="form-box">
+        <div class="logo-section">
+          <div class="logo">
+            <span class="logo-icon">🚗</span>
+            <span class="logo-text">CarConnect</span>
+          </div>
+        </div>
+  
+        <div class="form-content">
+          <h2>Welcome Back!</h2>
+          <p class="subtitle">
+            Sign in to continue your ride-sharing journey
+          </p>
+  
+          <!-- Quick Login Demo Buttons (for testing) -->
+          <div class="demo-login" *ngIf="!email">
+            <p class="demo-text">Quick Demo Login:</p>
+            <div class="demo-buttons">
+              <button type="button" class="demo-btn driver" (click)="quickLogin('driver')">
+                🚗 Driver Demo
+              </button>
+              <button type="button" class="demo-btn rider" (click)="quickLogin('rider')">
+                🎒 Rider Demo
+              </button>
+            </div>
+          </div>
+  
+          <!-- Error Message -->
+          <div class="error-message" *ngIf="errorMessage">
+            <span class="error-icon">⚠️</span>
+            {{ errorMessage }}
+          </div>
+  
+          <form (ngSubmit)="onSubmit()" #loginForm="ngForm" novalidate>
+            <!-- Email Input -->
+            <div class="input-group">
+              <label for="email">Email Address</label>
+              <div class="input-wrapper" [class.error]="emailError">
+                <span class="input-icon">📧</span>
+                <input 
+                  type="email" 
+                  id="email"
+                  name="email" 
+                  [(ngModel)]="email" 
+                  (blur)="onEmailBlur()"
+                  placeholder="Enter your email"
+                  autocomplete="email"
+                  required 
+                />
+              </div>
+              <div class="field-error" *ngIf="emailError">{{ emailError }}</div>
+            </div>
+  
+            <!-- Password Input -->
+            <div class="input-group">
+              <label for="password">Password</label>
+              <div class="input-wrapper" [class.error]="passwordError">
+                <span class="input-icon">🔒</span>
+                <input 
+                  [type]="showPassword ? 'text' : 'password'" 
+                  id="password"
+                  name="password" 
+                  [(ngModel)]="password" 
+                  (blur)="onPasswordBlur()"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                  required 
+                />
+                <button 
+                  type="button" 
+                  class="password-toggle"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <span *ngIf="!showPassword">👁️</span>
+                  <span *ngIf="showPassword">🙈</span>
+                </button>
+              </div>
+              <div class="field-error" *ngIf="passwordError">{{ passwordError }}</div>
+            </div>
+  
+            <!-- Remember Me & Forgot Password -->
+            <div class="form-options">
+              <label class="checkbox-container">
+                <input type="checkbox" [(ngModel)]="rememberMe" name="rememberMe">
+                <span class="checkmark"></span>
+                Remember me
+              </label>
+              <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+            </div>
+  
+            <!-- Login Button -->
+            <button 
+              type="submit" 
+              class="btn login-btn" 
+              [disabled]="isLoading || !loginForm.form.valid"
+              [class.loading]="isLoading"
+            >
+              <span *ngIf="!isLoading">Sign In</span>
+              <span *ngIf="isLoading" class="loading-content">
+                <span class="spinner"></span>
+                Signing in...
+              </span>
+            </button>
+  
+            <!-- Divider -->
+            <div class="divider">
+              <span>or continue with</span>
+            </div>
+  
+            <!-- Social Login Buttons -->
+            <div class="social-login">
+              <button type="button" class="social-btn google" (click)="loginWithGoogle()">
+                <span class="social-icon">🔍</span>
+                Google
+              </button>
+              <button type="button" class="social-btn facebook" (click)="loginWithFacebook()">
+                <span class="social-icon">📘</span>
+                Facebook
+              </button>
+            </div>
+  
+            <!-- Register Link -->
+            <p class="register-link">
+              New to CarConnect? 
+              <a routerLink="/register">Create an account</a>
+            </p>
+          </form>
+        </div>
+  
+        <!-- Trust Indicators -->
+        <div class="trust-indicators">
+          <div class="trust-item">
+            <span class="trust-icon">🔒</span>
+            <span>Secure & Safe</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">⚡</span>
+            <span>Instant Booking</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">💰</span>
+            <span>Best Prices</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Right side - Image/Illustration -->
+      <div class="image-box">
+        <div class="image-content">
+          <div class="hero-illustration">
+            <div class="car-animation">
+              <div class="car">🚗</div>
+              <div class="road"></div>
+            </div>
+            <h3>Your Journey Starts Here</h3>
+            <p>Connect with verified drivers and riders in your city</p>
+            
+            <div class="features-list">
+              <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>Verified Drivers</span>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>Real-time Tracking</span>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>Safe & Secure Rides</span>
+              </div>
+              <div class="feature">
+                <span class="feature-icon">✅</span>
+                <span>24/7 Support</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Mobile App Download Links -->
+    <div class="app-download">
+      <p>Get the CarConnect app for the best experience</p>
+      <div class="download-buttons">
+        <button class="download-btn">
+          <span class="download-icon">📱</span>
+          Download for iOS
+        </button>
+        <button class="download-btn">
+          <span class="download-icon">🤖</span>
+          Download for Android
+        </button>
+      </div>
+    </div>
+  </div>
