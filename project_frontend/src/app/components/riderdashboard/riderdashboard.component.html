@@ -17,24 +17,30 @@
                 <div class="profile-avatar">
                     <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
                 </div>
+                <!-- Updated Profile Menu - Only shows rider details and sign out -->
                 <div class="profile-menu" [class.show]="isProfileMenuOpen" (click)="$event.stopPropagation()">
                     <div class="profile-header">
                         <h3>{{ riderDetails.rider_name || 'Unknown' }}</h3>
                         <div class="rating">★ 4.74</div>
                     </div>
                     
-                    <div class="quick-actions">
-                        <div class="action-item" (click)="openHelp()">🛟 Help</div>
-                        <div class="action-item" (click)="openWallet()">💳 Wallet</div>
-                        <div class="action-item" (click)="openActivity()">📋 Activity</div>
-                    </div>
-
-                    <div class="menu-items">
-                        <div class="menu-item" (click)="manageAccount()">👤 Manage account</div>
-                        <div class="menu-item" (click)="viewRides()">🚗 Rides</div>
-                        <div class="menu-item" (click)="driveAndDeliver()">🚙 Drive & deliver</div>
-                        <div class="menu-item" (click)="openUberEats()">🍽 Uber Eats</div>
-                        <div class="menu-item" (click)="openUberBusiness()">💼 Uber for Business</div>
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">+91{{ riderDetails.phone || 'Not provided' }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Gender:</span>
+                            <span class="detail-value">{{ riderDetails.gender || 'Not specified' }}</span>
+                        </div>
+                        <div class="detail-item" *ngIf="riderDetails.start_stop_id">
+                            <span class="detail-label">Default Source:</span>
+                            <span class="detail-value">{{ getStopName(riderDetails.start_stop_id) }}</span>
+                        </div>
+                        <div class="detail-item" *ngIf="riderDetails.destination_stop_id">
+                            <span class="detail-label">Default Destination:</span>
+                            <span class="detail-value">{{ getStopName(riderDetails.destination_stop_id) }}</span>
+                        </div>
                     </div>
 
                     <div class="menu-footer" (click)="logout()">Sign out</div>
@@ -47,7 +53,7 @@
 <!-- Sidebar Overlay -->
 <div class="sidebar-overlay" [class.show]="isSidebarOpen" (click)="closeSidebar()"></div>
 
-<!-- Sidebar Menu -->
+<!-- Sidebar Menu - Contains all the functionality -->
 <div class="sidebar" [class.show]="isSidebarOpen">
     <div class="sidebar-header">
         <div class="sidebar-profile">
@@ -55,16 +61,44 @@
                 <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
             </div>
             <div class="sidebar-user-info">
-                <h3>{{ riderDetails.rider_name || 'Navaneeth' }}</h3>
+                <h3>{{ riderDetails.rider_name || 'User' }}</h3>
                 <p>+91{{ riderDetails.phone || '9908245918' }}</p>
             </div>
         </div>
     </div>
     
     <div class="sidebar-menu">
+        <div class="sidebar-menu-item" (click)="manageAccount()">
+            <span class="sidebar-icon">👤</span>
+            <span>Manage Account</span>
+        </div>
         <div class="sidebar-menu-item" (click)="viewRides()">
             <span class="sidebar-icon">🚗</span>
             <span>My Rides</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="driveAndDeliver()">
+            <span class="sidebar-icon">🚙</span>
+            <span>Drive & Deliver</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openUberEats()">
+            <span class="sidebar-icon">🍽</span>
+            <span>Uber Eats</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openUberBusiness()">
+            <span class="sidebar-icon">💼</span>
+            <span>Uber for Business</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openHelp()">
+            <span class="sidebar-icon">🛟</span>
+            <span>Help</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openWallet()">
+            <span class="sidebar-icon">💳</span>
+            <span>Wallet</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="openActivity()">
+            <span class="sidebar-icon">📋</span>
+            <span>Activity</span>
         </div>
         <div class="sidebar-menu-item" (click)="openSupport()">
             <span class="sidebar-icon">❓</span>
@@ -121,6 +155,7 @@
 
             <div *ngIf="!isEditingProfile" class="profile-info">
                 <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+                <p><strong>Phone:</strong> +91{{ riderDetails.phone || 'Not provided' }}</p>
                 <p><strong>Source Stop:</strong> {{ getStopName(riderDetails.start_stop_id) }}</p>
                 <p><strong>Destination Stop:</strong> {{ getStopName(riderDetails.destination_stop_id) }}</p>
                 <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>

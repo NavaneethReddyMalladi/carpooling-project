@@ -59,7 +59,7 @@ export class RiderDashboardComponent implements OnInit {
   // Profile menu state
   isProfileMenuOpen = false;
   
-  // NEW: Sidebar state
+  // Sidebar state
   isSidebarOpen = false;
   
   // State to control when to show profile management
@@ -118,7 +118,8 @@ export class RiderDashboardComponent implements OnInit {
         this.riderDetails.rider_name = rider.user_name || rider.name || 'Unknown User';
         this.riderDetails.gender = rider.gender || 'Not specified';
         this.riderDetails.phone = rider.phone || '';
-        // Don't load start_stop_id and destination_stop_id here unless needed for display
+        this.riderDetails.start_stop_id = rider.start_stop_id || '';
+        this.riderDetails.destination_stop_id = rider.destination_stop_id || '';
       },
       error: (err) => {
         console.error('Failed to load rider info:', err);
@@ -178,7 +179,6 @@ export class RiderDashboardComponent implements OnInit {
             )
           );
           
-
           this.destStops = uniqueDestIds.map((stopId:string) => {
             const stopInfo = this.stops.find(s =>String(s.stop_id) === stopId);
             return {
@@ -305,7 +305,7 @@ export class RiderDashboardComponent implements OnInit {
     }, 5000);
   }
 
-  // NEW: Sidebar methods
+  // Sidebar methods
   toggleSidebar() {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -322,11 +322,10 @@ export class RiderDashboardComponent implements OnInit {
   closeProfileMenu() {
     this.isProfileMenuOpen = false;
   }
-  
-  // Show profile management and load full details
+
+  // Sidebar menu methods - Manage Account from sidebar
   manageAccount() {
-    this.closeProfileMenu();
-    this.closeSidebar(); // Close sidebar when opening profile management
+    this.closeSidebar();
     this.showProfileManagement = true;
     
     const token = localStorage.getItem('token');
@@ -421,57 +420,56 @@ export class RiderDashboardComponent implements OnInit {
     this.manageAccount(); // Reload original data
   }
 
-  // Updated sidebar menu methods
+  // Sidebar menu methods
   viewRides() {
     console.log('Navigate to view rides');
     this.closeSidebar();
     // Add your navigation logic here
-    // this.router.navigate(['/my-rides']);
+    // this.router.navigate(['/my-rides']); 
   }
 
   driveAndDeliver() {
     console.log('Navigate to drive & deliver');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/drive-deliver']);
   }
 
   openUberEats() {
     console.log('Navigate to Uber Eats');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/uber-eats']);
   }
 
   openUberBusiness() {
     console.log('Navigate to Uber for Business');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/uber-business']);
   }
 
   openHelp() {
     console.log('Navigate to help');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/help']);
   }
 
   openWallet() {
     console.log('Navigate to wallet');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/wallet']);
   }
 
   openActivity() {
     console.log('Navigate to activity');
-    this.closeProfileMenu();
+    this.closeSidebar();
     // Add your navigation logic here
     // this.router.navigate(['/activity']);
   }
 
-  // NEW: Sidebar menu methods
   openSupport() {
     console.log('Navigate to support');
     this.closeSidebar();
@@ -487,6 +485,8 @@ export class RiderDashboardComponent implements OnInit {
   }
 
   logout() {
+    this.closeProfileMenu();
+    this.closeSidebar();
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
