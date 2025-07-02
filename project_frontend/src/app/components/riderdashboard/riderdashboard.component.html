@@ -12,6 +12,7 @@
         </div>
         <div class="header-actions">
             <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button>
+            <button class="header-btn" (click)="openChat()">Chat</button>
             <button class="header-btn" (click)="logout()">Logout</button>
             <div class="profile-section" (click)="toggleProfileMenu()">
                 <div class="profile-avatar">
@@ -26,6 +27,10 @@
                     
                     <div class="profile-details">
                         <div class="detail-item">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">{{ riderDetails.email || 'Not provided' }}</span>
+                        </div>
+                        <div class="detail-item">
                             <span class="detail-label">Phone:</span>
                             <span class="detail-value">+91{{ riderDetails.phone || 'Not provided' }}</span>
                         </div>
@@ -33,13 +38,9 @@
                             <span class="detail-label">Gender:</span>
                             <span class="detail-value">{{ riderDetails.gender || 'Not specified' }}</span>
                         </div>
-                        <div class="detail-item" *ngIf="riderDetails.start_stop_id">
-                            <span class="detail-label">Default Source:</span>
-                            <span class="detail-value">{{ getStopName(riderDetails.start_stop_id) }}</span>
-                        </div>
-                        <div class="detail-item" *ngIf="riderDetails.destination_stop_id">
-                            <span class="detail-label">Default Destination:</span>
-                            <span class="detail-value">{{ getStopName(riderDetails.destination_stop_id) }}</span>
+                        <div class="detail-item">
+                            <span class="detail-label">Verified:</span>
+                            <span class="detail-value">{{ riderDetails.is_verified ? 'Yes' : 'No' }}</span>
                         </div>
                     </div>
 
@@ -62,6 +63,7 @@
             </div>
             <div class="sidebar-user-info">
                 <h3>{{ riderDetails.rider_name || 'User' }}</h3>
+                <p>{{ riderDetails.email || 'No email provided' }}</p>
                 <p>+91{{ riderDetails.phone || '9908245918' }}</p>
             </div>
         </div>
@@ -75,18 +77,6 @@
         <div class="sidebar-menu-item" (click)="viewRides()">
             <span class="sidebar-icon">🚗</span>
             <span>My Rides</span>
-        </div>
-        <div class="sidebar-menu-item" (click)="driveAndDeliver()">
-            <span class="sidebar-icon">🚙</span>
-            <span>Drive & Deliver</span>
-        </div>
-        <div class="sidebar-menu-item" (click)="openUberEats()">
-            <span class="sidebar-icon">🍽</span>
-            <span>Uber Eats</span>
-        </div>
-        <div class="sidebar-menu-item" (click)="openUberBusiness()">
-            <span class="sidebar-icon">💼</span>
-            <span>Uber for Business</span>
         </div>
         <div class="sidebar-menu-item" (click)="openHelp()">
             <span class="sidebar-icon">🛟</span>
@@ -117,6 +107,91 @@
 
 <div class="profile-overlay" [class.show]="isProfileMenuOpen" (click)="closeProfileMenu()"></div>
 
+<!-- Chat Modal -->
+<div class="chat-modal-overlay" *ngIf="showChat" (click)="closeChat()">
+    <div class="chat-modal" (click)="$event.stopPropagation()">
+        <div class="chat-header">
+            <h3>Messages</h3>
+            <button class="chat-close-btn" (click)="closeChat()">×</button>
+        </div>
+        
+        <div class="chat-content">
+            <!-- Chat Sessions List -->
+            <div class="chat-sessions" *ngIf="chatSessions.length > 0">
+                <h4>Active Conversations</h4>
+                <div class="chat-session-list">
+                    <div 
+                        *ngFor="let session of chatSessions" 
+                        class="chat-session-item"
+                        [class.active]="session.isActive"
+                        (click)="selectChatSession(session)"
+                    >
+                        <div class="session-avatar">
+                            <span>{{ session.driver_name[0] | uppercase }}</span>
+                        </div>
+                        <div class="session-info">
+                            <h5>{{ session.driver_name }}</h5>
+                            <p *ngIf="session.ride_id">Ride #{{ session.ride_id }}</p>
+                            <p *ngIf="session.messages.length > 0" class="last-message">
+                                {{ session.messages[session.messages.length - 1].message_text }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Chat Sessions Message -->
+            <div *ngIf="chatSessions.length === 0" class="no-chats">
+                <p>No active conversations. Book a ride to start chatting with drivers!</p>
+            </div>
+
+            <!-- Active Chat Session -->
+            <div *ngIf="activeChatSession" class="chat-conversation">
+                <div class="conversation-header">
+                    <div class="conversation-avatar">
+                        <span>{{ activeChatSession.driver_name[0] | uppercase }}</span>
+                    </div>
+                    <div class="conversation-info">
+                        <h4>{{ activeChatSession.driver_name }}</h4>
+                        <p *ngIf="activeChatSession.ride_id">Ride #{{ activeChatSession.ride_id }}</p>
+                    </div>
+                </div>
+
+                <div class="chat-messages">
+                    <div 
+                        *ngFor="let message of activeChatSession.messages" 
+                        class="message"
+                        [class.sent]="isMessageFromCurrentUser(message)"
+                        [class.received]="!isMessageFromCurrentUser(message)"
+                    >
+                        <div class="message-content">
+                            <p>{{ message.message_text }}</p>
+                            <span class="message-time">{{ formatMessageTime(message.sent_at) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input">
+                    <input 
+                        type="text" 
+                        [(ngModel)]="newMessage" 
+                        placeholder="Type a message..."
+                        (keyup.enter)="sendMessage()"
+                        [disabled]="isSendingMessage"
+                    >
+                    <button 
+                        (click)="sendMessage()" 
+                        [disabled]="!newMessage.trim() || isSendingMessage"
+                        class="send-btn"
+                    >
+                        {{ isSendingMessage ? '...' : 'Send' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="dashboard-container">
     <div class="dashboard-content">
         <!-- Profile Management Panel - Only shows when showProfileManagement is true -->
@@ -124,27 +199,21 @@
             <h2>Manage Account</h2>
             <form *ngIf="isEditingProfile" (ngSubmit)="saveProfile()">
                 <label>Name: 
-                    <input type="text" [(ngModel)]="riderDetails.rider_name" name="name">
+                    <input type="text" [(ngModel)]="riderDetails.rider_name" name="name" required>
                 </label>
-                <label>Source Stop: 
-                    <select [(ngModel)]="riderDetails.start_stop_id" name="start_stop" (change)="onSourceChange()">
-                        <option value="">Select Source</option>
-                        <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
-                    </select>
+                <label>Email: 
+                    <input type="email" [(ngModel)]="riderDetails.email" name="email" required>
                 </label>
-                <label>Destination Stop: 
-                    <select [(ngModel)]="riderDetails.destination_stop_id" name="dest_stop">
-                        <option value="">Select Destination</option>
-                        <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
-                    </select>
+                <label>Phone: 
+                    <input type="tel" [(ngModel)]="riderDetails.phone" name="phone" required>
                 </label>
                 <label>Gender: 
                     <select [(ngModel)]="riderDetails.gender" name="gender">
                         <option value="">Select Gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Other</option>
-                        <option>Not specified</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                        <option value="Not specified">Not specified</option>
                     </select>
                 </label>
                 <div>
@@ -154,11 +223,13 @@
             </form>
 
             <div *ngIf="!isEditingProfile" class="profile-info">
-                <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+                <p><strong>Name:</strong> {{ riderDetails.rider_name || 'Not provided' }}</p>
+                <p><strong>Email:</strong> {{ riderDetails.email || 'Not provided' }}</p>
                 <p><strong>Phone:</strong> +91{{ riderDetails.phone || 'Not provided' }}</p>
-                <p><strong>Source Stop:</strong> {{ getStopName(riderDetails.start_stop_id) }}</p>
-                <p><strong>Destination Stop:</strong> {{ getStopName(riderDetails.destination_stop_id) }}</p>
-                <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+                <p><strong>Gender:</strong> {{ riderDetails.gender || 'Not specified' }}</p>
+                <p><strong>Account Status:</strong> {{ riderDetails.is_verified ? 'Verified' : 'Not Verified' }}</p>
+                <p><strong>Member Since:</strong> {{ formatDateTime(riderDetails.create_datetime) }}</p>
+                <p *ngIf="riderDetails.driver_id"><strong>Driver Status:</strong> Active Driver (ID: {{ riderDetails.driver_id }})</p>
                 <div>
                     <button class="btn" (click)="editProfile()">Edit Profile</button>
                     <button class="btn cancel" (click)="hideProfileManagement()">Close</button>
@@ -210,6 +281,7 @@
                 <h4>Your Details</h4>
                 <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
                 <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+                <p><strong>Phone:</strong> +91{{ riderDetails.phone }}</p>
 
                 <button (click)="confirmBooking()" [disabled]="isBooking">
                     {{ isBooking ? 'Booking…' : 'Confirm' }}

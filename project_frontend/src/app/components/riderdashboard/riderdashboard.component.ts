@@ -24,12 +24,34 @@ interface Ride {
 }
 
 interface RiderDetails {
-  rider_name: string;
   rider_id: string;
-  start_stop_id: string;
-  destination_stop_id: string;
+  rider_name: string;
+  email: string;
+  phone: string;
   gender: string;
-  phone?: string;
+  is_verified: boolean;
+  role_id: string;
+  create_datetime: string;
+  driver_id: string | null;
+  start_stop_id?: string;
+  destination_stop_id?: string;
+}
+
+interface Message {
+  message_id: number;
+  sender_id: number;
+  receiver_id: number;
+  ride_id?: number;
+  message_text: string;
+  sent_at: string;
+}
+
+interface ChatSession {
+  driver_id: number;
+  driver_name: string;
+  ride_id?: number;
+  messages: Message[];
+  isActive: boolean;
 }
 
 @Component({
@@ -65,13 +87,26 @@ export class RiderDashboardComponent implements OnInit {
   // State to control when to show profile management
   showProfileManagement = false;
 
+  // Chat feature states
+  showChat = false;
+  chatSessions: ChatSession[] = [];
+  activeChatSession: ChatSession | null = null;
+  newMessage = '';
+  isSendingMessage = false;
+  chatPollingInterval: any;
+
   riderDetails: RiderDetails = {
-    rider_name: '',
     rider_id: '',
-    start_stop_id: '',
-    destination_stop_id: '',
+    rider_name: '',
+    email: '',
+    phone: '',
     gender: '',
-    phone: ''
+    is_verified: false,
+    role_id: '',
+    create_datetime: '',
+    driver_id: null,
+    start_stop_id: '',
+    destination_stop_id: ''
   };
   
   constructor(
@@ -92,6 +127,7 @@ export class RiderDashboardComponent implements OnInit {
           
           if (riderId) {
             this.loadRiderDetails(riderId, token);
+            this.loadChatSessions();
           } else {
             console.error('User ID not found in token');
             this.showMessage('Authentication error. Please login again.', 'error');
@@ -104,6 +140,12 @@ export class RiderDashboardComponent implements OnInit {
         console.error('No token found in localStorage');
         this.router.navigate(['/login']);
       }
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.chatPollingInterval) {
+      clearInterval(this.chatPollingInterval);
     }
   }
 
@@ -267,6 +309,15 @@ export class RiderDashboardComponent implements OnInit {
         this.closeBookingModal();
         this.searchRides();
         this.isBooking = false;
+        
+        // Add driver to chat sessions after successful booking
+        if (this.selectedRide && this.selectedRide.driver_id) {
+          this.addDriverToChat(
+            parseInt(this.selectedRide.driver_id), 
+            this.selectedRide.driver_name,
+            this.selectedRide.ride_id ? parseInt(this.selectedRide.ride_id) : undefined
+          );
+        }
       },
       error: (err) => {
         console.error('Failed to book ride:', err);
@@ -279,6 +330,158 @@ export class RiderDashboardComponent implements OnInit {
     });
   }
 
+  // Chat functionality methods
+  openChat() {
+    this.showChat = true;
+    this.loadChatSessions();
+    this.startChatPolling();
+  }
+
+  closeChat() {
+    this.showChat = false;
+    this.activeChatSession = null;
+    this.stopChatPolling();
+  }
+
+  loadChatSessions() {
+    // This would typically load from your backend based on the rider's bookings
+    // For now, we'll maintain the existing chat sessions
+    if (this.chatSessions.length === 0) {
+      // You might want to load existing chat sessions from the backend here
+      console.log('Loading existing chat sessions...');
+    }
+  }
+
+  addDriverToChat(driverId: number, driverName: string, rideId?: number) {
+    // Check if chat session already exists
+    const existingSession = this.chatSessions.find(session => 
+      session.driver_id === driverId && session.ride_id === rideId
+    );
+
+    if (!existingSession) {
+      const newSession: ChatSession = {
+        driver_id: driverId,
+        driver_name: driverName,
+        ride_id: rideId,
+        messages: [],
+        isActive: false
+      };
+      
+      this.chatSessions.push(newSession);
+      this.loadMessagesForSession(newSession);
+    }
+  }
+
+  selectChatSession(session: ChatSession) {
+    // Deactivate all sessions
+    this.chatSessions.forEach(s => s.isActive = false);
+    
+    // Activate selected session
+    session.isActive = true;
+    this.activeChatSession = session;
+    
+    // Load messages for this session
+    this.loadMessagesForSession(session);
+  }
+
+  loadMessagesForSession(session: ChatSession) {
+    const riderId = parseInt(this.riderDetails.rider_id);
+    
+    this.http.get<Message[]>(`http://127.0.0.1:42099/messages/conversation/${riderId}/${session.driver_id}`).subscribe({
+      next: (messages) => {
+        session.messages = messages.filter(msg => 
+          !session.ride_id || msg.ride_id === session.ride_id
+        );
+      },
+      error: (err) => {
+        console.error('Failed to load messages:', err);
+        session.messages = [];
+      }
+    });
+  }
+
+  sendMessage() {
+    if (!this.activeChatSession || !this.newMessage.trim()) return;
+
+    this.isSendingMessage = true;
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      this.showMessage('Authentication required. Please login again.', 'error');
+      this.isSendingMessage = false;
+      return;
+    }
+
+    const messageData = {
+      sender_id: parseInt(this.riderDetails.rider_id),
+      receiver_id: this.activeChatSession.driver_id,
+      ride_id: this.activeChatSession.ride_id,
+      message_text: this.newMessage.trim()
+    };
+
+    this.http.post<any>('http://127.0.0.1:42099/messages', messageData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    }).subscribe({
+      next: (response) => {
+        // Add message to local session
+        const newMessage: Message = {
+          message_id: response.message_id,
+          sender_id: messageData.sender_id,
+          receiver_id: messageData.receiver_id,
+          ride_id: messageData.ride_id,
+          message_text: messageData.message_text,
+          sent_at: new Date().toISOString()
+        };
+        
+        if (this.activeChatSession) {
+          this.activeChatSession.messages.push(newMessage);
+        }
+        
+        this.newMessage = '';
+        this.isSendingMessage = false;
+        
+        // Scroll to bottom of chat
+        setTimeout(() => this.scrollChatToBottom(), 100);
+      },
+      error: (err) => {
+        console.error('Failed to send message:', err);
+        this.showMessage('Failed to send message', 'error');
+        this.isSendingMessage = false;
+      }
+    });
+  }
+
+  startChatPolling() {
+    this.stopChatPolling(); // Clear any existing interval
+    
+    this.chatPollingInterval = setInterval(() => {
+      if (this.activeChatSession) {
+        this.loadMessagesForSession(this.activeChatSession);
+      }
+    }, 3000); // Poll every 3 seconds
+  }
+
+  stopChatPolling() {
+    if (this.chatPollingInterval) {
+      clearInterval(this.chatPollingInterval);
+      this.chatPollingInterval = null;
+    }
+  }
+
+  scrollChatToBottom() {
+    const chatMessagesContainer = document.querySelector('.chat-messages');
+    if (chatMessagesContainer) {
+      chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+    }
+  }
+
+  isMessageFromCurrentUser(message: Message): boolean {
+    return message.sender_id === parseInt(this.riderDetails.rider_id);
+  }
+
   getStopName(stopId: string): string {
     const stop = this.stops.find(s => s.stop_id === stopId);
     return stop ? stop.stop_name : `Stop ${stopId}`;
@@ -288,6 +491,18 @@ export class RiderDashboardComponent implements OnInit {
     try {
       const date = new Date(dateString);
       return date.toLocaleDateString() + ', ' + date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      return dateString;
+    }
+  }
+
+  formatMessageTime(dateString: string): string {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -347,19 +562,16 @@ export class RiderDashboardComponent implements OnInit {
       next: (data) => {
         this.riderDetails = {
           rider_id: data.user_id,
-          rider_name: data.user_name || data.name || '',
-          start_stop_id: data.start_stop_id || '',
-          destination_stop_id: data.destination_stop_id || '',
+          rider_name: data.user_name || '',
+          email: data.email || '',
+          phone: data.phone_number || '',
           gender: data.gender || '',
-          phone: data.phone || ''
+          is_verified: data.is_verified || false,
+          role_id: data.role_id || '',
+          create_datetime: data.create_datetime || '',
+          driver_id: data.driver_id || null
         };
         this.isEditingProfile = false;
-        
-        // Load destination stops if source is selected
-        if (this.riderDetails.start_stop_id) {
-          this.selectedSource = this.riderDetails.start_stop_id;
-          this.onSourceChange();
-        }
       },
       error: (err) => {
         console.error('Failed to load rider details:', err);
@@ -367,7 +579,7 @@ export class RiderDashboardComponent implements OnInit {
       }
     });
   }
-  
+
   // Hide profile management
   hideProfileManagement() {
     this.showProfileManagement = false;
@@ -419,7 +631,7 @@ export class RiderDashboardComponent implements OnInit {
     this.isEditingProfile = false;
     this.manageAccount(); // Reload original data
   }
-
+  
   // Sidebar menu methods
   viewRides() {
     console.log('Navigate to view rides');
@@ -485,6 +697,7 @@ export class RiderDashboardComponent implements OnInit {
   }
 
   logout() {
+    this.closeChat(); // Stop chat polling
     this.closeProfileMenu();
     this.closeSidebar();
     if (isPlatformBrowser(this.platformId)) {

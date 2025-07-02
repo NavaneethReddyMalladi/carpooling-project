@@ -23,7 +23,7 @@
         <span class="profile-name">{{ driverDetails.driver_name }}</span>
         <div class="rating">
           <span class="stars">★★★★★</span>
-          <span class="rating-text">{{ driverDetails.rating }}</span>
+          <span class="rating-text">{{ dashboardStats.rating.toFixed(1) }}</span>
         </div>
       </div>
       <button class="profile-btn" (click)="toggleProfileMenu()">
@@ -64,6 +64,7 @@
         (click)="setActiveTab('rides')">
         <span class="icon">🚗</span>
         My Rides
+        <span class="badge" *ngIf="activeRides.length > 0">{{ activeRides.length }}</span>
       </button>
       <button 
         class="menu-item" 
@@ -115,16 +116,16 @@
         <div class="stat-card rating">
           <div class="stat-icon">⭐</div>
           <div class="stat-info">
-            <h3>{{ dashboardStats.rating }}</h3>
+            <h3>{{ dashboardStats.rating.toFixed(1) }}</h3>
             <p>Average Rating</p>
           </div>
         </div>
         
-        <div class="stat-card hours">
-          <div class="stat-icon">⏱️</div>
+        <div class="stat-card active">
+          <div class="stat-icon">🔄</div>
           <div class="stat-info">
-            <h3>{{ dashboardStats.onlineHours }}h</h3>
-            <p>Online Today</p>
+            <h3>{{ dashboardStats.activeRides }}</h3>
+            <p>Active Rides</p>
           </div>
         </div>
       </div>
@@ -132,7 +133,7 @@
       <!-- Recent Rides -->
       <div class="recent-rides">
         <h3>Recent Rides</h3>
-        <div class="rides-list">
+        <div class="rides-list" *ngIf="recentRides.length > 0">
           <div *ngFor="let ride of recentRides" class="ride-item" [class]="ride.status">
             <div class="ride-info">
               <div class="route">
@@ -146,13 +147,18 @@
               </div>
             </div>
             <div class="ride-details">
-              <div class="fare">₹{{ ride.fare }}</div>
+              <div class="fare" *ngIf="ride.fare > 0">₹{{ ride.fare }}</div>
               <div class="rating" *ngIf="ride.rating > 0">
                 <span class="stars">★</span>
                 <span>{{ ride.rating }}</span>
               </div>
             </div>
           </div>
+        </div>
+        <div class="empty-state" *ngIf="recentRides.length === 0">
+          <div class="empty-icon">🚗</div>
+          <h4>No rides yet</h4>
+          <p>Create your first ride to start earning!</p>
         </div>
       </div>
     </div>
@@ -163,7 +169,6 @@
         <h2>Create a New Ride</h2>
         <p>Share your ride and earn money!</p>
       </div>
-
       <div class="create-ride-form">
         <form (ngSubmit)="createRide()" #rideForm="ngForm">
           <div class="form-row">
@@ -182,7 +187,6 @@
                 </option>
               </select>
             </div>
-
             <div class="form-group">
               <label for="destination">To</label>
               <select 
@@ -201,7 +205,6 @@
               </select>
             </div>
           </div>
-
           <div class="form-row">
             <div class="form-group">
               <label for="departure">Departure Time</label>
@@ -213,7 +216,6 @@
                 required
                 class="form-control" />
             </div>
-
             <div class="form-group">
               <label for="seats">Available Seats</label>
               <input 
@@ -227,7 +229,6 @@
                 class="form-control" />
             </div>
           </div>
-
           <div class="form-group">
             <label for="route">Route ID (Optional)</label>
             <input 
@@ -238,7 +239,6 @@
               class="form-control"
               placeholder="Enter route ID if available" />
           </div>
-
           <button 
             type="submit" 
             class="btn btn-primary"
@@ -256,22 +256,142 @@
         <h2>My Rides</h2>
         <p>Manage your active and completed rides</p>
       </div>
-
       <div class="rides-section">
         <div class="tabs">
-          <button class="tab active">Active Rides</button>
-          <button class="tab">Completed</button>
-          <button class="tab">Cancelled</button>
+          <button 
+            class="tab" 
+            [class.active]="ridesSubTab === 'active'"
+            (click)="setRidesSubTab('active')">
+            Active Rides
+            <span class="badge" *ngIf="activeRides.length > 0">{{ activeRides.length }}</span>
+          </button>
+          <button 
+            class="tab" 
+            [class.active]="ridesSubTab === 'completed'"
+            (click)="setRidesSubTab('completed')">
+            Completed
+            <span class="badge" *ngIf="completedRides.length > 0">{{ completedRides.length }}</span>
+          </button>
+          <button 
+            class="tab" 
+            [class.active]="ridesSubTab === 'cancelled'"
+            (click)="setRidesSubTab('cancelled')">
+            Cancelled
+            <span class="badge" *ngIf="cancelledRides.length > 0">{{ cancelledRides.length }}</span>
+          </button>
         </div>
-
+        
         <div class="rides-content">
-          <div class="empty-state">
-            <div class="empty-icon">🚗</div>
-            <h3>No active rides</h3>
-            <p>Create a new ride to start earning!</p>
-            <button class="btn btn-secondary" (click)="setActiveTab('create-ride')">
-              Create Ride
-            </button>
+          <!-- Active Rides -->
+          <div *ngIf="ridesSubTab === 'active'">
+            <div *ngIf="activeRides.length > 0" class="rides-list">
+              <div *ngFor="let ride of activeRides" class="ride-card active">
+                <div class="ride-header">
+                  <div class="route">
+                    <span class="origin">{{ ride.origin_name }}</span>
+                    <span class="arrow">→</span>
+                    <span class="destination">{{ ride.destination_name }}</span>
+                  </div>
+                  <div class="ride-status active">Active</div>
+                </div>
+                <div class="ride-details">
+                  <div class="detail-item">
+                    <span class="label">Departure:</span>
+                    <span class="value">{{ formatTime(ride.departure_time) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Available Seats:</span>
+                    <span class="value">{{ ride.available_seats }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="ride.passenger_count">
+                    <span class="label">Booked:</span>
+                    <span class="value">{{ ride.passenger_count }} passengers</span>
+                  </div>
+                </div>
+                <div class="ride-actions">
+                  <button class="btn btn-success" (click)="completeRide(ride.ride_id)">
+                    Complete
+                  </button>
+                  <button class="btn btn-danger" (click)="cancelRide(ride.ride_id)">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="activeRides.length === 0" class="empty-state">
+              <div class="empty-icon">🚗</div>
+              <h3>No active rides</h3>
+              <p>Create a new ride to start earning!</p>
+              <button class="btn btn-secondary" (click)="setActiveTab('create-ride')">
+                Create Ride
+              </button>
+            </div>
+          </div>
+
+          <!-- Completed Rides -->
+          <div *ngIf="ridesSubTab === 'completed'">
+            <div *ngIf="completedRides.length > 0" class="rides-list">
+              <div *ngFor="let ride of completedRides" class="ride-card completed">
+                <div class="ride-header">
+                  <div class="route">
+                    <span class="origin">{{ ride.origin_name }}</span>
+                    <span class="arrow">→</span>
+                    <span class="destination">{{ ride.destination_name }}</span>
+                  </div>
+                  <div class="ride-status completed">Completed</div>
+                </div>
+                <div class="ride-details">
+                  <div class="detail-item">
+                    <span class="label">Completed:</span>
+                    <span class="value">{{ formatTime(ride.departure_time) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Seats:</span>
+                    <span class="value">{{ ride.available_seats }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="ride.fare">
+                    <span class="label">Earnings:</span>
+                    <span class="value">₹{{ ride.fare }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="completedRides.length === 0" class="empty-state">
+              <div class="empty-icon">✅</div>
+              <h3>No completed rides</h3>
+              <p>Complete some rides to see them here!</p>
+            </div>
+          </div>
+
+          <!-- Cancelled Rides -->
+          <div *ngIf="ridesSubTab === 'cancelled'">
+            <div *ngIf="cancelledRides.length > 0" class="rides-list">
+              <div *ngFor="let ride of cancelledRides" class="ride-card cancelled">
+                <div class="ride-header">
+                  <div class="route">
+                    <span class="origin">{{ ride.origin_name }}</span>
+                    <span class="arrow">→</span>
+                    <span class="destination">{{ ride.destination_name }}</span>
+                  </div>
+                  <div class="ride-status cancelled">Cancelled</div>
+                </div>
+                <div class="ride-details">
+                  <div class="detail-item">
+                    <span class="label">Was scheduled for:</span>
+                    <span class="value">{{ formatTime(ride.departure_time) }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="label">Seats:</span>
+                    <span class="value">{{ ride.available_seats }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="cancelledRides.length === 0" class="empty-state">
+              <div class="empty-icon">❌</div>
+              <h3>No cancelled rides</h3>
+              <p>Good job! You haven't cancelled any rides.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -283,7 +403,6 @@
         <h2>Driver Profile</h2>
         <p>Manage your profile information</p>
       </div>
-
       <div class="profile-section">
         <div class="profile-header">
           <div class="profile-avatar large">{{ driverDetails.driver_name.charAt(0) }}</div>
@@ -291,14 +410,13 @@
             <h3>{{ driverDetails.driver_name }}</h3>
             <div class="rating">
               <span class="stars">★★★★★</span>
-              <span class="rating-text">{{ driverDetails.rating }} ({{ dashboardStats.totalRides }} rides)</span>
+              <span class="rating-text">{{ dashboardStats.rating.toFixed(1) }} ({{ dashboardStats.totalRides }} rides)</span>
             </div>
             <div class="status-badge" [class.online]="isOnline" [class.offline]="!isOnline">
               {{ isOnline ? 'Online' : 'Offline' }}
             </div>
           </div>
         </div>
-
         <div class="profile-details">
           <div class="detail-item">
             <span class="label">Driver ID:</span>
@@ -324,8 +442,19 @@
             <span class="label">Completed Rides:</span>
             <span class="value">{{ dashboardStats.completedRides }}</span>
           </div>
+          <div class="detail-item">
+            <span class="label">Success Rate:</span>
+            <span class="value">
+              {{ dashboardStats.totalRides > 0 ? ((dashboardStats.completedRides / dashboardStats.totalRides) * 100).toFixed(1) : 0 }}%
+            </span>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+
+
+
+
