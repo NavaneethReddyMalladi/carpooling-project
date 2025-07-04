@@ -204,3 +204,71 @@ def rider_search(origin_stop_id, destination_stop_id):
         })
 
     return jsonify(result), 200
+
+
+
+
+
+def get_rides_by_driver_id(driver_id):
+    """
+    Get all rides for a specific driver
+    """
+    try:
+        # Query rides by driver_id and join with stops to get stop names
+        rides = db.session.query(
+                    Rides,
+                    Stops.stop_name.label('origin_name'),
+                    Stops.stop_name.label('destination_name'))\
+                 .join(Stops, Rides.origin_stop_id == Stops.stop_id)\
+                 .join(Stops, Rides.destination_stop_id == Stops.stop_id)\
+                 .filter(Rides.driver_id == driver_id)\
+                 .order_by(Rides.departure_time.desc())\
+                 .all()
+
+        if not rides:
+            rides_data = Rides.query.filter_by(driver_id=driver_id).order_by(Rides.departure_time.desc()).all()
+            
+            rides_list = []
+            for ride in rides_data:
+                origin_stop = Stops.query.get(ride.origin_stop_id)
+                destination_stop = Stops.query.get(ride.destination_stop_id)
+                
+                rides_list.append({
+                    'ride_id': ride.ride_id,
+                    'driver_id': ride.driver_id,
+                    'origin_stop_id': ride.origin_stop_id,
+                    'destination_stop_id': ride.destination_stop_id,
+                    'route_id': ride.route_id,
+                    'departure_time': ride.departure_time.isoformat() if ride.departure_time else None,
+                    'available_seats': ride.available_seats,
+                    'status': ride.status,
+                    'created_at': ride.create_datetime.isoformat() if ride.create_datetime else None,
+                    'updated_at': ride.update_datetime.isoformat() if ride.update_datetime else None,
+                    'origin_name': origin_stop.stop_name if origin_stop else 'Unknown',
+                    'destination_name': destination_stop.stop_name if destination_stop else 'Unknown'
+                })
+            
+            return jsonify(rides_list), 200
+
+        # Process the joined query results
+        rides_list = []
+        for ride, origin_name, destination_name in rides:
+            rides_list.append({
+                'ride_id': ride.ride_id,
+                'driver_id': ride.driver_id,
+                'origin_stop_id': ride.origin_stop_id,
+                'destination_stop_id': ride.destination_stop_id,
+                'route_id': ride.route_id,
+                'departure_time': ride.departure_time.isoformat() if ride.departure_time else None,
+                'available_seats': ride.available_seats,
+                'status': ride.status,
+                'created_at': ride.create_datetime.isoformat() if ride.create_datetime else None,
+                'updated_at': ride.update_datetime.isoformat() if ride.update_datetime else None,
+                'origin_name': origin_name,
+                'destination_name': destination_name
+            })
+
+        return jsonify(rides_list), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

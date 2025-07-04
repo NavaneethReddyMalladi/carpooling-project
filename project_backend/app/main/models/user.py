@@ -31,3 +31,5 @@ class User(db.Model):
 
     # RiderDetails entries associated with this user (if RiderDetails still exists)
     rider_details = db.relationship('RiderDetails', backref='user', lazy=True)
+
+    # role=db.relationship('Role',backref='user',lazy=True)

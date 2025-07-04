@@ -7,15 +7,31 @@ import { DriverDashboardComponent } from './components/driverdashboard/driverdas
 import { DriverProfileComponent } from './components/driverprofile/driverprofile.component';
 
 
-export const routes: Routes = [
 
-    { path: 'login', component: LoginComponent },
+import { AuthGuard } from '../app/components/gaurds/auth.guard';
+import { RoleGuard } from '../app/components/gaurds/role.guard';
+
+export const routes: Routes = [
+  { path: 'login', component: LoginComponent },
   { path: 'register', component: RegistrationComponent },
-  {path:'',component:HomeComponent},
-  {path:'rider',component:RiderDashboardComponent},
-  
-  {path:'driver',component:DriverDashboardComponent
+  { path: '', component: HomeComponent },
+
+  {
+    path: 'driver',
+    component: DriverDashboardComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'Driver' }
   },
-  {path:'driver/profile',component:DriverProfileComponent}
-  
+  {
+    path: 'driver/profile',
+    component: DriverProfileComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'Driver' }
+  },
+  {
+    path: 'rider',
+    component: RiderDashboardComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { expectedRole: 'Rider' }
+  }
 ];
