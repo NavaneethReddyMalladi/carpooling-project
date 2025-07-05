@@ -111,3 +111,56 @@ def get_ride_requests_by_rider(rider_id):
         return jsonify(result), 200
     except Exception:
         return jsonify({"message": "Internal server error"}), 500
+
+
+# ⬇️ add at top of file
+from app.main.models.rides import Rides
+from sqlalchemy.orm import joinedload
+
+# -----------------------------------------------------------
+# Get all ride requests for a specific driver  (NEW FUNCTION)
+# -----------------------------------------------------------
+def get_ride_requests_by_driver(driver_id):
+    """
+    Return all requests whose ride belongs to the given driver_id.
+    Includes rider & ride information for convenience.
+    """
+    try:
+        # Eager‑load ride & rider info to avoid N+1 queries
+        requests = (
+            RideRequestsTable.query
+            .join(Rides, RideRequestsTable.ride_id == Rides.ride_id)
+            .options(joinedload(RideRequestsTable.ride), joinedload(RideRequestsTable.rider))
+            .filter(Rides.driver_id == driver_id)
+            .order_by(RideRequestsTable.requested_at.desc())
+            .all()
+        )
+
+        result = []
+        for req in requests:
+            ride = req.ride
+            rider = req.rider  # assuming FK relationship rider_id → User table
+
+            result.append({
+                "request_id"   : req.request_id,
+                "ride_id"      : req.ride_id,
+                "rider_id"     : req.rider_id,
+                "status"       : req.status,
+                "requested_at" : req.requested_at,
+                # optional nested data
+                "ride": {
+                    "origin_stop_id"   : ride.origin_stop_id,
+                    "destination_stop_id": ride.destination_stop_id,
+                    "departure_time"   : ride.departure_time,
+                    "available_seats"  : ride.available_seats
+                } if ride else None,
+                "rider": {
+                    "user_name" : getattr(rider, "user_name", None),
+                    "phone"     : getattr(rider, "phone_number", None),
+                } if rider else None
+            })
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

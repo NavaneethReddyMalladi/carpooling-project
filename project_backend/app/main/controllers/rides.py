@@ -76,7 +76,8 @@ from app.main.services.rides import (
     update_ride,
     delete_ride,
     rider_search,
-    get_rides_by_driver_id  # Add this import
+    get_rides_by_driver_id,
+    get_driver_stats 
 )
 
 rides_bp = Blueprint('rides_bp', __name__)
@@ -143,3 +144,12 @@ def rider_search_route():
 
     # Call service function with parameters
     return rider_search(origin_stop_id,destination_stop_id)
+
+
+@rides_bp.route('/rides/driver/<int:driver_id>/stats', methods=['GET'])
+# @requires_roles(1, 3)                # 1 = driver, 3 = admin
+def driver_stats(driver_id):
+    return get_driver_stats(driver_id)
+
+
+

@@ -206,65 +206,70 @@ def rider_search(origin_stop_id, destination_stop_id):
     return jsonify(result), 200
 
 
-
-
+from sqlalchemy.orm import aliased   # ⬅️ add at top of file
 
 def get_rides_by_driver_id(driver_id):
     """
-    Get all rides for a specific driver
+    Get all rides for a specific driver, including origin/destination stop names.
     """
     try:
-        # Query rides by driver_id and join with stops to get stop names
+        # ── Alias the stops table ────────────────────────────────────────────────
+        origin      = aliased(Stops)
+        destination = aliased(Stops)
+
         rides = db.session.query(
                     Rides,
-                    Stops.stop_name.label('origin_name'),
-                    Stops.stop_name.label('destination_name'))\
-                 .join(Stops, Rides.origin_stop_id == Stops.stop_id)\
-                 .join(Stops, Rides.destination_stop_id == Stops.stop_id)\
-                 .filter(Rides.driver_id == driver_id)\
-                 .order_by(Rides.departure_time.desc())\
-                 .all()
+                    origin.stop_name.label('origin_name'),
+                    destination.stop_name.label('destination_name')
+                )\
+                .join(origin,      Rides.origin_stop_id      == origin.stop_id)\
+                .join(destination, Rides.destination_stop_id == destination.stop_id)\
+                .filter(Rides.driver_id == driver_id)\
+                .order_by(Rides.departure_time.desc())\
+                .all()
 
+        # If the aliased join returned nothing, fall back to the simple query.
         if not rides:
-            rides_data = Rides.query.filter_by(driver_id=driver_id).order_by(Rides.departure_time.desc()).all()
-            
+            rides_data  = Rides.query.filter_by(driver_id=driver_id)\
+                                     .order_by(Rides.departure_time.desc())\
+                                     .all()
+
             rides_list = []
             for ride in rides_data:
-                origin_stop = Stops.query.get(ride.origin_stop_id)
+                origin_stop      = Stops.query.get(ride.origin_stop_id)
                 destination_stop = Stops.query.get(ride.destination_stop_id)
-                
+
                 rides_list.append({
-                    'ride_id': ride.ride_id,
-                    'driver_id': ride.driver_id,
-                    'origin_stop_id': ride.origin_stop_id,
+                    'ride_id'         : ride.ride_id,
+                    'driver_id'       : ride.driver_id,
+                    'origin_stop_id'  : ride.origin_stop_id,
                     'destination_stop_id': ride.destination_stop_id,
-                    'route_id': ride.route_id,
-                    'departure_time': ride.departure_time.isoformat() if ride.departure_time else None,
-                    'available_seats': ride.available_seats,
-                    'status': ride.status,
-                    'created_at': ride.create_datetime.isoformat() if ride.create_datetime else None,
-                    'updated_at': ride.update_datetime.isoformat() if ride.update_datetime else None,
-                    'origin_name': origin_stop.stop_name if origin_stop else 'Unknown',
+                    'route_id'        : ride.route_id,
+                    'departure_time'  : ride.departure_time.isoformat() if ride.departure_time else None,
+                    'available_seats' : ride.available_seats,
+                    'status'          : ride.status,
+                    'created_at'      : ride.create_datetime.isoformat() if ride.create_datetime else None,
+                    'updated_at'      : ride.update_datetime.isoformat() if ride.update_datetime else None,
+                    'origin_name'     : origin_stop.stop_name if origin_stop else 'Unknown',
                     'destination_name': destination_stop.stop_name if destination_stop else 'Unknown'
                 })
-            
             return jsonify(rides_list), 200
 
-        # Process the joined query results
+        # ── Normal case: process aliased join results ───────────────────────────
         rides_list = []
         for ride, origin_name, destination_name in rides:
             rides_list.append({
-                'ride_id': ride.ride_id,
-                'driver_id': ride.driver_id,
-                'origin_stop_id': ride.origin_stop_id,
+                'ride_id'         : ride.ride_id,
+                'driver_id'       : ride.driver_id,
+                'origin_stop_id'  : ride.origin_stop_id,
                 'destination_stop_id': ride.destination_stop_id,
-                'route_id': ride.route_id,
-                'departure_time': ride.departure_time.isoformat() if ride.departure_time else None,
-                'available_seats': ride.available_seats,
-                'status': ride.status,
-                'created_at': ride.create_datetime.isoformat() if ride.create_datetime else None,
-                'updated_at': ride.update_datetime.isoformat() if ride.update_datetime else None,
-                'origin_name': origin_name,
+                'route_id'        : ride.route_id,
+                'departure_time'  : ride.departure_time.isoformat() if ride.departure_time else None,
+                'available_seats' : ride.available_seats,
+                'status'          : ride.status,
+                'created_at'      : ride.create_datetime.isoformat() if ride.create_datetime else None,
+                'updated_at'      : ride.update_datetime.isoformat() if ride.update_datetime else None,
+                'origin_name'     : origin_name,
                 'destination_name': destination_name
             })
 
@@ -272,3 +277,56 @@ def get_rides_by_driver_id(driver_id):
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+
+
+
+# ⬇️ add just below get_rides_by_driver_id(...)
+from datetime import datetime, date
+from sqlalchemy import func
+
+def get_driver_stats(driver_id):
+    """
+    Return ride statistics for a given driver_id.
+    Fields returned:
+      todayEarnings, totalRides, completedRides,
+      cancelledRides, activeRides, averageRating, onlineHours
+    """
+    try:
+        # All rides for this driver
+        rides = Rides.query.filter_by(driver_id=driver_id).all()
+
+        total_rides      = len(rides)
+        completed_rides  = sum(r.status == 'completed' for r in rides)
+        cancelled_rides  = sum(r.status == 'cancelled' for r in rides)
+        active_rides     = sum(r.status == 'active'    for r in rides)
+
+        # Earnings just for today
+        today = date.today()
+        today_earnings = sum(
+            (r.fare_amount or 0)
+            for r in rides
+            if r.status == 'completed' and r.departure_time.date() == today
+        )
+
+        # If you store per‑ride driver rating
+        ratings = [r.rating for r in rides if hasattr(r, "rating") and r.rating]
+        average_rating = round(sum(ratings) / len(ratings), 2) if ratings else 0
+
+        # TODO: Replace with real online‑hours calculation if you track it
+        online_hours = 0
+
+        return jsonify({
+            "todayEarnings": today_earnings,
+            "totalRides": total_rides,
+            "completedRides": completed_rides,
+            "cancelledRides": cancelled_rides,
+            "activeRides": active_rides,
+            "averageRating": average_rating,
+            "onlineHours": online_hours
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

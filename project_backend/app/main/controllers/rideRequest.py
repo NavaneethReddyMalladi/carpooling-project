@@ -6,7 +6,8 @@ from app.main.services.rideRequests import (
     update_ride_request,
     delete_ride_request,
     get_ride_requests_by_ride,
-    get_ride_requests_by_rider
+    get_ride_requests_by_rider,
+    get_ride_requests_by_driver
 )
 
 ride_requests_bp = Blueprint('ride_requests_bp', __name__)
@@ -47,3 +48,8 @@ def get_requests_by_ride(ride_id):
 @ride_requests_bp.route('/ride-requests/rider/<int:rider_id>', methods=['GET'])
 def get_requests_by_rider(rider_id):
     return get_ride_requests_by_rider(rider_id)
+
+
+@ride_requests_bp.route('/ride-requests/driver/<int:driver_id>', methods=['GET'])
+def get_requests_by_driver(driver_id):
+    return get_ride_requests_by_driver(driver_id)
