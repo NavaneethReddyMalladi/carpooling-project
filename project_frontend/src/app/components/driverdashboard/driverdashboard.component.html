@@ -413,63 +413,6 @@ Ride Requests
       </div>
     </div>
 
-    <!-- Profile Tab -->
-    <div *ngIf="activeTab === 'profile'" class="content-section">
-      <div class="section-header">
-        <h2>Driver Profile</h2>
-        <p>Manage your profile information</p>
-      </div>
-      <div class="profile-section">
-        <div class="profile-header">
-          <div class="profile-avatar large">{{ driverDetails.driver_name.charAt(0) }}</div>
-          <div class="profile-info">
-            <h3>{{ driverDetails.driver_name }}</h3>
-            <div class="rating">
-              <span class="stars">★★★★★</span>
-              <span class="rating-text">{{ dashboardStats.rating.toFixed(1) }} ({{ dashboardStats.totalRides }} rides)</span>
-            </div>
-            <div class="status-badge" [class.online]="isOnline" [class.offline]="!isOnline">
-              {{ isOnline ? 'Online' : 'Offline' }}
-            </div>
-          </div>
-        </div>
-        <div class="profile-details">
-          <div class="detail-item">
-            <span class="label">Driver ID:</span>
-            <span class="value">{{ driverDetails.driver_id }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Gender:</span>
-            <span class="value">{{ driverDetails.gender | titlecase }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Phone:</span>
-            <span class="value">{{ driverDetails.phone }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Email:</span>
-            <span class="value">{{ driverDetails.email }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Total Rides:</span>
-            <span class="value">{{ dashboardStats.totalRides }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Completed Rides:</span>
-            <span class="value">{{ dashboardStats.completedRides }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="label">Success Rate:</span>
-            <span class="value">
-              {{ dashboardStats.totalRides > 0 ? ((dashboardStats.completedRides / dashboardStats.totalRides) * 100).toFixed(1) : 0 }}%
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div *ngIf="activeTab === 'requests'" class="content-section">
   <div class="section-header">
     <h2>Ride Requests</h2>
@@ -641,3 +584,61 @@ Ride Requests
 
 
 
+
+
+    <!-- Profile Tab -->
+    <div *ngIf="activeTab === 'profile'" class="content-section">
+      <div class="section-header">
+        <h2>Driver Profile</h2>
+        <p>Manage your profile information</p>
+      </div>
+      <div class="profile-section">
+        <div class="profile-header">
+          <div class="profile-avatar large">{{ driverDetails.driver_name.charAt(0) }}</div>
+          <div class="profile-info">
+            <h3>{{ driverDetails.driver_name }}</h3>
+            <div class="rating">
+              <span class="stars">★★★★★</span>
+              <span class="rating-text">{{ dashboardStats.rating.toFixed(1) }} ({{ dashboardStats.totalRides }} rides)</span>
+            </div>
+            <div class="status-badge" [class.online]="isOnline" [class.offline]="!isOnline">
+              {{ isOnline ? 'Online' : 'Offline' }}
+            </div>
+          </div>
+        </div>
+        <div class="profile-details">
+          <div class="detail-item">
+            <span class="label">Driver ID:</span>
+            <span class="value">{{ driverDetails.driver_id }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Gender:</span>
+            <span class="value">{{ driverDetails.gender | titlecase }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Phone:</span>
+            <span class="value">{{ driverDetails.phone }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ driverDetails.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Total Rides:</span>
+            <span class="value">{{ dashboardStats.totalRides }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Completed Rides:</span>
+            <span class="value">{{ dashboardStats.completedRides }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Success Rate:</span>
+            <span class="value">
+              {{ dashboardStats.totalRides > 0 ? ((dashboardStats.completedRides / dashboardStats.totalRides) * 100).toFixed(1) : 0 }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

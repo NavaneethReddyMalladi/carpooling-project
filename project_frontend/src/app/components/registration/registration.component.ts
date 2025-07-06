@@ -7,17 +7,18 @@ import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, HttpClientModule], // ✅ Add HttpClientModule here for standalone
+  imports: [CommonModule, RouterLink, FormsModule, HttpClientModule],
   templateUrl: './registration.component.html',
-  styleUrls: ['./registration.component.css'] // ✅ Corrected 'styleUrl' to 'styleUrls'
+  styleUrls: ['./registration.component.css']
 })
 export class RegistrationComponent implements OnInit {
   isDriver = false;
   errorMessage = '';
+  isLoading = false;
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient, // ✅ Corrected spelling: 'http', not 'htpp'
+    private http: HttpClient,
     private router: Router
   ) {}
 
@@ -30,10 +31,14 @@ export class RegistrationComponent implements OnInit {
 
   toggleRole(role: string) {
     this.isDriver = role === 'driver';
+    this.errorMessage = ''; // Clear error when switching roles
   }
 
   onSubmit(form: any) {
     if (form.invalid) return;
+
+    this.errorMessage = ''; // Clear previous error
+    this.isLoading = true;
 
     const formData = form.value;
     const payload: any = {
@@ -45,37 +50,23 @@ export class RegistrationComponent implements OnInit {
       role_id: this.isDriver ? 1 : 2
     };
 
-    // Optional: Include driver fields only if needed
+    // Include driver fields only if user is registering as driver
     if (this.isDriver) {
       payload.license_number = formData.license;
+      payload.vehicle_type = formData.vehicle;
       payload.experience = formData.experience;
+      payload.vehicle_rc = formData.vechileRc;
     }
 
     this.http.post("http://127.0.0.1:42099/register", payload).subscribe({
       next: () => {
+        this.isLoading = false;
         this.router.navigate(['/login']);
       },
       error: (err) => {
-        this.errorMessage = err.error?.message || 'Registration Failed';
-        alert(err)
+        this.isLoading = false;
+        this.errorMessage = err.error?.message || 'Registration failed. Please try again.';
       }
     });
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

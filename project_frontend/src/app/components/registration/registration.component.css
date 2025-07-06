@@ -1,218 +1,14 @@
-/* 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
-
-html, body {
-  height: 100%;
-  background-color: #f4f4f4;
-}
-
-
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.toggle-buttons {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-  gap: 20px;
-}
-
-.toggle-buttons button {
-  padding: 10px 30px;
-  font-size: 1rem;
-  border: 2px solid #00bcd4;
-  background-color: white;
-  color: #00bcd4;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.toggle-buttons button.active {
-  background-color: #00bcd4;
-  color: white;
-}
-
-.toggle-buttons button:hover {
-  background-color: #0097a7;
-  color: white;
-}
-
-
-.main-container{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-}
-
-.container {
-  display: flex;
-  max-width: 1000px;
-  width: 100%;
-  background-color: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  flex-direction: row;
-}
-
-.form-box {
-  flex: 1;
-  padding: 40px;
-  max-height: 600px; 
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-.form-box h2 {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-  color: #222;
-}
-
-.subtitle {
-  margin-bottom: 25px;
-  color: #555;
-  font-size: 1rem;
-}
-
-.input-group {
-  margin-bottom: 15px;
-}
-
-.input-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 0.9rem;
-  color: #333;
-}
-
-.input-group input,
-.input-group select {
-  width: 100%;
-  padding: 10px;
-  font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  transition: border-color 0.3s;
-}
-
-.input-group input:focus,
-.input-group select:focus {
-  outline: none;
-  border-color: #00bcd4;
-}
-
-
-button[type="submit"] {
-  background-color: #00bcd4;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 20px;
-  transition: background-color 0.3s ease;
-}
-
-button[type="submit"]:hover {
-  background-color: #0097a7;
-}
-
-.register-link {
-  text-align: center;
-  margin-top: 15px;
-  font-size: 0.9rem;
-}
-
-.register-link a {
-  color: #00bcd4;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
-}
-
-
-.image-box {
-  flex: 1;
-  background-color: #e0f7fa;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.image-box img {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  border-radius: 12px;
-}
-
-
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .image-box {
-    order: -1;
-    margin-bottom: 20px;
-  }
-
-  .toggle-buttons {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .toggle-buttons button {
-    width: 100%;
-  }
-} */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Reset and global styles */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
 }
 
 html, body {
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f6f6f6;
   overflow-x: hidden;
 }
 
@@ -263,14 +59,14 @@ body {
 }
 
 .toggle-buttons button.active {
-  background-color: #00bcd4;
+  background-color: #000000;
   color: white;
-  box-shadow: 0 2px 10px rgba(0, 188, 212, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .toggle-buttons button:hover:not(.active) {
-  color: #00bcd4;
-  background-color: rgba(0, 188, 212, 0.1);
+  color: #000000;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Container */
@@ -285,6 +81,7 @@ body {
   backdrop-filter: blur(10px);
   flex-direction: row;
   min-height: 600px;
+  border: 1px solid #e4e4e7;
 }
 
 /* Form section */
@@ -294,7 +91,7 @@ body {
   max-height: 700px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #00bcd4 #f1f1f1;
+  scrollbar-color: #000000 #f1f1f1;
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -308,30 +105,30 @@ body {
 }
 
 .form-box::-webkit-scrollbar-thumb {
-  background: #00bcd4;
+  background: #000000;
   border-radius: 3px;
 }
 
 .form-box::-webkit-scrollbar-thumb:hover {
-  background: #0097a7;
+  background: #1a1a1a;
 }
 
 .form-box h2 {
   font-size: 2rem;
   margin-bottom: 10px;
-  color: #333;
+  color: #000000;
   font-weight: 700;
 }
 
 .subtitle {
   margin-bottom: 30px;
-  color: #666;
+  color: #5a5a5a;
   font-size: 1.1rem;
   line-height: 1.5;
 }
 
 .subtitle span {
-  color: #00bcd4;
+  color: #000000;
   font-weight: 600;
 }
 
@@ -345,7 +142,7 @@ body {
   display: block;
   margin-bottom: 8px;
   font-size: 0.95rem;
-  color: #444;
+  color: #000000;
   font-weight: 500;
 }
 
@@ -355,17 +152,23 @@ body {
   padding: 12px 16px;
   font-size: 1rem;
   border-radius: 10px;
-  border: 2px solid #e0e0e0;
+  border: 2px solid #e4e4e7;
   transition: all 0.3s ease;
-  background-color: #fafafa;
+  background-color: #2a2a2a;
+  color: #ffffff;
 }
 
 .input-group input:focus,
 .input-group select:focus {
   outline: none;
-  border-color: #00bcd4;
-  background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+  border-color: #000000;
+  background-color: #2a2a2a;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+}
+
+.input-group input::placeholder {
+  color: #71717a;
 }
 
 /* Password input container */
@@ -388,7 +191,7 @@ body {
 }
 
 .password-toggle:hover {
-  color: #00bcd4;
+  color: #000000;
 }
 
 /* Password strength indicator */
@@ -399,26 +202,26 @@ body {
 }
 
 .password-strength.weak {
-  color: #f44336;
+  color: #dc2626;
 }
 
 .password-strength.medium {
-  color: #ff9800;
+  color: #f59e0b;
 }
 
 .password-strength.strong {
-  color: #4caf50;
+  color: #16a34a;
 }
 
 /* Error styling */
 .input-group.error input,
 .input-group.error select {
-  border-color: #f44336;
+  border-color: #dc2626;
   background-color: #fef5f5;
 }
 
 .error-message {
-  color: #f44336;
+  color: #dc2626;
   font-size: 0.85rem;
   margin-top: 5px;
   display: flex;
@@ -439,20 +242,20 @@ body {
 }
 
 .success-message {
-  background-color: #e8f5e8;
-  color: #2e7d32;
-  border: 1px solid #4caf50;
+  background-color: #f0f9ff;
+  color: #16a34a;
+  border: 1px solid #16a34a;
 }
 
 .error-banner {
   background-color: #fef5f5;
-  color: #d32f2f;
-  border: 1px solid #f44336;
+  color: #dc2626;
+  border: 1px solid #dc2626;
 }
 
 /* Submit button */
 button[type="submit"] {
-  background: linear-gradient(45deg, #00bcd4, #00acc1);
+  background: #000000;
   color: white;
   padding: 14px 25px;
   border: none;
@@ -468,8 +271,9 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover:not(:disabled) {
+  background: #1a1a1a;
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 188, 212, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 button[type="submit"]:disabled {
@@ -501,30 +305,31 @@ button[type="submit"]:disabled {
   text-align: center;
   margin-top: 20px;
   font-size: 0.95rem;
-  color: #666;
+  color: #5a5a5a;
 }
 
 .register-link a {
-  color: #00bcd4;
+  color: #000000;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
 .register-link a:hover {
-  color: #0097a7;
+  color: #3f3f46;
   text-decoration: underline;
 }
 
 /* Image box */
 .image-box {
   flex: 1;
-  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 40px;
   position: relative;
+  overflow: hidden;
 }
 
 .image-box::before {
@@ -534,7 +339,7 @@ button[type="submit"]:disabled {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+  background: linear-gradient(45deg, rgba(0, 0, 0, 0.1), transparent);
   opacity: 0.3;
 }
 
@@ -559,12 +364,12 @@ button[type="submit"]:disabled {
   padding: 25px;
   border-radius: 15px;
   margin: 25px 0;
-  border-left: 5px solid #00bcd4;
-  box-shadow: 0 4px 15px rgba(0, 188, 212, 0.1);
+  border-left: 5px solid #000000;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .driver-fields-title {
-  color: #00bcd4;
+  color: #000000;
   font-weight: 700;
   margin-bottom: 20px;
   font-size: 1.2rem;
@@ -583,6 +388,7 @@ button[type="submit"]:disabled {
   display: block;
   margin-top: 5px;
   font-style: italic;
+  color: #5a5a5a;
 }
 
 /* Responsive Design */
@@ -688,18 +494,219 @@ button[type="submit"]:disabled {
 button[type="submit"]:focus,
 .input-group input:focus,
 .input-group select:focus {
-  outline: 2px solid #00bcd4;
+  outline: 2px solid #000000;
   outline-offset: 2px;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #0f0f0f;
+  }
+  
+  .container {
+    background: #1a1a1a;
+    border-color: #2a2a2a;
+  }
+  
+  .form-box {
+    background: #1a1a1a;
+  }
+  
+  .form-box h2 {
+    color: #ffffff;
+  }
+  
+  .subtitle {
+    color: #a1a1aa;
+  }
+  
+  .input-group label {
+    color: #ffffff;
+  }
+  
+  .input-group input,
+  .input-group select {
+    background: #2a2a2a;
+    border-color: #3f3f46;
+    color: #ffffff;
+  }
+  
+  .input-group input:focus,
+  .input-group select:focus {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+  }
+  
+  .input-group input::placeholder {
+    color: #71717a;
+  }
+  
+  button[type="submit"] {
+    background: #ffffff;
+    color: #000000;
+  }
+  
+  button[type="submit"]:hover:not(:disabled) {
+    background: #f4f4f5;
+  }
+  
+  .register-link {
+    color: #a1a1aa;
+  }
+  
+  .register-link a {
+    color: #ffffff;
+  }
+  
+  .register-link a:hover {
+    color: #d4d4d8;
+  }
+  
+  .toggle-buttons {
+    background-color: #2a2a2a;
+  }
+  
+  .toggle-buttons button.active {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  .driver-fields {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border-left-color: #ffffff;
+  }
+  
+  .driver-fields-title {
+    color: #ffffff;
+  }
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .container {
-    border: 2px solid #000;
+    border: 2px solid #000000;
   }
   
   .input-group input,
   .input-group select {
-    border-color: #000;
+    border-width: 2px;
+  }
+  
+  button[type="submit"] {
+    border: 2px solid #000000;
   }
 }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  button[type="submit"]:hover {
+    transform: none;
+  }
+  
+  .image-box img:hover {
+    transform: none;
+  }
+}
+
+
+
+
+
+
+
+/* Add these styles to your existing CSS - Same as login page */
+
+/* Error Message Styles */
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c33;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  text-align: center;
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Error Input Styles */
+.error-input {
+  border-color: #c33 !important;
+  box-shadow: 0 0 5px rgba(204, 51, 51, 0.3) !important;
+}
+
+/* Button Disabled State */
+.btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Toggle Buttons Styles */
+.toggle-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.toggle-buttons button {
+  padding: 10px 20px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: transparent;
+  color: rgb(0, 255, 242);
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.toggle-buttons button:hover {
+  background-color: rgba(0, 0,0,0);
+}
+
+.toggle-buttons button.active {
+  background-color: rgb(2, 17, 16);
+  color: white;
+}
+
+/* Shake Animation for Error */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Loading State */
+.btn.loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  border-color: #ffffff transparent #ffffff transparent;
+  animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

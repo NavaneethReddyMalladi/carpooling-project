@@ -1,33 +1,63 @@
 <div class="main-container">
-<div class="container">
-  <div class="form-box">
-    <h2>Welcome Back</h2>
-    <p class="subtitle">Login to your 
-      <span style="color: rgba(0, 204, 255, 0.959);">CarConnect</span> account
-    </p>
-
-    <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-      <div class="input-group">
-        <label>Email</label>
-        <input type="email" name="email" [(ngModel)]="email" required />
-      </div>
-
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" name="password" [(ngModel)]="password" required />
-      </div>
-
-      <button type="submit" class="btn">Login</button>
-
-      <p class="register-link">
-        Don't have an account?  
-        <a routerLink="/register">Sign up</a>
+  <div class="container">
+    <div class="form-box">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Login to your 
+        <span style="color: rgba(0, 204, 255, 0.959);">CarConnect</span> account
       </p>
-    </form>
-  </div>
 
-  <div class="image-box">
-    <img src="login_image.webp" alt="Car Pool" />
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <!-- Error Message Display -->
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <div class="input-group">
+          <label>Email</label>
+          <input 
+            type="email" 
+            name="email" 
+            [(ngModel)]="email" 
+            required 
+            [class.error-input]="errorMessage"
+          />
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <input 
+            type="password" 
+            name="password" 
+            [(ngModel)]="password" 
+            required 
+            [class.error-input]="errorMessage"
+          />
+        </div>
+
+        <!-- Forgot Password Link -->
+        <div class="forgot-password">
+          <a href="#" (click)="onForgotPassword(); $event.preventDefault()">
+            Forgot Password?
+          </a>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn" 
+          [disabled]="isLoading || !loginForm.valid"
+        >
+          {{ isLoading ? 'Logging in...' : 'Login' }}
+        </button>
+
+        <p class="register-link">
+          Don't have an account?  
+          <a routerLink="/register">Sign up</a>
+        </p>
+      </form>
+    </div>
+
+    <div class="image-box">
+      <img src="login_image.webp" alt="Car Pool" />
+    </div>
   </div>
-</div>
 </div>
