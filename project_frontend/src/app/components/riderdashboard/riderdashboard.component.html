@@ -11,7 +11,7 @@
             <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
         </div>
         <div class="header-actions">
-            <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button>
+            <!-- <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button> -->
             <button class="header-btn" (click)="openChat()">Chat</button>
             <button class="header-btn" (click)="logout()">Logout</button>
             <div class="profile-section" (click)="toggleProfileMenu()">
@@ -248,7 +248,7 @@
                 <option value="">Select Destination</option>
                 <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
             </select>
-            <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest">Search</button>
+            <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest"  style="color: white; border-radius: 10px;">Search</button>
         </div>
 
         <div *ngIf="isLoading" class="loading">Searching for rides…</div>
@@ -293,3 +293,6 @@
         <div *ngIf="message" class="message" [ngClass]="messageType">{{ message }}</div>
     </div>
 </div>
+
+
+
