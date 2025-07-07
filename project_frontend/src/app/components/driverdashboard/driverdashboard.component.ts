@@ -173,7 +173,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
         this.driverDetails.driver_id = driver.driver_id || driverId;
         this.driverDetails.driver_name = driver.user_name;
         this.driverDetails.gender = driver.gender;
-        this.driverDetails.phone = driver.phone || 'Not provided';
+        this.driverDetails.phone = driver.phone_number || 'Not provided';
         this.driverDetails.email = driver.email || 'Not provided';
         this.driverDetails.status = driver.status || 'offline';
         this.isOnline = this.driverDetails.status === 'online';
@@ -381,7 +381,7 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
   }
 
 
-  // FIXED: Load ride requests for the driver using only the working endpoint
+// Load ride requests for the driver using only the working endpoint
 loadRideRequests() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -450,7 +450,7 @@ loadRideRequests() {
     }
   });
 }
-  // FIXED: Start polling for ride requests
+// Start polling for ride requests
   startRequestPolling() {
     console.log('Starting request polling...'); // Debug log
     this.stopRequestPolling(); // Stop any existing polling
@@ -474,7 +474,7 @@ loadRideRequests() {
     if (!confirm('Accept this ride request?')) return;
 
     const token = localStorage.getItem('token');
-    this.http.patch(`http://127.0.0.1:42099/ride-requests/${requestId}`, 
+    this.http.patch(`http://127.0.0.1:42099/ride-requests/${requestId}`,
       { status: 'Accepted' },
       { headers: { Authorization: `Bearer ${token}` } }
     ).subscribe({
@@ -564,7 +564,7 @@ loadRideRequests() {
       this.isLoading = false;
       return;
     }
-  
+    
     if (this.ride.origin_stop_id === this.ride.destination_stop_id) {
       this.error = 'Origin and destination cannot be the same.';
       this.isLoading = false;
@@ -684,7 +684,7 @@ loadRideRequests() {
     this.showProfileMenu = !this.showProfileMenu;
   }
 
-  // FIXED: online/offline toggle with proper polling management
+  //  online/offline toggle with proper polling management
   toggleOnlineStatus() {
     const newStatus = !this.isOnline;
     const token = localStorage.getItem('token');
@@ -767,9 +767,10 @@ loadRideRequests() {
   }
 
   viewProfile() {
-    this.setActiveTab('profile');
-    this.showProfileMenu = false;
+    // this.setActiveTab('profile');
+    // this.showProfileMenu = false;
   }
+
   
 
   logout() {

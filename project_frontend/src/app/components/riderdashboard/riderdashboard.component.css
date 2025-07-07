@@ -67,16 +67,25 @@ body {
   background: #333333;
 }
 
+.logo-sec{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+
+}
+
 .logo {
-  width: 40px;
+  width: 130px;
   height: 40px;
   border-radius: 50%;
 }
 
 .welcome-text {
   font-size: 1.2rem;
-  font-weight: 500;
-  color: #000000;
+  font-weight: bold;
+  color: #ec120b81;
 }
 
 .header-actions {
@@ -590,6 +599,10 @@ body {
   justify-content: center;
   z-index: 1001;
   animation: fadeIn 0.3s ease-out;
+}
+
+.search-btn{
+  width: 100px;
 }
 
 @keyframes fadeIn {

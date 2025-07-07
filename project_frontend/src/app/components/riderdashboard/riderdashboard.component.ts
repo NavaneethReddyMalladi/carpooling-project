@@ -27,7 +27,7 @@ interface RiderDetails {
   rider_id: string;
   rider_name: string;
   email: string;
-  phone: string;
+  phone_number: string;
   gender: string;
   is_verified: boolean;
   role_id: string;
@@ -99,7 +99,7 @@ export class RiderDashboardComponent implements OnInit {
     rider_id: '',
     rider_name: '',
     email: '',
-    phone: '',
+    phone_number: '',
     gender: '',
     is_verified: false,
     role_id: '',
@@ -159,9 +159,10 @@ export class RiderDashboardComponent implements OnInit {
         this.riderDetails.rider_id = rider.user_id;
         this.riderDetails.rider_name = rider.user_name || rider.name || 'Unknown User';
         this.riderDetails.gender = rider.gender || 'Not specified';
-        this.riderDetails.phone = rider.phone || '';
+        this.riderDetails.phone_number = rider.phone_number || '';
         this.riderDetails.start_stop_id = rider.start_stop_id || '';
         this.riderDetails.destination_stop_id = rider.destination_stop_id || '';
+        this.riderDetails.email=rider.email
       },
       error: (err) => {
         console.error('Failed to load rider info:', err);
@@ -564,7 +565,7 @@ export class RiderDashboardComponent implements OnInit {
           rider_id: data.user_id,
           rider_name: data.user_name || '',
           email: data.email || '',
-          phone: data.phone_number || '',
+          phone_number: data.phone_number || '',
           gender: data.gender || '',
           is_verified: data.is_verified || false,
           role_id: data.role_id || '',

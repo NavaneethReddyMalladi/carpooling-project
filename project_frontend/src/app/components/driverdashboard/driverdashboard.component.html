@@ -48,21 +48,21 @@
         class="menu-item" 
         [class.active]="activeTab === 'dashboard'"
         (click)="setActiveTab('dashboard')">
-        <span class="icon">📊</span>
+        <span class="icon"><i class="fa-solid fa-house"></i></span>
         Dashboard
       </button>
       <button 
         class="menu-item" 
         [class.active]="activeTab === 'create-ride'"
         (click)="setActiveTab('create-ride')">
-        <span class="icon">➕</span>
+        <span class="icon"><i class="fa-solid fa-plus"></i></span>
         Create Ride
       </button>
       <button 
         class="menu-item" 
         [class.active]="activeTab === 'rides'"
         (click)="setActiveTab('rides')">
-        <span class="icon">🚗</span>
+        <span class="icon"><i class="fa-solid fa-car"></i></span>
         My Rides
         <span class="badge" *ngIf="activeRides.length > 0">{{ activeRides.length }}</span>
       </button>
@@ -72,7 +72,7 @@
 class="menu-item" 
 [class.active]="activeTab === 'requests'"
 (click)="setActiveTab('requests')">
-<span class="icon">📋</span>
+<span class="icon"><i class="fa-solid fa-code-pull-request"></i></span>
 Ride Requests
 <span class="badge" *ngIf="pendingRequests.length > 0">{{ pendingRequests.length }}</span>
 </button>
@@ -81,7 +81,7 @@ Ride Requests
         class="menu-item" 
         [class.active]="activeTab === 'profile'"
         (click)="setActiveTab('profile')">
-        <span class="icon">👤</span>
+        <span class="icon"><i class="fa-solid fa-user"></i></span>
         Profile
       </button>
     </div>
@@ -91,17 +91,17 @@ Ride Requests
   <div class="main-content">
     <!-- Success/Error Messages -->
     <div class="message success" *ngIf="message">
-      <span class="icon">✅</span>
+      <span class="icon"><i class="fa-solid fa-circle-check"></i></span>
       {{ message }}
     </div>
     <div class="message error" *ngIf="error">
-      <span class="icon">❌</span>
+      <span class="icon"><i class="fa-solid fa-circle-xmark"></i></span>
       {{ error }}
     </div>
     <div class="request-notification" *ngIf="showRequestNotification">
-      <span class="icon">🔔</span>
+      <span class="icon"><i class="fa-solid fa-bell"></i></span>
       You have {{ newRequestsCount }} new ride request(s)!
-      <button class="close-btn" (click)="showRequestNotification = false">×</button>
+      <button class="close-btn" (click)="showRequestNotification = false"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <!-- Dashboard Tab -->
@@ -114,7 +114,7 @@ Ride Requests
       <!-- Stats Cards -->
       <div class="stats-grid">
         <div class="stat-card earnings">
-          <div class="stat-icon">💰</div>
+          <div class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></div>
           <div class="stat-info">
             <h3>₹{{ dashboardStats.todayEarnings }}</h3>
             <p>Today's Earnings</p>
@@ -122,7 +122,7 @@ Ride Requests
         </div>
         
         <div class="stat-card rides">
-          <div class="stat-icon">🚗</div>
+          <div class="stat-icon"><i class="fa-solid fa-car"></i></div>
           <div class="stat-info">
             <h3>{{ dashboardStats.totalRides }}</h3>
             <p>Total Rides</p>
@@ -130,7 +130,7 @@ Ride Requests
         </div>
         
         <div class="stat-card rating">
-          <div class="stat-icon">⭐</div>
+          <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
           <div class="stat-info">
             <h3>{{ dashboardStats.rating.toFixed(1) }}</h3>
             <p>Average Rating</p>
@@ -138,7 +138,8 @@ Ride Requests
         </div>
         
         <div class="stat-card active">
-          <div class="stat-icon">🔄</div>
+          <div class="stat-icon"><i class="fa-solid fa-toggle-on"></i></div>
+          
           <div class="stat-info">
             <h3>{{ dashboardStats.activeRides }}</h3>
             <p>Active Rides</p>

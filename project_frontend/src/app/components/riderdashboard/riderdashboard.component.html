@@ -7,8 +7,10 @@
                 <div class="hamburger-line"></div>
                 <div class="hamburger-line"></div>
             </button>
+            <div class="logo-sec">
             <img src="logo.png" alt="Logo" class="logo">
             <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
+            </div>
         </div>
         <div class="header-actions">
             <!-- <button class="header-btn" (click)="router.navigate(['/publish'])">Publish a ride</button> -->
@@ -32,7 +34,7 @@
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Phone:</span>
-                            <span class="detail-value">+91{{ riderDetails.phone || 'Not provided' }}</span>
+                            <span class="detail-value">+91{{ riderDetails.phone_number || 'Not provided' }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-label">Gender:</span>
@@ -64,42 +66,42 @@
             <div class="sidebar-user-info">
                 <h3>{{ riderDetails.rider_name || 'User' }}</h3>
                 <p>{{ riderDetails.email || 'No email provided' }}</p>
-                <p>+91{{ riderDetails.phone || '9908245918' }}</p>
+                <p>+91{{ riderDetails.phone_number || '9908245918' }}</p>
             </div>
         </div>
     </div>
     
     <div class="sidebar-menu">
         <div class="sidebar-menu-item" (click)="manageAccount()">
-            <span class="sidebar-icon">👤</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-user"></i></span>
             <span>Manage Account</span>
         </div>
         <div class="sidebar-menu-item" (click)="viewRides()">
-            <span class="sidebar-icon">🚗</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-car"></i></span>
             <span>My Rides</span>
         </div>
         <div class="sidebar-menu-item" (click)="openHelp()">
-            <span class="sidebar-icon">🛟</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-circle-info"></i></span>
             <span>Help</span>
         </div>
         <div class="sidebar-menu-item" (click)="openWallet()">
-            <span class="sidebar-icon">💳</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-wallet"></i></span>
             <span>Wallet</span>
         </div>
         <div class="sidebar-menu-item" (click)="openActivity()">
-            <span class="sidebar-icon">📋</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-chart-line"></i></span>
             <span>Activity</span>
         </div>
-        <div class="sidebar-menu-item" (click)="openSupport()">
+        <!-- <div class="sidebar-menu-item" (click)="openSupport()">
             <span class="sidebar-icon">❓</span>
             <span>Support</span>
-        </div>
+        </div> -->
         <div class="sidebar-menu-item" (click)="openTermsConditions()">
-            <span class="sidebar-icon">📄</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-book"></i></span>
             <span>Terms & Conditions</span>
         </div>
         <div class="sidebar-menu-item" (click)="logout()">
-            <span class="sidebar-icon">🚪</span>
+            <span class="sidebar-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
             <span>Logout</span>
         </div>
     </div>
@@ -205,7 +207,7 @@
                     <input type="email" [(ngModel)]="riderDetails.email" name="email" required>
                 </label>
                 <label>Phone: 
-                    <input type="tel" [(ngModel)]="riderDetails.phone" name="phone" required>
+                    <input type="tel" [(ngModel)]="riderDetails.phone_number" name="phone" required>
                 </label>
                 <label>Gender: 
                     <select [(ngModel)]="riderDetails.gender" name="gender">
@@ -214,7 +216,7 @@
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
                         <option value="Not specified">Not specified</option>
-                    </select>
+                    </select>  
                 </label>
                 <div>
                     <button type="submit" class="btn">Save</button>
@@ -225,7 +227,7 @@
             <div *ngIf="!isEditingProfile" class="profile-info">
                 <p><strong>Name:</strong> {{ riderDetails.rider_name || 'Not provided' }}</p>
                 <p><strong>Email:</strong> {{ riderDetails.email || 'Not provided' }}</p>
-                <p><strong>Phone:</strong> +91{{ riderDetails.phone || 'Not provided' }}</p>
+                <p><strong>Phone:</strong> +91{{ riderDetails.phone_number || 'Not provided' }}</p>
                 <p><strong>Gender:</strong> {{ riderDetails.gender || 'Not specified' }}</p>
                 <p><strong>Account Status:</strong> {{ riderDetails.is_verified ? 'Verified' : 'Not Verified' }}</p>
                 <p><strong>Member Since:</strong> {{ formatDateTime(riderDetails.create_datetime) }}</p>
@@ -248,7 +250,7 @@
                 <option value="">Select Destination</option>
                 <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
             </select>
-            <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest"  style="color: white; border-radius: 10px;">Search</button>
+            <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest" class="search-btn"  style="color: white; border-radius: 10px;">Search</button>
         </div>
 
         <div *ngIf="isLoading" class="loading">Searching for rides…</div>
@@ -281,7 +283,7 @@
                 <h4>Your Details</h4>
                 <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
                 <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
-                <p><strong>Phone:</strong> +91{{ riderDetails.phone }}</p>
+                <p><strong>Phone:</strong> +91{{ riderDetails.phone_number }}</p>
 
                 <button (click)="confirmBooking()" [disabled]="isBooking">
                     {{ isBooking ? 'Booking…' : 'Confirm' }}

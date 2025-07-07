@@ -53,3 +53,11 @@ def get_requests_by_rider(rider_id):
 @ride_requests_bp.route('/ride-requests/driver/<int:driver_id>', methods=['GET'])
 def get_requests_by_driver(driver_id):
     return get_ride_requests_by_driver(driver_id)
+
+
+
+@ride_requests_bp.route('/ride-requests/<int:request_id>', methods=['PATCH'])
+def patch_request(request_id):
+    data = request.get_json()
+    # if you want to allow both PUT *and* PATCH to hit the same code:
+    return update_ride_request(request_id, data)
