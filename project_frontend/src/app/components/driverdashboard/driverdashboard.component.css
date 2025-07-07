@@ -810,3 +810,352 @@ input:checked + .slider:before {
   from { transform: translateX(-100%); }
   to { transform: translateX(0); }
 }
+
+
+/* Requests Section */
+.requests-section {
+  margin-top: 20px;
+}
+
+/* Tabs Styling */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.tab {
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px 8px 0 0;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.tab:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.tab.active {
+  background: #333;
+  color: white;
+  border-bottom: 2px solid #333;
+}
+
+.tab .badge {
+  background: #666;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.tab.active .badge {
+  background: white;
+  color: #333;
+}
+
+/* Requests List */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Request Card Styling */
+.request-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.request-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: #ccc;
+}
+
+/* Status-based card styling */
+.request-card.pending {
+  border-left: 4px solid #666;
+}
+
+.request-card.accepted {
+  border-left: 4px solid #333;
+}
+
+.request-card.rejected {
+  border-left: 4px solid #999;
+}
+
+.request-card.completed {
+  border-left: 4px solid #000;
+}
+
+/* Request Header */
+.request-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.rider-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rider-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  border: 2px solid #e0e0e0;
+}
+
+.rider-details h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.rider-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.stars {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Request Status Badge */
+.request-status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.request-status.pending {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.request-status.accepted {
+  background: #333;
+  color: white;
+  border: 1px solid #333;
+}
+
+.request-status.rejected {
+  background: white;
+  color: #666;
+  border: 1px solid #999;
+}
+
+.request-status.completed {
+  background: #000;
+  color: white;
+  border: 1px solid #000;
+}
+
+/* Request Details */
+.request-details {
+  margin-bottom: 16px;
+}
+
+.ride-info {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.origin {
+  color: #333;
+  font-weight: 600;
+}
+
+.arrow {
+  color: #666;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.destination {
+  color: #333;
+  font-weight: 600;
+}
+
+.departure-time, .available-seats {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.request-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8f8f8;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.request-time .label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.request-time .value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Request Actions */
+.request-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  flex: 1;
+  text-align: center;
+}
+
+.btn-success {
+  background: #333;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #000;
+  border-color: #000;
+}
+
+.btn-danger {
+  background: white;
+  color: #333;
+  border: 2px solid #999;
+}
+
+.btn-danger:hover {
+  background: #f5f5f5;
+  border-color: #666;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+  color: #666;
+}
+
+.empty-state h3 {
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .request-card {
+    padding: 16px;
+  }
+  
+  .request-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .rider-info {
+    width: 100%;
+  }
+  
+  .request-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    flex: none;
+  }
+  
+  .route {
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+  
+  .arrow {
+    transform: rotate(90deg);
+  }
+}

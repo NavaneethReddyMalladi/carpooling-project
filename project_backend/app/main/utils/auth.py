@@ -83,7 +83,7 @@ def register():
         return jsonify({"message": "Database Error"}), 500
 
     except Exception as e:
-        print("❌ DATABASE ERROR:", e)
+        print(" DATABASE ERROR:", e)
         return jsonify({"message": "Internal Server Error"}), 500
 
 @auth_bp.route('/login', methods=['POST'])

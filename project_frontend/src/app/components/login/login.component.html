@@ -1,6 +1,20 @@
 <div class="main-container">
   <div class="container">
     <div class="form-box">
+      <!-- Back Button -->
+      <!-- <div class="back-button-container">
+        <button 
+          type="button" 
+          class="back-button" 
+          (click)="goToHome()"
+          title="Go to Home"
+        >
+          <span class="back-icon">←</span>
+          Back to Home
+        </button>
+      </div> -->
+      <!-- <img src="logo.png" alt="CarConnect" class="logo-img"> -->
+
       <h2>Welcome Back</h2>
       <p class="subtitle">Login to your 
         <span style="color: rgba(0, 204, 255, 0.959);">CarConnect</span> account
@@ -54,6 +68,17 @@
           <a routerLink="/register">Sign up</a>
         </p>
       </form>
+      <div class="back-button-container">
+        <button 
+          type="button" 
+          class="back-button" 
+          (click)="goToHome()"
+          title="Go to Home"
+        >
+          <span class="back-icon">←</span>
+          Back to Home
+        </button>
+      </div>
     </div>
 
     <div class="image-box">
