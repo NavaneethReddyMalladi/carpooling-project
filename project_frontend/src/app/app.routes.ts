@@ -4,7 +4,7 @@ import { RegistrationComponent } from './components/registration/registration.co
 import { HomeComponent } from './components/home/home.component';
 import { RiderDashboardComponent } from './components/riderdashboard/riderdashboard.component';
 import { DriverDashboardComponent } from './components/driverdashboard/driverdashboard.component';
-import { DriverProfileComponent } from './components/driverprofile/driverprofile.component';
+// import { DriverProfileComponent } from './components/driverprofile/driverprofile.component';
 
 
 
@@ -22,12 +22,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard, RoleGuard],
     data: { expectedRole: 'Driver' }
   },
-  {
-    path: 'driver/profile',
-    component: DriverProfileComponent,
-    canActivate: [AuthGuard, RoleGuard],
-    data: { expectedRole: 'Driver' }
-  },
+  // {
+  //   path: 'driver/profile',
+  //   component: DriverProfileComponent,
+  //   canActivate: [AuthGuard, RoleGuard],
+  //   data: { expectedRole: 'Driver' }
+  // },
   {
     path: 'rider',
     component: RiderDashboardComponent,
