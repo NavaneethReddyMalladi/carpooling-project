@@ -1,0 +1,354 @@
+/* Rider Sidebar Component - Minimal Styles */
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1001;
+  }
+  
+  .sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* Sidebar Container */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100%;
+    background: #ffffff;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1002;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    border-right: 1px solid #e0e0e0;
+  }
+  
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  
+  /* Sidebar Header */
+  .sidebar-header {
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .sidebar-avatar {
+    width: 50px;
+    height: 50px;
+    background: #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #ffffff;
+    flex-shrink: 0;
+  }
+  
+  .sidebar-user-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .sidebar-user-info h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.25rem 0;
+    color: #000000;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .sidebar-user-info p {
+    font-size: 0.85rem;
+    margin: 0.1rem 0;
+    color: #666666;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* Sidebar Menu */
+  .sidebar-menu {
+    padding: 0.5rem 0;
+  }
+  
+  .sidebar-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    gap: 1rem;
+    font-size: 0.95rem;
+    color: #000000;
+    text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .sidebar-menu-item:hover {
+    background: #f8f9fa;
+  }
+  
+  .sidebar-menu-item:last-child {
+    border-bottom: none;
+    color: #dc3545;
+  }
+  
+  .sidebar-menu-item:last-child:hover {
+    background: #fff5f5;
+  }
+  
+  .sidebar-icon {
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  
+  .sidebar-icon i {
+    font-size: 1rem;
+    color: #666666;
+  }
+  
+  .sidebar-menu-item:last-child .sidebar-icon i {
+    color: #dc3545;
+  }
+  
+  .sidebar-menu-item span:last-child {
+    font-weight: 500;
+  }
+  
+  /* Active Menu Item */
+  .sidebar-menu-item.active {
+    background: #f8f9fa;
+    color: #000000;
+    border-left: 3px solid #000000;
+  }
+  
+  .sidebar-menu-item.active .sidebar-icon i {
+    color: #000000;
+  }
+  
+  /* Scrollbar Styling */
+  .sidebar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+  
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 260px;
+    }
+  
+    .sidebar-header {
+      padding: 1.25rem;
+    }
+  
+    .sidebar-avatar {
+      width: 45px;
+      height: 45px;
+      font-size: 1.1rem;
+    }
+  
+    .sidebar-user-info h3 {
+      font-size: 1rem;
+    }
+  
+    .sidebar-user-info p {
+      font-size: 0.8rem;
+    }
+  
+    .sidebar-menu-item {
+      padding: 0.875rem 1.25rem;
+      font-size: 0.9rem;
+    }
+  
+    .sidebar-icon {
+      width: 18px;
+    }
+  
+    .sidebar-icon i {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sidebar {
+      width: 240px;
+    }
+  
+    .sidebar-header {
+      padding: 1rem;
+    }
+  
+    .sidebar-profile {
+      gap: 0.75rem;
+    }
+  
+    .sidebar-avatar {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+    }
+  
+    .sidebar-user-info h3 {
+      font-size: 0.95rem;
+    }
+  
+    .sidebar-user-info p {
+      font-size: 0.75rem;
+    }
+  
+    .sidebar-menu-item {
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      gap: 0.75rem;
+    }
+  
+    .sidebar-icon {
+      width: 16px;
+    }
+  
+    .sidebar-icon i {
+      font-size: 0.85rem;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .sidebar {
+      width: 220px;
+    }
+  
+    .sidebar-header {
+      padding: 0.75rem;
+    }
+  
+    .sidebar-profile {
+      gap: 0.5rem;
+    }
+  
+    .sidebar-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 0.9rem;
+    }
+  
+    .sidebar-user-info h3 {
+      font-size: 0.9rem;
+    }
+  
+    .sidebar-user-info p {
+      font-size: 0.7rem;
+    }
+  
+    .sidebar-menu-item {
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      gap: 0.6rem;
+    }
+  
+    .sidebar-icon {
+      width: 14px;
+    }
+  
+    .sidebar-icon i {
+      font-size: 0.8rem;
+    }
+  }
+  
+  /* Focus States for Accessibility */
+  .sidebar-menu-item:focus {
+    outline: 2px solid #000000;
+    outline-offset: -2px;
+  }
+  
+  /* Animation for Better UX */
+  @keyframes slideIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  
+  .sidebar.show {
+    animation: slideIn 0.3s ease-out;
+  }
+  
+  /* Print Styles */
+  @media print {
+    .sidebar,
+    .sidebar-overlay {
+      display: none;
+    }
+  }
+
+  .sidebar.always-visible {
+    width: 250px;
+    background-color: #fff;
+    border-right: 1px solid #ccc;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    overflow-y: auto;
+    padding: 20px 10px;
+  }
+  
+  .sidebar-header {
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .sidebar-menu-item:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .sidebar-icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+  

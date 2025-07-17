@@ -1,0 +1,52 @@
+<!-- Search & Rides Section -->
+<h1 class="dashboard-title">Find a Ride</h1>
+<div class="search-section">
+    <select [(ngModel)]="selectedSource" (change)="onSourceChange()">
+        <option value="">Select Source</option>
+        <option *ngFor="let s of sourceStops" [value]="s.id">{{ s.name }}</option>
+    </select>
+    <select [(ngModel)]="selectedDest" [disabled]="!selectedSource">
+        <option value="">Select Destination</option>
+        <option *ngFor="let s of destStops" [value]="s.id">{{ s.name }}</option>
+    </select>
+    <button (click)="searchRides()" [disabled]="!selectedSource || !selectedDest" class="search-btn" style="color: white; border-radius: 10px;">Search</button>
+</div>
+
+<div *ngIf="isLoading" class="loading">Searching for rides…</div>
+
+<ul *ngIf="rides && rides.length > 0" class="ride-list">
+    <li *ngFor="let r of rides" class="ride-card">
+        <p><strong>Driver:</strong> {{ r.driver_name }}</p>
+        <p><strong>Route:</strong> {{ getStopName(r.origin_stop_id) }} → {{ getStopName(r.destination_stop_id) }}</p>
+        <p><strong>Departure:</strong> {{ formatDateTime(r.departure_time) }}</p>
+        <p><strong>Seats:</strong> {{ r.available_seats || r.seats }}</p>
+        <p *ngIf="r.price"><strong>Price:</strong> ₹{{ r.price }}</p>
+        <button (click)="bookRide(r)">Book</button>
+    </li>
+</ul>
+
+<p *ngIf="!isLoading && (!rides?.length)" style="text-align: center; padding: 3rem; color: #666; font-size: 1.1rem;">
+    No rides found. Try changing stops.
+</p>
+
+<!-- Booking Confirmation Modal -->
+<div class="modal-overlay" *ngIf="selectedRide">
+    <div class="modal">
+        <h3>Confirm Booking</h3>
+        <p><strong>Driver:</strong> {{ selectedRide.driver_name }}</p>
+        <p><strong>Route:</strong> {{ getStopName(selectedRide.origin_stop_id) }} → {{ getStopName(selectedRide.destination_stop_id) }}</p>
+        <p><strong>Departure:</strong> {{ formatDateTime(selectedRide.departure_time) }}</p>
+        <p><strong>Seats:</strong> {{ selectedRide.available_seats || selectedRide.seats }}</p>
+        <p *ngIf="selectedRide.price"><strong>Price:</strong> ₹{{ selectedRide.price }}</p>
+
+        <h4>Your Details</h4>
+        <p><strong>Name:</strong> {{ riderDetails.rider_name }}</p>
+        <p><strong>Gender:</strong> {{ riderDetails.gender }}</p>
+        <p><strong>Phone:</strong> +91{{ riderDetails.phone_number }}</p>
+
+        <button (click)="confirmBooking()" [disabled]="isBooking">
+            {{ isBooking ? 'Booking…' : 'Confirm' }}
+        </button>
+        <button (click)="closeBookingModal()">Cancel</button>
+    </div>
+</div>

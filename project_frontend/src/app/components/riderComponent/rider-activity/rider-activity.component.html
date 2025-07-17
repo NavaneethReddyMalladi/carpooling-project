@@ -1,0 +1,137 @@
+<!-- Activity Section -->
+<div class="activity-container">
+    <div class="section-header">
+        <h2>Activity</h2>
+        <button class="back-btn" routerLink="/rider">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </button>
+    </div>
+
+    <div class="activity-content">
+        <!-- Activity Stats -->
+        <div class="activity-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-car"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ totalRides }}</h3>
+                    <p>Total Rides</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-money-bill"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>₹{{ totalSpent | number:'1.2-2' }}</h3>
+                    <p>Total Spent</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ averageRating | number:'1.1-1' }}</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ totalTravelTime }}</h3>
+                    <p>Travel Time</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="activity-timeline">
+            <h3>Recent Activity</h3>
+            <div class="timeline-filters">
+                <button 
+                    class="filter-btn" 
+                    [class.active]="selectedTimeFilter === 'week'"
+                    (click)="setTimeFilter('week')">
+                    This Week
+                </button>
+                <button 
+                    class="filter-btn" 
+                    [class.active]="selectedTimeFilter === 'month'"
+                    (click)="setTimeFilter('month')">
+                    This Month
+                </button>
+                <button 
+                    class="filter-btn" 
+                    [class.active]="selectedTimeFilter === 'all'"
+                    (click)="setTimeFilter('all')">
+                    All Time
+                </button>
+            </div>
+
+            <div class="timeline" *ngIf="filteredActivities.length > 0">
+                <div *ngFor="let activity of filteredActivities" class="timeline-item">
+                    <div class="timeline-marker" [class]="activity.type">
+                        <i [class]="getActivityIcon(activity.type)"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="activity-header">
+                            <h4>{{ activity.title }}</h4>
+                            <span class="activity-time">{{ formatRelativeTime(activity.timestamp) }}</span>
+                        </div>
+                        <p class="activity-description">{{ activity.description }}</p>
+                        <div class="activity-details" *ngIf="activity.details">
+                            <span *ngFor="let detail of activity.details" class="detail-tag">{{ detail }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="filteredActivities.length === 0" class="empty-activity">
+                <div class="empty-icon">📈</div>
+                <h3>No Activity</h3>
+                <p>Your activity for the selected period will appear here.</p>
+            </div>
+        </div>
+
+        <!-- Monthly Summary -->
+        <div class="monthly-summary">
+            <h3>This Month's Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Rides Taken</div>
+                    <div class="summary-value">{{ monthlyStats.ridesCount }}</div>
+                    <div class="summary-change" [class.positive]="monthlyStats.ridesChange > 0" [class.negative]="monthlyStats.ridesChange < 0">
+                        {{ monthlyStats.ridesChange > 0 ? '+' : '' }}{{ monthlyStats.ridesChange }}%
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Money Spent</div>
+                    <div class="summary-value">₹{{ monthlyStats.amountSpent | number:'1.2-2' }}</div>
+                    <div class="summary-change" [class.positive]="monthlyStats.spentChange < 0" [class.negative]="monthlyStats.spentChange > 0">
+                        {{ monthlyStats.spentChange > 0 ? '+' : '' }}{{ monthlyStats.spentChange }}%
+                    </div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Favorite Route</div>
+                    <div class="summary-value">{{ monthlyStats.favoriteRoute }}</div>
+                    <div class="summary-change">{{ monthlyStats.favoriteRouteCount }} times</div>
+                </div>
+
+                <div class="summary-item">
+                    <div class="summary-label">Carbon Saved</div>
+                    <div class="summary-value">{{ monthlyStats.carbonSaved }} kg</div>
+                    <div class="summary-change positive">🌱 Eco-friendly</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

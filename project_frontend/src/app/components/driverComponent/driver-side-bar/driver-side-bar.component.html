@@ -1,0 +1,41 @@
+<div class="sidebar">
+  <div class="sidebar-menu">
+    <button 
+      class="menu-item" 
+      [class.active]="isActiveRoute('/driver')"
+      routerLink="/driver">
+      <span class="icon"><i class="fa-solid fa-house"></i></span>
+      Dashboard
+    </button>
+    <button 
+      class="menu-item" 
+      [class.active]="isActiveRoute('/driver/create-ride')"
+      routerLink="/driver/create-ride">
+      <span class="icon"><i class="fa-solid fa-plus"></i></span>
+      Create Ride
+    </button>
+    <button 
+      class="menu-item" 
+      [class.active]="isActiveRoute('/driver/myrides')"
+      routerLink="/driver/myrides">
+      <span class="icon"><i class="fa-solid fa-car"></i></span>
+      My Rides
+      <span class="badge" *ngIf="getActiveRidesCount() > 0">{{ getActiveRidesCount() }}</span>
+    </button>
+    <button 
+      class="menu-item" 
+      [class.active]="isActiveRoute('/driver/requests')"
+      routerLink="/driver/requests">
+      <span class="icon"><i class="fa-solid fa-code-pull-request"></i></span>
+      Ride Requests
+      <span class="badge" *ngIf="getPendingRequestsCount() > 0">{{ getPendingRequestsCount() }}</span>
+    </button>
+    <button 
+      class="menu-item" 
+      [class.active]="isActiveRoute('/driver/profile')"
+      routerLink="/driver/profile">
+      <span class="icon"><i class="fa-solid fa-user"></i></span>
+      Profile
+    </button>
+  </div>
+</div>

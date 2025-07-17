@@ -1,0 +1,49 @@
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" [class.show]="isSidebarOpen" (click)="closeSidebar()"></div>
+
+<!-- Sidebar Menu -->
+<div class="sidebar" [class.show]="isSidebarOpen">
+    <div class="sidebar-header">
+        <div class="sidebar-profile">
+            <div class="sidebar-avatar">
+                <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
+            </div>
+            <div class="sidebar-user-info">
+                <h3>{{ riderDetails.rider_name || 'User' }}</h3>
+                <p>{{ riderDetails.email || 'No email provided' }}</p>
+                <p>+91{{ riderDetails.phone_number || '9908245918' }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <div class="sidebar-menu-item" routerLink="/rider/profile" (click)="onMenuItemClick('profile')">
+            <span class="sidebar-icon"><i class="fa-solid fa-user"></i></span>
+            <span>Manage Account</span>
+        </div>
+        <div class="sidebar-menu-item" routerLink="/rider/myrides" (click)="onMenuItemClick('myrides')">
+            <span class="sidebar-icon"><i class="fa-solid fa-car"></i></span>
+            <span>My Rides</span>
+        </div>
+        <div class="sidebar-menu-item" routerLink="/rider/help" (click)="onMenuItemClick('help')">
+            <span class="sidebar-icon"><i class="fa-solid fa-circle-info"></i></span>
+            <span>Help</span>
+        </div>
+        <div class="sidebar-menu-item" routerLink="/rider/wallet" (click)="onMenuItemClick('wallet')">
+            <span class="sidebar-icon"><i class="fa-solid fa-wallet"></i></span>
+            <span>Wallet</span>
+        </div>
+        <div class="sidebar-menu-item" routerLink="/rider/activity" (click)="onMenuItemClick('activity')">
+            <span class="sidebar-icon"><i class="fa-solid fa-chart-line"></i></span>
+            <span>Activity</span>
+        </div>
+        <div class="sidebar-menu-item" routerLink="/rider/terms" (click)="onMenuItemClick('terms')">
+            <span class="sidebar-icon"><i class="fa-solid fa-book"></i></span>
+            <span>Terms & Conditions</span>
+        </div>
+        <div class="sidebar-menu-item" (click)="onMenuItemClick('logout')">
+            <span class="sidebar-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+            <span>Logout</span>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+<!-- My Rides Section -->
+<div class="my-rides-container">
+    <div class="section-header">
+        <h2>My Rides</h2>
+        <button class="back-btn" routerLink="/rider">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </button>
+    </div>
+
+    <!-- Rides Tabs -->
+    <div class="rides-tabs">
+        <button 
+            class="tab-btn" 
+            [class.active]="activeTab === 'upcoming'"
+            (click)="setActiveTab('upcoming')">
+            Upcoming Rides
+            <span class="badge" *ngIf="upcomingRides.length > 0">{{ upcomingRides.length }}</span>
+        </button>
+        <button 
+            class="tab-btn" 
+            [class.active]="activeTab === 'completed'"
+            (click)="setActiveTab('completed')">
+            Completed Rides
+            <span class="badge" *ngIf="completedRides.length > 0">{{ completedRides.length }}</span>
+        </button>
+        <button 
+            class="tab-btn" 
+            [class.active]="activeTab === 'cancelled'"
+            (click)="setActiveTab('cancelled')">
+            Cancelled Rides
+            <span class="badge" *ngIf="cancelledRides.length > 0">{{ cancelledRides.length }}</span>
+        </button>
+    </div>
+
+    <!-- Upcoming Rides -->
+    <div *ngIf="activeTab === 'upcoming'" class="rides-content">
+        <div *ngIf="upcomingRides.length > 0" class="rides-list">
+            <div *ngFor="let ride of upcomingRides" class="ride-card upcoming">
+                <div class="ride-header">
+                    <div class="ride-status upcoming">Upcoming</div>
+                    <div class="ride-date">{{ formatDateTime(ride.departure_time) }}</div>
+                </div>
+                <div class="ride-details">
+                    <p><strong>Driver:</strong> {{ ride.driver_name }}</p>
+                    <p><strong>Route:</strong> {{ getStopName(ride.origin_stop_id) }} → {{ getStopName(ride.destination_stop_id) }}</p>
+                    <p><strong>Seats Booked:</strong> {{ ride.seats_booked || 1 }}</p>
+                    <p *ngIf="ride.price"><strong>Amount:</strong> ₹{{ ride.price }}</p>
+                    <p><strong>Booking ID:</strong> #{{ ride.booking_id || ride.id }}</p>
+                </div>
+                <div class="ride-actions">
+                    <button class="btn contact-btn" (click)="contactDriver(ride)">Contact Driver</button>
+                    <button class="btn cancel-btn" (click)="cancelRide(ride)">Cancel Ride</button>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="upcomingRides.length === 0" class="empty-state">
+            <div class="empty-icon">🚗</div>
+            <h3>No Upcoming Rides</h3>
+            <p>You don't have any upcoming rides booked.</p>
+            <button class="btn" routerLink="/rider">Find Rides</button>
+        </div>
+    </div>
+
+    <!-- Completed Rides -->
+    <div *ngIf="activeTab === 'completed'" class="rides-content">
+        <div *ngIf="completedRides.length > 0" class="rides-list">
+            <div *ngFor="let ride of completedRides" class="ride-card completed">
+                <div class="ride-header">
+                    <div class="ride-status completed">Completed</div>
+                    <div class="ride-date">{{ formatDateTime(ride.departure_time) }}</div>
+                </div>
+                <div class="ride-details">
+                    <p><strong>Driver:</strong> {{ ride.driver_name }}</p>
+                    <p><strong>Route:</strong> {{ getStopName(ride.origin_stop_id) }} → {{ getStopName(ride.destination_stop_id) }}</p>
+                    <p><strong>Seats:</strong> {{ ride.seats_booked || 1 }}</p>
+                    <p *ngIf="ride.price"><strong>Amount Paid:</strong> ₹{{ ride.price }}</p>
+                    <p><strong>Booking ID:</strong> #{{ ride.booking_id || ride.id }}</p>
+                </div>
+                <div class="ride-actions">
+                    <button class="btn rate-btn" (click)="rateRide(ride)">Rate Experience</button>
+                    <button class="btn receipt-btn" (click)="downloadReceipt(ride)">Download Receipt</button>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="completedRides.length === 0" class="empty-state">
+            <div class="empty-icon">✅</div>
+            <h3>No Completed Rides</h3>
+            <p>Your completed rides will appear here.</p>
+        </div>
+    </div>
+
+    <!-- Cancelled Rides -->
+    <div *ngIf="activeTab === 'cancelled'" class="rides-content">
+        <div *ngIf="cancelledRides.length > 0" class="rides-list">
+            <div *ngFor="let ride of cancelledRides" class="ride-card cancelled">
+                <div class="ride-header">
+                    <div class="ride-status cancelled">Cancelled</div>
+                    <div class="ride-date">{{ formatDateTime(ride.departure_time) }}</div>
+                </div>
+                <div class="ride-details">
+                    <p><strong>Driver:</strong> {{ ride.driver_name }}</p>
+                    <p><strong>Route:</strong> {{ getStopName(ride.origin_stop_id) }} → {{ getStopName(ride.destination_stop_id) }}</p>
+                    <p><strong>Cancellation Reason:</strong> {{ ride.cancellation_reason || 'Not specified' }}</p>
+                    <p><strong>Booking ID:</strong> #{{ ride.booking_id || ride.id }}</p>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="cancelledRides.length === 0" class="empty-state">
+            <div class="empty-icon">❌</div>
+            <h3>No Cancelled Rides</h3>
+            <p>You haven't cancelled any rides.</p>
+        </div>
+    </div>
+</div>

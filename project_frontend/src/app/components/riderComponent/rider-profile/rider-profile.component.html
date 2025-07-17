@@ -1,0 +1,45 @@
+<!-- Profile Management Panel -->
+<div class="profile-panel">
+    <h2>Manage Account</h2>
+    
+    <!-- Edit Profile Form -->
+    <form *ngIf="isEditingProfile" (ngSubmit)="saveProfile()">
+        <label>Name: 
+            <input type="text" [(ngModel)]="riderDetails.rider_name" name="name" required>
+        </label>
+        <label>Email: 
+            <input type="email" [(ngModel)]="riderDetails.email" name="email" required>
+        </label>
+        <label>Phone: 
+            <input type="tel" [(ngModel)]="riderDetails.phone_number" name="phone" required>
+        </label>
+        <label>Gender: 
+            <select [(ngModel)]="riderDetails.gender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Not specified">Not specified</option>
+            </select>  
+        </label>
+        <div>
+            <button type="submit" class="btn">Save</button>
+            <button type="button" class="btn cancel" (click)="cancelEdit()">Cancel</button>
+        </div>
+    </form>
+
+    <!-- Profile Info Display -->
+    <div *ngIf="!isEditingProfile" class="profile-info">
+        <p><strong>Name:</strong> {{ riderDetails.rider_name || 'Not provided' }}</p>
+        <p><strong>Email:</strong> {{ riderDetails.email || 'Not provided' }}</p>
+        <p><strong>Phone:</strong> +91{{ riderDetails.phone_number || 'Not provided' }}</p>
+        <p><strong>Gender:</strong> {{ riderDetails.gender || 'Not specified' }}</p>
+        <p><strong>Account Status:</strong> {{ riderDetails.is_verified ? 'Verified' : 'Not Verified' }}</p>
+        <p><strong>Member Since:</strong> {{ formatDateTime(riderDetails.create_datetime) }}</p>
+        <p *ngIf="riderDetails.driver_id"><strong>Driver Status:</strong> Active Driver (ID: {{ riderDetails.driver_id }})</p>
+        <div>
+            <button class="btn" (click)="editProfile()">Edit Profile</button>
+            <button class="btn cancel" routerLink="/rider">Back to Dashboard</button>
+        </div>
+    </div>
+</div>

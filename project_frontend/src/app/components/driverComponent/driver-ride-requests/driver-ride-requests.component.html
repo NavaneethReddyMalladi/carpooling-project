@@ -1,0 +1,144 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2>Ride Requests</h2>
+    <p>Manage ride requests from passengers</p>
+  </div>
+  
+  <div class="requests-section">
+    <div class="tabs">
+      <button 
+        class="tab" 
+        [class.active]="requestsSubTab === 'pending'"
+        (click)="setRequestsSubTab('pending')">
+        Pending Requests
+        <span class="badge" *ngIf="pendingRequests.length > 0">{{ pendingRequests.length }}</span>
+      </button>
+      <button 
+        class="tab" 
+        [class.active]="requestsSubTab === 'all'"
+        (click)="setRequestsSubTab('all')">
+        All Requests
+        <span class="badge" *ngIf="allRequests.length > 0">{{ allRequests.length }}</span>
+      </button>
+    </div>
+    
+    <div class="requests-content">
+      <!-- Pending Requests -->
+      <div *ngIf="requestsSubTab === 'pending'">
+        <div *ngIf="pendingRequests.length > 0" class="requests-list">
+          <div *ngFor="let request of pendingRequests" class="request-card pending">
+            <div class="request-header">
+              <div class="rider-info">
+                <div class="rider-avatar">{{ request.rider?.user_name?.charAt(0) || 'R' }}</div>
+                <div class="rider-details">
+                  <h4>{{ request.rider?.user_name || 'Unknown Rider' }}</h4>
+                  <div class="rider-rating" *ngIf="request.rider?.rating">
+                    <!-- Rider rating display -->
+                  </div>
+                  <div class="rider-phone" *ngIf="request.rider?.phone">
+                    <!-- Rider phone display -->
+                  </div>
+                </div>
+              </div>
+              <div class="request-status pending">Pending</div>
+            </div>
+            
+            <div class="request-details">
+              <div class="ride-info" *ngIf="request.ride">
+                <div class="route">
+                  <span class="origin">{{ request.ride.origin_name || 'Unknown Origin' }}</span>
+                  <span class="arrow">→</span>
+                  <span class="destination">{{ request.ride.destination_name || 'Unknown Destination' }}</span>
+                </div>
+                <div class="departure-time">
+                  <!-- Departure time display -->
+                </div>
+                <div class="available-seats">
+                  🪑 {{ request.ride.available_seats }} seats available
+                </div>
+              </div>
+              <div class="request-time">
+                <span class="label">Requested:</span>
+                <span class="value">{{ formatTime(request.requested_at) }}</span>
+              </div>
+            </div>
+            
+            <div class="request-actions">
+              <button class="btn btn-success" (click)="acceptRideRequest(request.request_id)">
+                Accept
+              </button>
+              <button class="btn btn-danger" (click)="rejectRideRequest(request.request_id)">
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="pendingRequests.length === 0" class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No pending requests</h3>
+          <p>New ride requests from passengers will appear here.</p>
+        </div>
+      </div>
+      
+      <!-- All Requests -->
+      <div *ngIf="requestsSubTab === 'all'">
+        <div *ngIf="allRequests.length > 0" class="requests-list">
+          <div *ngFor="let request of allRequests" class="request-card" [class]="request.status.toLowerCase()">
+            <div class="request-header">
+              <div class="rider-info">
+                <div class="rider-avatar">{{ request.rider?.user_name?.charAt(0) || 'R' }}</div>
+                <div class="rider-details">
+                  <h4>{{ request.rider?.user_name || 'Unknown Rider' }}</h4>
+                  <div class="rider-rating" *ngIf="request.rider?.rating">
+                    <span class="stars">★</span>
+                    <!-- <span>{{ request.rider.rating.toFixed(1) }}</span> -->
+                  </div>
+                  <!-- <div class="rider-phone" *ngIf="request.rider?.phone">
+                    📞 {{ request.rider.phone }}
+                  </div> -->
+                </div>
+              </div>
+              <div class="request-status" [class]="request.status.toLowerCase()">
+                {{ request.status }}
+              </div>
+            </div>
+            
+            <div class="request-details">
+              <div class="ride-info" *ngIf="request.ride">
+                <div class="route">
+                  <span class="origin">{{ request.ride.origin_name || 'Unknown Origin' }}</span>
+                  <span class="arrow">→</span>
+                  <span class="destination">{{ request.ride.destination_name || 'Unknown Destination' }}</span>
+                </div>
+                <!-- <div class="departure-time">
+                  🕐 {{ formatTime(request.ride.departure_time) }}
+                </div> -->
+              </div>
+              <div class="request-time">
+                <span class="label">Requested:</span>
+                <span class="value">{{ formatTime(request.requested_at) }}</span>
+              </div>
+            </div>
+            
+            <!-- Only show actions for pending requests -->
+            <div class="request-actions" *ngIf="request.status === 'Pending'">
+              <button class="btn btn-success" (click)="acceptRideRequest(request.request_id)">
+                Accept
+              </button>
+              <button class="btn btn-danger" (click)="rejectRideRequest(request.request_id)">
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="allRequests.length === 0" class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No ride requests</h3>
+          <p>Ride requests from passengers will appear here.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

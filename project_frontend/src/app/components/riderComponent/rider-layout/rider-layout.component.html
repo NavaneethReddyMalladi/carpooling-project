@@ -1,0 +1,75 @@
+<header class="header">
+    <div class="header-content">
+        <div class="logo-section">
+            <!-- Hamburger Menu Button -->
+            <button class="hamburger-btn" (click)="toggleSidebar()">
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+                <div class="hamburger-line"></div>
+            </button>
+            <div class="logo-sec">
+                <img src="logo.png" alt="Logo" class="logo">
+                <span class="welcome-text">Welcome, {{ riderDetails.rider_name || 'User' }}</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="header-btn" (click)="openChat()">Chat</button>
+            <button class="header-btn" (click)="logout()">Logout</button>
+            <div class="profile-section" (click)="toggleProfileMenu()">
+                <div class="profile-avatar">
+                    <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
+                </div>
+                <!-- Profile Menu -->
+                <div class="profile-menu" [class.show]="isProfileMenuOpen" (click)="$event.stopPropagation()">
+                    <div class="profile-header">
+                        <h3>{{ riderDetails.rider_name || 'Unknown' }}</h3>
+                        <div class="rating">★ 4.74</div>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">{{ riderDetails.email || 'Not provided' }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">+91{{ riderDetails.phone_number || 'Not provided' }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Gender:</span>
+                            <span class="detail-value">{{ riderDetails.gender || 'Not specified' }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Verified:</span>
+                            <span class="detail-value">{{ riderDetails.is_verified ? 'Yes' : 'No' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-footer" (click)="logout()">Sign out</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Sidebar Component -->
+<app-rider-sidebar 
+    [riderDetails]="riderDetails"
+    [isSidebarOpen]="isSidebarOpen"
+    (sidebarToggle)="closeSidebar()"
+    (menuItemClick)="handleMenuItemClick($event)">
+</app-rider-sidebar>
+
+<!-- Profile Menu Overlay -->
+<div class="profile-overlay" [class.show]="isProfileMenuOpen" (click)="closeProfileMenu()"></div>
+
+<!-- Main Content Container -->
+<div class="dashboard-container">
+    <div class="dashboard-content">
+        <!-- Messages -->
+        <div *ngIf="message" class="message" [ngClass]="messageType">{{ message }}</div>
+        
+        <!-- Router Outlet for Child Components -->
+        <router-outlet></router-outlet>
+    </div>
+</div>

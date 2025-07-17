@@ -1,0 +1,365 @@
+/* Rider Help Component - Minimal Styles */
+.help-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  
+  /* Section Header */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  
+  .section-header h2 {
+    font-size: 1.8rem;
+    color: #000000;
+    margin: 0;
+    font-weight: 600;
+  }
+  
+  .back-btn {
+    background: #ffffff;
+    color: #666666;
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .back-btn:hover {
+    background: #f8f9fa;
+    border-color: #000000;
+    color: #000000;
+  }
+  
+  /* Help Content */
+  .help-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .help-section {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+  
+  .help-section h3 {
+    font-size: 1.3rem;
+    color: #000000;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+  }
+  
+  /* FAQ Section */
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .faq-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .faq-question:hover {
+    background: #e9ecef;
+  }
+  
+  .faq-question h4 {
+    font-size: 1rem;
+    color: #000000;
+    margin: 0;
+    font-weight: 500;
+  }
+  
+  .faq-toggle {
+    font-size: 1.2rem;
+    color: #666666;
+    font-weight: bold;
+    width: 20px;
+    text-align: center;
+  }
+  
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: #ffffff;
+  }
+  
+  .faq-answer.expanded {
+    max-height: 200px;
+  }
+  
+  .faq-answer p {
+    padding: 1rem;
+    margin: 0;
+    color: #666666;
+    line-height: 1.5;
+  }
+  
+  /* Contact Options */
+  .contact-options {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #f8f9fa;
+  }
+  
+  .contact-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  
+  .contact-info {
+    flex: 1;
+  }
+  
+  .contact-info h4 {
+    font-size: 1rem;
+    color: #000000;
+    margin: 0 0 0.25rem 0;
+    font-weight: 500;
+  }
+  
+  .contact-info p {
+    font-size: 0.9rem;
+    color: #666666;
+    margin: 0 0 0.25rem 0;
+  }
+  
+  .contact-info small {
+    font-size: 0.8rem;
+    color: #999999;
+  }
+  
+  /* Quick Actions */
+  .quick-actions {
+    display: grid;
+    gap: 0.75rem;
+  }
+  
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #000000;
+    transition: all 0.2s ease;
+    text-align: left;
+  }
+  
+  .action-btn:hover {
+    background: #f8f9fa;
+    border-color: #000000;
+  }
+  
+  .action-btn i {
+    font-size: 1rem;
+    color: #666666;
+  }
+  
+  /* Button */
+  .btn {
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+    margin-top: 0.5rem;
+  }
+  
+  .btn:hover {
+    background: #333333;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .help-container {
+      margin: 1rem auto;
+      padding: 0 0.5rem;
+    }
+  
+    .section-header {
+      flex-direction: column;
+      gap: 1rem;
+      align-items: stretch;
+    }
+  
+    .section-header h2 {
+      text-align: center;
+      font-size: 1.5rem;
+    }
+  
+    .help-section {
+      padding: 1rem;
+    }
+  
+    .help-section h3 {
+      font-size: 1.1rem;
+    }
+  
+    .faq-question {
+      padding: 0.75rem;
+    }
+  
+    .faq-question h4 {
+      font-size: 0.9rem;
+    }
+  
+    .faq-answer p {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+    }
+  
+    .contact-item {
+      padding: 0.75rem;
+    }
+  
+    .contact-icon {
+      font-size: 1.2rem;
+      width: 30px;
+    }
+  
+    .contact-info h4 {
+      font-size: 0.9rem;
+    }
+  
+    .contact-info p {
+      font-size: 0.85rem;
+    }
+  
+    .contact-info small {
+      font-size: 0.75rem;
+    }
+  
+    .action-btn {
+      padding: 0.75rem;
+      font-size: 0.9rem;
+    }
+  
+    .action-btn i {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .help-container {
+      padding: 0 0.25rem;
+    }
+  
+    .section-header h2 {
+      font-size: 1.3rem;
+    }
+  
+    .back-btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+  
+    .help-section {
+      padding: 0.75rem;
+    }
+  
+    .help-section h3 {
+      font-size: 1rem;
+    }
+  
+    .faq-question {
+      padding: 0.6rem;
+    }
+  
+    .faq-question h4 {
+      font-size: 0.85rem;
+    }
+  
+    .faq-toggle {
+      font-size: 1rem;
+    }
+  
+    .faq-answer p {
+      padding: 0.6rem;
+      font-size: 0.85rem;
+    }
+  
+    .contact-item {
+      padding: 0.6rem;
+      gap: 0.75rem;
+    }
+  
+    .contact-icon {
+      font-size: 1.1rem;
+      width: 25px;
+    }
+  
+    .contact-info h4 {
+      font-size: 0.85rem;
+    }
+  
+    .contact-info p {
+      font-size: 0.8rem;
+    }
+  
+    .contact-info small {
+      font-size: 0.7rem;
+    }
+  
+    .action-btn {
+      padding: 0.6rem;
+      font-size: 0.85rem;
+      gap: 0.5rem;
+    }
+  
+    .action-btn i {
+      font-size: 0.85rem;
+    }
+  
+    .btn {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+    }
+  }

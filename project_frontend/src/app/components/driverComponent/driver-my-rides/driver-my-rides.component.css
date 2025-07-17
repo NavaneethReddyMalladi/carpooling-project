@@ -1,0 +1,339 @@
+/* My Rides Content */
+.content-section {
+    background: transparent;
+  }
+  
+  /* Rides Section */
+  .rides-section {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+  }
+  
+  /* Tabs Styling */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .tab {
+    flex: 1;
+    padding: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666666;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+  }
+  
+  .tab:hover {
+    color: #000000;
+    background: #f8f9fa;
+  }
+  
+  .tab.active {
+    color: #000000;
+    background: #f8f9fa;
+    border-bottom: 2px solid #000000;
+  }
+  
+  .tab .badge {
+    background: #666;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tab.active .badge {
+    background: #000000;
+    color: white;
+  }
+  
+  /* Rides Content */
+  .rides-content {
+    padding: 2rem;
+  }
+  
+  .rides-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* Ride Card Styling */
+  .ride-card {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .ride-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-color: #ccc;
+  }
+  
+  /* Status-based card styling */
+  .ride-card.active {
+    border-left: 4px solid #000000;
+  }
+  
+  .ride-card.completed {
+    border-left: 4px solid #333333;
+  }
+  
+  .ride-card.cancelled {
+    border-left: 4px solid #666666;
+  }
+  
+  /* Ride Card Header */
+  .ride-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .route {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #1a1a1a;
+  }
+  
+  .origin {
+    color: #1a1a1a;
+  }
+  
+  .arrow {
+    color: #000000;
+    font-weight: bold;
+  }
+  
+  .destination {
+    color: #1a1a1a;
+  }
+  
+  /* Ride Status Badge */
+  .ride-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .ride-status.active {
+    background: #000000;
+    color: white;
+  }
+  
+  .ride-status.completed {
+    background: #333333;
+    color: white;
+  }
+  
+  .ride-status.cancelled {
+    background: #666666;
+    color: white;
+  }
+  
+  /* Ride Details */
+  .ride-details {
+    margin-bottom: 1rem;
+  }
+  
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-item .label {
+    font-weight: 600;
+    color: #666666;
+    font-size: 0.9rem;
+  }
+  
+  .detail-item .value {
+    color: #1a1a1a;
+    font-weight: 500;
+  }
+  
+  /* Ride Actions */
+  .ride-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+  
+  .btn-success {
+    background: #000000;
+    color: white;
+    border: 1px solid #000000;
+  }
+  
+  .btn-success:hover {
+    background: #333333;
+    border-color: #333333;
+  }
+  
+  .btn-danger {
+    background: white;
+    color: #666666;
+    border: 1px solid #666666;
+  }
+  
+  .btn-danger:hover {
+    background: #f5f5f5;
+    border-color: #333333;
+    color: #333333;
+  }
+  
+  .btn-secondary {
+    background: #f8f9fa;
+    color: #000000;
+    border: 1px solid #e0e0e0;
+    text-decoration: none;
+  }
+  
+  .btn-secondary:hover {
+    background: #e0e0e0;
+    border-color: #000000;
+  }
+  
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: white;
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    margin-top: 1rem;
+  }
+  
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+    color: #666666;
+  }
+  
+  .empty-state h3 {
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  
+  .empty-state p {
+    color: #666666;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .rides-content {
+      padding: 1rem;
+    }
+    
+    .ride-card {
+      padding: 1rem;
+    }
+    
+    .ride-header {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+    
+    .ride-actions {
+      flex-direction: column;
+    }
+    
+    .btn {
+      flex: none;
+    }
+    
+    .tabs {
+      flex-direction: column;
+    }
+    
+    .tab {
+      flex: none;
+      padding: 0.75rem 1rem;
+    }
+    
+    .route {
+      flex-direction: column;
+      gap: 0.25rem;
+      text-align: center;
+    }
+    
+    .arrow {
+      transform: rotate(90deg);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .detail-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+    }
+    
+    .empty-state {
+      padding: 2rem 1rem;
+    }
+    
+    .empty-icon {
+      font-size: 2.5rem;
+    }
+  }

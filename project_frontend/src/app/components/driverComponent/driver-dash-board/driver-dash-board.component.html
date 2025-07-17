@@ -1,0 +1,74 @@
+<!-- Dashboard Tab -->
+<div class="content-section">
+  <div class="section-header">
+    <h2>Dashboard Overview</h2>
+    <p>Welcome back, {{ driverDetails.driver_name }}!</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card earnings">
+      <div class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+      <div class="stat-info">
+        <h3>₹{{ dashboardStats.todayEarnings }}</h3>
+        <p>Today's Earnings</p>
+      </div>
+    </div>
+    
+    <div class="stat-card rides">
+      <div class="stat-icon"><i class="fa-solid fa-car"></i></div>
+      <div class="stat-info">
+        <h3>{{ dashboardStats.totalRides }}</h3>
+        <p>Total Rides</p>
+      </div>
+    </div>
+    
+    <div class="stat-card rating">
+      <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+      <div class="stat-info">
+        <h3>{{ dashboardStats.rating.toFixed(1) }}</h3>
+        <p>Average Rating</p>
+      </div>
+    </div>
+    
+    <div class="stat-card active">
+      <div class="stat-icon"><i class="fa-solid fa-toggle-on"></i></div>
+      <div class="stat-info">
+        <h3>{{ dashboardStats.activeRides }}</h3>
+        <p>Active Rides</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Rides -->
+  <div class="recent-rides">
+    <h3>Recent Rides</h3>
+    <div class="rides-list" *ngIf="recentRides.length > 0">
+      <div *ngFor="let ride of recentRides" class="ride-item" [class]="ride.status">
+        <div class="ride-info">
+          <div class="route">
+            <span class="origin">{{ ride.origin }}</span>
+            <span class="arrow">→</span>
+            <span class="destination">{{ ride.destination }}</span>
+          </div>
+          <div class="ride-meta">
+            <span class="time">{{ ride.time }}</span>
+            <span class="status">{{ ride.status | titlecase }}</span>
+          </div>
+        </div>
+        <div class="ride-details">
+          <div class="fare" *ngIf="ride.fare > 0">₹{{ ride.fare }}</div>
+          <div class="rating" *ngIf="ride.rating > 0">
+            <span class="stars">★</span>
+            <span>{{ ride.rating }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="recentRides.length === 0">
+      <div class="empty-icon">🚗</div>
+      <h4>No rides yet</h4>
+      <p>Create your first ride to start earning!</p>
+    </div>
+  </div>
+</div>
