@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-# from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 import os
 from dotenv import load_dotenv
@@ -8,7 +7,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 
 
-from app.main.config.dev_config import DevConfig  # <-- import the config class
+from app.main.config.dev_config import DevConfig  
 
 load_dotenv()
 
@@ -16,10 +15,9 @@ app = Flask(__name__)
 
 CORS(app)
 
-app.config.from_object(DevConfig)  # <-- apply the config
-
+app.config.from_object(DevConfig)  
 db = SQLAlchemy(app)
-# bcrypt = Bcrypt(app)
+
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 jwt = JWTManager(app)
 
@@ -30,8 +28,6 @@ app.register_blueprint(user_bp)
 from app.main.controllers.driver import driver_bp
 app.register_blueprint(driver_bp)
 
-# from app.main.controllers.riders import rider_bp
-# app.register_blueprint(rider_bp)
 
 from app.main.controllers.rides import rides_bp
 app.register_blueprint(rides_bp)
@@ -67,6 +63,3 @@ app.register_blueprint(roles_bp)
 
 from app.main.utils.auth import auth_bp
 app.register_blueprint(auth_bp)
-
-# from app.main.utils.auth import auth_bp
-# app.register_blueprint(auth_bp, url_prefix='/auth')

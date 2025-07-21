@@ -13,14 +13,18 @@ def add_review(data):
         rating = data.get('rating')
         comment = data.get('comment')
 
-        # Validate required fields
+
+
+
         if not all([Rides_id, User_id, rating is not None]):
             return jsonify({"message": "Rides_id, User_id, and rating are required"}), 400
 
         if not isinstance(rating, int) or not (1 <= rating <= 5):
             return jsonify({"message": "Rating must be an integer between 1 and 5"}), 400
 
-        # Validate foreign keys
+
+
+
         if not Rides.query.get(Rides_id):
             return jsonify({"message": "Rides not found"}), 404
         if not User.query.get(User_id):

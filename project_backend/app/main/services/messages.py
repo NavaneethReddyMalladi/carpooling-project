@@ -12,24 +12,28 @@ def add_message(data):
     try:
         sender_id = data.get('sender_id')
         receiver_id = data.get('receiver_id')
-        ride_id = data.get('ride_id')  # optional
+        ride_id = data.get('ride_id') 
         message_text = data.get('message_text')
 
-        # Validate required fields
+        
+
         if not all([sender_id, receiver_id, message_text]):
             return jsonify({"message": "sender_id, receiver_id, and message_text are required"}), 400
 
-        # Check if sender exists
+   
+   
+
         sender = User.query.get(sender_id)
         if not sender:
             return jsonify({"message": "Sender not found"}), 404
 
-        # Check if receiver exists
+
+
         receiver = User.query.get(receiver_id)
         if not receiver:
             return jsonify({"message": "Receiver not found"}), 404
 
-        # If ride_id is provided, check if ride exists
+
         if ride_id:
             ride = Rides.query.get(ride_id)
             if not ride:

@@ -10,7 +10,7 @@
 .sidebar {
   width: 250px;
   background: white;
-  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 2px 0 20px rgba(0, 0, 0,x 0.08); */
   padding: 2rem 0;
   border-right: 1px solid #f0f0f0;
 }

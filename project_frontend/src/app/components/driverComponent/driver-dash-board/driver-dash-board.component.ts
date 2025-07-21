@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DriverService, DashboardStats } from '../../../services/driver.service';
 import { RideService } from '../../../services/ride.service';
 
@@ -11,60 +11,25 @@ import { RideService } from '../../../services/ride.service';
   standalone: true,
   imports: [CommonModule]
 })
-export class DriverDashboardComponent implements OnInit, OnDestroy {
-  driverDetails: any = {};
-  dashboardStats: DashboardStats = {
-    todayEarnings: 0,
-    totalRides: 0,
-    completedRides: 0,
-    cancelledRides: 0,
-    activeRides: 0,
-    rating: 0,
-    onlineHours: 0
-  };
-  recentRides: any[] = [];
-
-  private subscriptions: Subscription[] = [];
+export class DriverDashboardComponent implements OnInit {
+  driverDetails$: Observable<any>;
+  dashboardStats$: Observable<DashboardStats>;
+  recentRides$: Observable<any[]>;
 
   constructor(
     private driverService: DriverService,
     private rideService: RideService
-  ) {}
+  ) {
+    this.driverDetails$ = this.driverService.driverDetails$;
+    this.dashboardStats$ = this.rideService.dashboardStats$;
+    this.recentRides$ = this.rideService.recentRides$;
+  }
 
   ngOnInit() {
     this.loadDashboardData();
-    this.setupSubscriptions();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
-
-  private setupSubscriptions() {
-    // Subscribe to driver details
-    this.subscriptions.push(
-      this.driverService.driverDetails$.subscribe(details => {
-        this.driverDetails = details;
-      })
-    );
-
-    // Subscribe to dashboard stats
-    this.subscriptions.push(
-      this.rideService.dashboardStats$.subscribe(stats => {
-        this.dashboardStats = stats;
-      })
-    );
-
-    // Subscribe to recent rides
-    this.subscriptions.push(
-      this.rideService.recentRides$.subscribe(rides => {
-        this.recentRides = rides;
-      })
-    );
   }
 
   private loadDashboardData() {
-    // Load dashboard statistics
     this.rideService.loadDashboardStats().subscribe({
       next: (stats) => {
         console.log('Dashboard stats loaded:', stats);
@@ -74,7 +39,6 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Load rides to get recent rides
     this.rideService.loadDriverRides().subscribe({
       next: (rides) => {
         console.log('Rides loaded for dashboard:', rides.length);
@@ -83,5 +47,9 @@ export class DriverDashboardComponent implements OnInit, OnDestroy {
         console.error('Failed to load rides for dashboard:', err);
       }
     });
+  }
+
+  trackByRideId(index: number, ride: any): any {
+    return ride.id || index;
   }
 }

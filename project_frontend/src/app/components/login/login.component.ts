@@ -20,7 +20,7 @@ export class LoginComponent {
   constructor(private auth: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.errorMessage = ''; // Clear previous error
+    this.errorMessage = ''; 
     this.isLoading = true;
 
     this.auth.login(this.email, this.password).subscribe({

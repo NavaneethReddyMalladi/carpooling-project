@@ -11,7 +11,7 @@ def create_route_stop(data):
         start_stop = Stops.query.get(data['start_stop_id'])
         end_stop = Stops.query.get(data['end_stop_id'])
 
-        # Validation
+
         if not start_stop or not end_stop:
             return jsonify({"error": "Start or end stop not found"}), 404
         if start_stop.stop_type.name not in ['ORIGIN', 'INTERMEDIATE']:
@@ -36,7 +36,8 @@ def create_route_stop(data):
         return jsonify({"error": str(e)}), 500
 
 
-# Get all route stops
+
+
 def get_all_route_stops():
     try:
         route_stops = RouteStop.query.all()
@@ -51,7 +52,8 @@ def get_all_route_stops():
     except SQLAlchemyError as e:
         return jsonify({"error": str(e)}), 500
 
-# Get a route stop by ID
+
+
 def get_route_stop_by_id(route_stop_id):
     stop = RouteStop.query.get(route_stop_id)
     if not stop:
@@ -64,7 +66,9 @@ def get_route_stop_by_id(route_stop_id):
         "cost": stop.cost
     }), 200
 
-# Update a route stop
+
+
+
 def update_route_stop(route_stop_id, data):
     stop = RouteStop.query.get(route_stop_id)
     if not stop:
@@ -80,7 +84,9 @@ def update_route_stop(route_stop_id, data):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Delete a route stop
+
+
+
 def delete_route_stop(route_stop_id):
     stop = RouteStop.query.get(route_stop_id)
     if not stop:
@@ -108,10 +114,10 @@ def add_multiple_routes_service(data_list):
     return {"message": "All routes added successfully"}
 
 
-# Get all source stops
+
+
 def get_all_source_stops():
     try:
-        # Return all stops except the last destination(s)
         sources = Stops.query.filter(
             Stops.stop_type.in_(['ORIGIN', 'INTERMEDIATE'])
         ).order_by(Stops.route_id, Stops.stop_order).all()
@@ -126,12 +132,10 @@ def get_all_source_stops():
 
 def get_all_destination_stops(source_stop_id):
     try:
-        # Get the source stop details first
         source_stop = Stops.query.get(source_stop_id)
         if not source_stop:
             return jsonify({"error": "Source stop not found"}), 404
 
-        # Get all stops on the same route with stop_order greater than source's stop_order
         destinations = Stops.query.filter(
             Stops.route_id == source_stop.route_id,
             Stops.stop_order > source_stop.stop_order

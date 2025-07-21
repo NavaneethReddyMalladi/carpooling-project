@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DriverService, Ride } from '../../../services/driver.service';
 import { RideService } from '../../../services/ride.service';
 
@@ -12,49 +12,23 @@ import { RideService } from '../../../services/ride.service';
   standalone: true,
   imports: [CommonModule, RouterModule]
 })
-export class MyRidesComponent implements OnInit, OnDestroy {
-  activeRides: Ride[] = [];
-  completedRides: Ride[] = [];
-  cancelledRides: Ride[] = [];
+export class MyRidesComponent implements OnInit {
+  activeRides$: Observable<Ride[]>;
+  completedRides$: Observable<Ride[]>;
+  cancelledRides$: Observable<Ride[]>;
   ridesSubTab = 'active';
-
-  private subscriptions: Subscription[] = [];
 
   constructor(
     private driverService: DriverService,
     private rideService: RideService
-  ) {}
+  ) {
+    this.activeRides$ = this.rideService.activeRides$;
+    this.completedRides$ = this.rideService.completedRides$;
+    this.cancelledRides$ = this.rideService.cancelledRides$;
+  }
 
   ngOnInit() {
     this.loadRides();
-    this.setupSubscriptions();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-  }
-
-  private setupSubscriptions() {
-    // Subscribe to active rides
-    this.subscriptions.push(
-      this.rideService.activeRides$.subscribe(rides => {
-        this.activeRides = rides;
-      })
-    );
-
-    // Subscribe to completed rides
-    this.subscriptions.push(
-      this.rideService.completedRides$.subscribe(rides => {
-        this.completedRides = rides;
-      })
-    );
-
-    // Subscribe to cancelled rides
-    this.subscriptions.push(
-      this.rideService.cancelledRides$.subscribe(rides => {
-        this.cancelledRides = rides;
-      })
-    );
   }
 
   private loadRides() {
@@ -74,7 +48,7 @@ export class MyRidesComponent implements OnInit, OnDestroy {
 
   completeRide(rideId: number) {
     if (!confirm('Mark this ride as completed?')) return;
-
+    
     this.rideService.completeRide(rideId).subscribe({
       next: () => {
         console.log('Ride completed successfully');
@@ -87,7 +61,7 @@ export class MyRidesComponent implements OnInit, OnDestroy {
 
   cancelRide(rideId: number) {
     if (!confirm('Are you sure you want to cancel this ride?')) return;
-
+    
     this.rideService.cancelRide(rideId).subscribe({
       next: () => {
         console.log('Ride cancelled successfully');
@@ -100,5 +74,9 @@ export class MyRidesComponent implements OnInit, OnDestroy {
 
   formatTime(timeString: string): string {
     return this.driverService.formatTime(timeString);
+  }
+
+  trackByRideId(index: number, ride: Ride): any {
+    return ride.ride_id || index;
   }
 }

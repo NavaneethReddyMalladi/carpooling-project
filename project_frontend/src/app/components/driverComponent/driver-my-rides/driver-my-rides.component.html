@@ -1,9 +1,9 @@
-<!-- My Rides Tab -->
 <div class="content-section">
   <div class="section-header">
     <h2>My Rides</h2>
     <p>Manage your active and completed rides</p>
   </div>
+  
   <div class="rides-section">
     <div class="tabs">
       <button 
@@ -11,135 +11,165 @@
         [class.active]="ridesSubTab === 'active'"
         (click)="setRidesSubTab('active')">
         Active Rides
-        <span class="badge" *ngIf="activeRides.length > 0">{{ activeRides.length }}</span>
+        <span class="badge" *ngIf="(activeRides$ | async)?.length as count">{{ count }}</span>
       </button>
       <button 
         class="tab" 
         [class.active]="ridesSubTab === 'completed'"
         (click)="setRidesSubTab('completed')">
         Completed
-        <span class="badge" *ngIf="completedRides.length > 0">{{ completedRides.length }}</span>
+        <span class="badge" *ngIf="(completedRides$ | async)?.length as count">{{ count }}</span>
       </button>
       <button 
         class="tab" 
         [class.active]="ridesSubTab === 'cancelled'"
         (click)="setRidesSubTab('cancelled')">
         Cancelled
-        <span class="badge" *ngIf="cancelledRides.length > 0">{{ cancelledRides.length }}</span>
+        <span class="badge" *ngIf="(cancelledRides$ | async)?.length as count">{{ count }}</span>
       </button>
     </div>
     
     <div class="rides-content">
-      <!-- Active Rides -->
       <div *ngIf="ridesSubTab === 'active'">
-        <div *ngIf="activeRides.length > 0" class="rides-list">
-          <div *ngFor="let ride of activeRides" class="ride-card active">
-            <div class="ride-header">
-              <div class="route">
-                <span class="origin">{{ ride.origin_name }}</span>
-                <span class="arrow">→</span>
-                <span class="destination">{{ ride.destination_name }}</span>
+        <div *ngIf="activeRides$ | async as activeRides; else activeLoading">
+          <div *ngIf="activeRides.length > 0; else noActiveRides" class="rides-list">
+            <div *ngFor="let ride of activeRides; trackBy: trackByRideId" class="ride-card active">
+              <div class="ride-header">
+                <div class="route">
+                  <span class="origin">{{ ride.origin_name }}</span>
+                  <span class="arrow">→</span>
+                  <span class="destination">{{ ride.destination_name }}</span>
+                </div>
+                <div class="ride-status active">Active</div>
               </div>
-              <div class="ride-status active">Active</div>
-            </div>
-            <div class="ride-details">
-              <div class="detail-item">
-                <span class="label">Departure:</span>
-                <span class="value">{{ formatTime(ride.departure_time) }}</span>
+              <div class="ride-details">
+                <div class="detail-item">
+                  <span class="label">Departure:</span>
+                  <span class="value">{{ formatTime(ride.departure_time) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Available Seats:</span>
+                  <span class="value">{{ ride.available_seats }}</span>
+                </div>
+                <div class="detail-item" *ngIf="ride.passenger_count">
+                  <span class="label">Booked:</span>
+                  <span class="value">{{ ride.passenger_count }} passengers</span>
+                </div>
               </div>
-              <div class="detail-item">
-                <span class="label">Available Seats:</span>
-                <span class="value">{{ ride.available_seats }}</span>
+              <div class="ride-actions">
+                <button class="btn btn-success" (click)="completeRide(ride.ride_id)">
+                  Complete
+                </button>
+                <button class="btn btn-danger" (click)="cancelRide(ride.ride_id)">
+                  Cancel
+                </button>
               </div>
-              <div class="detail-item" *ngIf="ride.passenger_count">
-                <span class="label">Booked:</span>
-                <span class="value">{{ ride.passenger_count }} passengers</span>
-              </div>
-            </div>
-            <div class="ride-actions">
-              <button class="btn btn-success" (click)="completeRide(ride.ride_id)">
-                Complete
-              </button>
-              <button class="btn btn-danger" (click)="cancelRide(ride.ride_id)">
-                Cancel
-              </button>
             </div>
           </div>
+          
+          <ng-template #noActiveRides>
+            <div class="empty-state">
+              <div class="empty-icon">🚗</div>
+              <h3>No active rides</h3>
+              <p>Create a new ride to start earning!</p>
+              <button class="btn btn-secondary" routerLink="/driver/create-ride">
+                Create Ride
+              </button>
+            </div>
+          </ng-template>
         </div>
-        <div *ngIf="activeRides.length === 0" class="empty-state">
-          <div class="empty-icon">🚗</div>
-          <h3>No active rides</h3>
-          <p>Create a new ride to start earning!</p>
-          <button class="btn btn-secondary" routerLink="/driver/create-ride">
-            Create Ride
-          </button>
-        </div>
+        
+        <ng-template #activeLoading>
+          <div class="loading-state">
+            <p>Loading active rides...</p>
+          </div>
+        </ng-template>
       </div>
 
-      <!-- Completed Rides -->
       <div *ngIf="ridesSubTab === 'completed'">
-        <div *ngIf="completedRides.length > 0" class="rides-list">
-          <div *ngFor="let ride of completedRides" class="ride-card completed">
-            <div class="ride-header">
-              <div class="route">
-                <span class="origin">{{ ride.origin_name }}</span>
-                <span class="arrow">→</span>
-                <span class="destination">{{ ride.destination_name }}</span>
+        <div *ngIf="completedRides$ | async as completedRides; else completedLoading">
+          <div *ngIf="completedRides.length > 0; else noCompletedRides" class="rides-list">
+            <div *ngFor="let ride of completedRides; trackBy: trackByRideId" class="ride-card completed">
+              <div class="ride-header">
+                <div class="route">
+                  <span class="origin">{{ ride.origin_name }}</span>
+                  <span class="arrow">→</span>
+                  <span class="destination">{{ ride.destination_name }}</span>
+                </div>
+                <div class="ride-status completed">Completed</div>
               </div>
-              <div class="ride-status completed">Completed</div>
-            </div>
-            <div class="ride-details">
-              <div class="detail-item">
-                <span class="label">Completed:</span>
-                <span class="value">{{ formatTime(ride.departure_time) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">Seats:</span>
-                <span class="value">{{ ride.available_seats }}</span>
-              </div>
-              <div class="detail-item" *ngIf="ride.fare">
-                <span class="label">Earnings:</span>
-                <span class="value">₹{{ ride.fare }}</span>
+              <div class="ride-details">
+                <div class="detail-item">
+                  <span class="label">Completed:</span>
+                  <span class="value">{{ formatTime(ride.departure_time) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Seats:</span>
+                  <span class="value">{{ ride.available_seats }}</span>
+                </div>
+                <div class="detail-item" *ngIf="ride.fare">
+                  <span class="label">Earnings:</span>
+                  <span class="value">₹{{ ride.fare }}</span>
+                </div>
               </div>
             </div>
           </div>
+          
+          <ng-template #noCompletedRides>
+            <div class="empty-state">
+              <div class="empty-icon">✅</div>
+              <h3>No completed rides</h3>
+              <p>Complete some rides to see them here!</p>
+            </div>
+          </ng-template>
         </div>
-        <div *ngIf="completedRides.length === 0" class="empty-state">
-          <div class="empty-icon">✅</div>
-          <h3>No completed rides</h3>
-          <p>Complete some rides to see them here!</p>
-        </div>
+        
+        <ng-template #completedLoading>
+          <div class="loading-state">
+            <p>Loading completed rides...</p>
+          </div>
+        </ng-template>
       </div>
 
-      <!-- Cancelled Rides -->
       <div *ngIf="ridesSubTab === 'cancelled'">
-        <div *ngIf="cancelledRides.length > 0" class="rides-list">
-          <div *ngFor="let ride of cancelledRides" class="ride-card cancelled">
-            <div class="ride-header">
-              <div class="route">
-                <span class="origin">{{ ride.origin_name }}</span>
-                <span class="arrow">→</span>
-                <span class="destination">{{ ride.destination_name }}</span>
+        <div *ngIf="cancelledRides$ | async as cancelledRides; else cancelledLoading">
+          <div *ngIf="cancelledRides.length > 0; else noCancelledRides" class="rides-list">
+            <div *ngFor="let ride of cancelledRides; trackBy: trackByRideId" class="ride-card cancelled">
+              <div class="ride-header">
+                <div class="route">
+                  <span class="origin">{{ ride.origin_name }}</span>
+                  <span class="arrow">→</span>
+                  <span class="destination">{{ ride.destination_name }}</span>
+                </div>
+                <div class="ride-status cancelled">Cancelled</div>
               </div>
-              <div class="ride-status cancelled">Cancelled</div>
-            </div>
-            <div class="ride-details">
-              <div class="detail-item">
-                <span class="label">Was scheduled for:</span>
-                <span class="value">{{ formatTime(ride.departure_time) }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">Seats:</span>
-                <span class="value">{{ ride.available_seats }}</span>
+              <div class="ride-details">
+                <div class="detail-item">
+                  <span class="label">Was scheduled for:</span>
+                  <span class="value">{{ formatTime(ride.departure_time) }}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="label">Seats:</span>
+                  <span class="value">{{ ride.available_seats }}</span>
+                </div>
               </div>
             </div>
           </div>
+          
+          <ng-template #noCancelledRides>
+            <div class="empty-state">
+              <div class="empty-icon">❌</div>
+              <h3>No cancelled rides</h3>
+              <p>Good job! You haven't cancelled any rides.</p>
+            </div>
+          </ng-template>
         </div>
-        <div *ngIf="cancelledRides.length === 0" class="empty-state">
-          <div class="empty-icon">❌</div>
-          <h3>No cancelled rides</h3>
-          <p>Good job! You haven't cancelled any rides.</p>
-        </div>
+        
+        <ng-template #cancelledLoading>
+          <div class="loading-state">
+            <p>Loading cancelled rides...</p>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>

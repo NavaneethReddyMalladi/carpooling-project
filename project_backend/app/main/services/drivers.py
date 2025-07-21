@@ -12,19 +12,23 @@ def add_driver(data):
         experience = data.get('experience')
         license_number = data.get('license_number')
 
-        # Validate required fields
+       
         if not all([user_id, driver_name, experience, license_number]):
             return jsonify({"message": "All fields are required"}), 400
+        
 
-        # Check if user exists
+  
         user = User.query.get(user_id)
         if not user:
             return jsonify({"message": "User not found"}), 404
 
-        # Check if user already registered as a driver (unique user_id)
+
         existing_driver = Drivers.query.filter_by(user_id=user_id).first()
         if existing_driver:
             return jsonify({"message": "User already registered as driver"}), 409
+        
+
+
 
         # Validate experience is a positive integer
         if not isinstance(experience, int) or experience < 0:
@@ -108,13 +112,13 @@ def update_driver(driver_id, data):
         experience = data.get('experience')
         license_number = data.get('license_number')
 
-        # If user_id is being updated, check if user exists and unique constraint
+
         if user_id and user_id != driver.user_id:
             user = User.query.get(user_id)
             if not user:
                 return jsonify({"message": "User not found"}), 404
 
-            # Check if another driver with this user_id exists
+     
             if Drivers.query.filter_by(user_id=user_id).first():
                 return jsonify({"message": "Another driver already registered with this user_id"}), 409
 

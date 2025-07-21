@@ -3,7 +3,7 @@ from app import db
 from app.main.models.riderDetails import RiderDetails
 from sqlalchemy.exc import SQLAlchemyError
 
-# Create RiderDetails
+
 def add_rider_details(data):
     try:
         new_details = RiderDetails(
@@ -20,7 +20,8 @@ def add_rider_details(data):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Get All RiderDetails
+
+
 def get_all_rider_details():
     try:
         details = RiderDetails.query.all()
@@ -37,7 +38,9 @@ def get_all_rider_details():
     except Exception:
         return jsonify({"message": "Internal server error"}), 500
 
-# Get RiderDetails by ID
+
+
+
 def get_rider_details_by_id(details_id):
     try:
         d = RiderDetails.query.get(details_id)
@@ -54,7 +57,9 @@ def get_rider_details_by_id(details_id):
     except Exception:
         return jsonify({"message": "Internal server error"}), 500
 
-# Update RiderDetails
+
+
+
 def update_rider_details(details_id, data):
     try:
         d = RiderDetails.query.get(details_id)
@@ -72,7 +77,9 @@ def update_rider_details(details_id, data):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Delete RiderDetails
+
+
+
 def delete_rider_details(details_id):
     try:
         d = RiderDetails.query.get(details_id)
@@ -86,7 +93,8 @@ def delete_rider_details(details_id):
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Get RiderDetails by Rider ID
+
+
 def get_rider_details_by_rider(rider_id):
     try:
         details = RiderDetails.query.filter_by(rider_id=rider_id).all()

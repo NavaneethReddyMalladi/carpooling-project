@@ -46,7 +46,6 @@ def get_sources():
 
 @route_stops_bp.route('/route-stops/destinations', methods=['GET'])
 def get_destinations():
-    # Get source_stop_id from query params
     source_stop_id = request.args.get('source_stop_id', type=int)
     if not source_stop_id:
         return {"error": "source_stop_id is required"}, 400

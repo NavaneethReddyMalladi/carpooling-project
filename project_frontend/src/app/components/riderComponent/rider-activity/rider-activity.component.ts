@@ -61,7 +61,7 @@ export class RiderActivityComponent implements OnInit {
   }
 
   private loadMockData() {
-    // Mock data - replace with actual API calls
+
     this.totalRides = 24;
     this.totalSpent = 1250.75;
     this.averageRating = 4.8;
@@ -106,13 +106,12 @@ export class RiderActivityComponent implements OnInit {
     this.filteredActivities = this.allActivities;
   }
 
-  // Set time filter
   setTimeFilter(filter: string) {
     this.selectedTimeFilter = filter;
     this.filterActivitiesByTime();
   }
 
-  // Filter activities by time
+
   private filterActivitiesByTime() {
     const now = new Date();
     let filterDate: Date;
@@ -135,7 +134,7 @@ export class RiderActivityComponent implements OnInit {
     );
   }
 
-  // Get activity icon
+ 
   getActivityIcon(type: string): string {
     switch (type) {
       case 'ride':
@@ -149,7 +148,7 @@ export class RiderActivityComponent implements OnInit {
     }
   }
 
-  // Format relative time
+
   formatRelativeTime(timestamp: string): string {
     const now = new Date();
     const time = new Date(timestamp);

@@ -16,19 +16,22 @@ def add_payment(data):
         payment_status = data.get('payment_status')
         payment_method = data.get('payment_method')
 
-        # Validate required fields
+
         if not all([driver_wallet_id, payer_wallet_id, amount, payment_status, payment_method]):
             return jsonify({"message": "All fields are required"}), 400
 
-        # Validate amount
+
         if not isinstance(amount, (int, float)) or amount <= 0:
             return jsonify({"message": "Amount must be a positive number"}), 400
 
-        # Validate status and method
+
+
         if payment_status not in VALID_STATUSES:
             return jsonify({"message": f"Invalid payment status. Must be one of {VALID_STATUSES}"}), 400
         if payment_method not in VALID_METHODS:
             return jsonify({"message": f"Invalid payment method. Must be one of {VALID_METHODS}"}), 400
+        
+
 
         # Validate wallets
         driver_wallet = Wallet.query.get(driver_wallet_id)
@@ -109,7 +112,7 @@ def update_payment(payment_id, data):
         if not payment:
             return jsonify({"message": "Payment not found"}), 404
 
-        # Optional updates
+
         if 'driver_wallet_id' in data:
             wallet = Wallet.query.get(data['driver_wallet_id'])
             if not wallet:

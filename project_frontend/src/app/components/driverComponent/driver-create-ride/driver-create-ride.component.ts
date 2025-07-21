@@ -55,7 +55,6 @@ export class CreateRideComponent implements OnInit, OnDestroy {
   }
 
   onOriginStopChange() {
-    // Reset destination selection when origin changes
     this.ride.destination_stop_id = '';
     this.destStops = [];
 
@@ -83,7 +82,6 @@ export class CreateRideComponent implements OnInit, OnDestroy {
         this.resetForm();
         this.isLoading = false;
         
-        // Navigate to active rides tab
         setTimeout(() => {
           this.router.navigate(['/driver/myrides']);
         }, 1000);

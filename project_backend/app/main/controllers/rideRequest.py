@@ -12,29 +12,37 @@ from app.main.services.rideRequests import (
 
 ride_requests_bp = Blueprint('ride_requests_bp', __name__)
 
-# Create a new ride request
+
 @ride_requests_bp.route('/ride-requests', methods=['POST'])
 def create_request():
     data = request.get_json()
     return create_ride_request(data)
 
-# Get all ride requests
+
+
+
 @ride_requests_bp.route('/ride-requests', methods=['GET'])
 def fetch_all_requests():
     return get_all_ride_requests()
 
-# Get a ride request by request_id
+
+
+
 @ride_requests_bp.route('/ride-requests/<int:request_id>', methods=['GET'])
 def fetch_request_by_id(request_id):
     return get_ride_request_by_id(request_id)
 
-# Update a ride request (e.g., status)
+
+
+
 @ride_requests_bp.route('/ride-requests/<int:request_id>', methods=['PUT'])
 def update_request(request_id):
     data = request.get_json()
     return update_ride_request(request_id, data)
 
-# Delete a ride request
+
+
+
 @ride_requests_bp.route('/ride-requests/<int:request_id>', methods=['DELETE'])
 def delete_request(request_id):
     return delete_ride_request(request_id)
@@ -59,5 +67,4 @@ def get_requests_by_driver(driver_id):
 @ride_requests_bp.route('/ride-requests/<int:request_id>', methods=['PATCH'])
 def patch_request(request_id):
     data = request.get_json()
-    # if you want to allow both PUT *and* PATCH to hit the same code:
     return update_ride_request(request_id, data)

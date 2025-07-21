@@ -25,7 +25,6 @@ def register():
         password = data.get('password')
         role_id = data.get('role_id')
 
-        # Validate required fields
         if not all([name, email, phone_number, gender, password, role_id]): 
             return jsonify({"message": "All fields are required"}), 400
 
@@ -53,7 +52,6 @@ def register():
             role_id=role_id
         )
 
-        # If role_id == 1, create associated driver details
         if int(role_id) == 1:
             experience = data.get('experience')
             license_number = data.get('license_number')
@@ -86,6 +84,7 @@ def register():
         print(" DATABASE ERROR:", e)
         return jsonify({"message": "Internal Server Error"}), 500
 
+
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -97,7 +96,7 @@ def login():
 
     if user and check_password_hash(user.password, data['password']):
         access_token = create_access_token(identity={"user_id": user.user_id, "role_name": user.role.role_name})
-        return jsonify({"token": access_token, "role_name": user.role.role_name,     # send role_id separately
+        return jsonify({"token": access_token, "role_name": user.role.role_name,    
         "user_id": user.user_id  }), 200
 
     return jsonify({"message": "Invalid email or password"}), 401

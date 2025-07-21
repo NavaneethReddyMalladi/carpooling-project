@@ -1,36 +1,20 @@
-<!-- Navigation Bar -->
 <nav class="navbar">
   <div class="navbar-container">
     <div class="navbar-brand">
       <img src="logo.png" alt="CarConnect" class="logo-img">
-      <!-- <span class="brand-text">CarConnect</span> -->
     </div>
-    
-    <!-- <div class="navbar-center">
-      <div class="online-status">
-        <label class="switch">
-          <input type="checkbox" [checked]="isOnline" (change)="toggleOnlineStatus()">
-          <span class="slider"></span>
-        </label>
-        <span class="status-text" [class.online]="isOnline" [class.offline]="!isOnline">
-          {{ isOnline ? 'Online' : 'Offline' }}
-        </span>
-      </div>
-    </div> -->
-    
     <div class="navbar-profile">
       <div class="profile-info">
-        <span class="profile-name">{{ driverDetails.driver_name }}</span>
+        <span class="profile-name">{{ driverDetails?.driver_name || 'Driver' }}</span>
         <div class="rating">
           <span class="stars">★★★★★</span>
-          <span class="rating-text">{{ driverDetails.rating?.toFixed(1) || '0.0' }}</span>
+          <span class="rating-text">{{ driverDetails?.rating?.toFixed(1) || '0.0' }}</span>
         </div>
       </div>
       <button class="profile-btn" (click)="toggleProfileMenu()">
-        <div class="profile-avatar">{{ driverDetails.driver_name?.charAt(0) || 'D' }}</div>
+        <div class="profile-avatar">{{ driverDetails?.driver_name?.charAt(0) || 'D' }}</div>
         <span class="dropdown-arrow">▼</span>
       </button>
-      
       <ul *ngIf="showProfileMenu" class="dropdown-menu">
         <li><a href="#" (click)="viewProfile()">View Profile</a></li>
         <li><a href="#" (click)="logout()">Logout</a></li>
@@ -39,34 +23,31 @@
   </div>
 </nav>
 
-<!-- Main Dashboard Container -->
 <div class="dashboard-container">
-  <!-- Sidebar Component -->
-  <app-driver-side-bar 
+  <app-driver-side-bar
     [activeRides]="activeRides"
     [pendingRequests]="pendingRequests">
   </app-driver-side-bar>
-
-  <!-- Main Content Area -->
+  
   <div class="main-content">
-    <!-- Success/Error Messages -->
-    <div class="message success" *ngIf="message">
+        <div class="message success" *ngIf="message">
       <span class="icon"><i class="fa-solid fa-circle-check"></i></span>
       {{ message }}
     </div>
+    
     <div class="message error" *ngIf="error">
       <span class="icon"><i class="fa-solid fa-circle-xmark"></i></span>
       {{ error }}
     </div>
+    
     <div class="request-notification" *ngIf="showRequestNotification">
       <span class="icon"><i class="fa-solid fa-bell"></i></span>
-      You have {{ newRequestsCount }} new ride request(s)!
+      You have {{ newRequestsCount }} new ride request{{ newRequestsCount > 1 ? 's' : '' }}!
       <button class="close-btn" (click)="closeRequestNotification()">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
-
-    <!-- Router Outlet for Child Components -->
+    
     <router-outlet></router-outlet>
   </div>
 </div>

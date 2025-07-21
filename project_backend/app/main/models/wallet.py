@@ -12,6 +12,4 @@ class Wallet(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # Relationship to User
-    # user = db.relationship('User', backref=db.backref('wallet', uselist=False, lazy=True))
-    
+ 

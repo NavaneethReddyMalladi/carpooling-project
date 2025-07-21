@@ -11,15 +11,12 @@ export class RideRequestService {
   private readonly BASE_URL = 'http://127.0.0.1:42099';
   private readonly POLLING_INTERVAL = 30000; // 30 seconds
 
-  // State subjects
   private pendingRequestsSubject = new BehaviorSubject<RideRequest[]>([]);
   private allRequestsSubject = new BehaviorSubject<RideRequest[]>([]);
   
-  // Public observables
   pendingRequests$ = this.pendingRequestsSubject.asObservable();
   allRequests$ = this.allRequestsSubject.asObservable();
 
-  // Polling interval reference
   private requestPollingInterval: any;
 
   constructor(
@@ -27,11 +24,9 @@ export class RideRequestService {
     private driverService: DriverService
   ) {}
 
-  // Getters for current values
   get pendingRequests() { return this.pendingRequestsSubject.value; }
   get allRequests() { return this.allRequestsSubject.value; }
 
-  // Load ride requests
   loadRideRequests(): Observable<RideRequest[]> {
     return new Observable(observer => {
       const token = localStorage.getItem('token');
@@ -51,7 +46,6 @@ export class RideRequestService {
         next: (response) => {
           console.log('Ride requests response:', response);
           
-          // Handle different response formats
           let requests: RideRequest[] = [];
           
           if (Array.isArray(response)) {
@@ -65,7 +59,6 @@ export class RideRequestService {
             requests = [];
           }
 
-          // Update state
           this.allRequestsSubject.next(requests);
           const pendingRequests = requests.filter(r => 
             r.status === 'Pending' || r.status === 'pending' || r.status === 'PENDING'
@@ -84,7 +77,6 @@ export class RideRequestService {
           console.error('Failed to load ride requests:', err);
           this.driverService.setError(`Failed to load ride requests: ${err.message || 'Unknown error'}`);
           
-          // Clear requests arrays on error
           this.allRequestsSubject.next([]);
           this.pendingRequestsSubject.next([]);
           observer.error(err);
@@ -105,10 +97,8 @@ export class RideRequestService {
         next: (response) => {
           this.driverService.setMessage('Ride request accepted successfully!');
           
-          // Refresh requests
           this.loadRideRequests().subscribe();
           
-          // Send notification to rider
           const request = this.pendingRequests.find(r => r.request_id === requestId);
           if (request) {
             this.driverService.sendNotificationToRider(
@@ -144,10 +134,8 @@ export class RideRequestService {
         next: (response) => {
           this.driverService.setMessage('Ride request rejected');
           
-          // Refresh requests
           this.loadRideRequests().subscribe();
           
-          // Send notification to rider
           const request = this.pendingRequests.find(r => r.request_id === requestId);
           if (request) {
             this.driverService.sendNotificationToRider(
@@ -171,22 +159,19 @@ export class RideRequestService {
     });
   }
 
-  // Start polling for ride requests
   startRequestPolling() {
     console.log('Starting request polling...');
-    this.stopRequestPolling(); // Stop any existing polling
-    
-    // Load immediately
+    this.stopRequestPolling(); 
+
     this.loadRideRequests().subscribe();
     
-    // Start interval polling
+
     this.requestPollingInterval = setInterval(() => {
       console.log('Polling for ride requests...');
       this.loadRideRequests().subscribe();
     }, this.POLLING_INTERVAL);
   }
 
-  // Stop polling for ride requests
   stopRequestPolling() {
     if (this.requestPollingInterval) {
       console.log('Stopping request polling...');

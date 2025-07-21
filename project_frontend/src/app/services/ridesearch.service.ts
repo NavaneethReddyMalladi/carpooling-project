@@ -22,13 +22,11 @@ export interface Ride {
 export class RideSearchService {
   private readonly BASE_URL = 'http://127.0.0.1:42099';
 
-  // State subjects
   private ridesSubject = new BehaviorSubject<Ride[]>([]);
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   private selectedRideSubject = new BehaviorSubject<Ride | null>(null);
   private isBookingSubject = new BehaviorSubject<boolean>(false);
   
-  // Public observables
   rides$ = this.ridesSubject.asObservable();
   isLoading$ = this.isLoadingSubject.asObservable();
   selectedRide$ = this.selectedRideSubject.asObservable();
@@ -39,13 +37,13 @@ export class RideSearchService {
     private riderService: RiderService
   ) {}
 
-  // Getters for current values
+
   get rides() { return this.ridesSubject.value; }
   get isLoading() { return this.isLoadingSubject.value; }
   get selectedRide() { return this.selectedRideSubject.value; }
   get isBooking() { return this.isBookingSubject.value; }
 
-  // Load destination stops based on source
+ 
   loadDestinationStops(sourceStopId: string): Observable<Stop[]> {
     return new Observable(observer => {
       this.http.get<any>(`${this.BASE_URL}/route-stops/destinations`, {
@@ -86,7 +84,7 @@ export class RideSearchService {
     });
   }
 
-  // Search for rides
+  
   searchRides(sourceStopId: string, destStopId: string): Observable<Ride[]> {
     return new Observable(observer => {
       this.isLoadingSubject.next(true);
@@ -120,11 +118,11 @@ export class RideSearchService {
     });
   }
 
-  // Select a ride for booking
+  
   selectRide(ride: Ride) {
     this.selectedRideSubject.next(ride);
     
-    // Update rider details with ride stops
+   
     const currentDetails = this.riderService.riderDetails;
     const updatedDetails = {
       ...currentDetails,
@@ -132,15 +130,12 @@ export class RideSearchService {
       destination_stop_id: ride.destination_stop_id
     };
     
-    // Update in service (you might want to add a method for this in RiderService)
   }
 
-  // Clear selected ride
   clearSelectedRide() {
     this.selectedRideSubject.next(null);
   }
 
-  // Book a ride
   bookRide(ride: Ride): Observable<any> {
     return new Observable(observer => {
       this.isBookingSubject.next(true);
@@ -191,7 +186,6 @@ export class RideSearchService {
     });
   }
 
-  // Refresh search results
   refreshResults(sourceStopId: string, destStopId: string) {
     this.searchRides(sourceStopId, destStopId).subscribe();
   }

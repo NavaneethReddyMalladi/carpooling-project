@@ -87,7 +87,7 @@ export class DriverService {
   get message() { return this.messageSubject.value; }
   get error() { return this.errorSubject.value; }
 
-  // Setters
+
   setMessage(message: string) { this.messageSubject.next(message); }
   setError(error: string) { this.errorSubject.next(error); }
   clearMessages() { 
@@ -150,56 +150,10 @@ export class DriverService {
     });
   }
 
-  // Toggle online status
-  toggleOnlineStatus(): Observable<any> {
-    const newStatus = !this.isOnline;
-    const token = localStorage.getItem('token');
-    const driverId = this.driverDetails.driver_id;
-    
-    return new Observable(observer => {
-      this.http.patch(`${this.BASE_URL}/users/${driverId}`, 
-        { status: newStatus ? 'online' : 'offline' },
-        { headers: { Authorization: `Bearer ${token}` } }
-      ).subscribe({
-        next: () => {
-          this.isOnlineSubject.next(newStatus);
-          const updatedDetails = { ...this.driverDetails, status: newStatus ? 'online' : 'offline' };
-          this.driverDetailsSubject.next(updatedDetails);
-          this.setMessage(`You are now ${newStatus ? 'online' : 'offline'}`);
-          observer.next(newStatus);
-          observer.complete();
-        },
-        error: (err) => {
-          // Fallback to drivers endpoint
-          this.http.patch(`${this.BASE_URL}/drivers/${driverId}/status`, 
-            { status: newStatus ? 'online' : 'offline' },
-            { headers: { Authorization: `Bearer ${token}` } }
-          ).subscribe({
-            next: () => {
-              this.isOnlineSubject.next(newStatus);
-              const updatedDetails = { ...this.driverDetails, status: newStatus ? 'online' : 'offline' };
-              this.driverDetailsSubject.next(updatedDetails);
-              this.setMessage(`You are now ${newStatus ? 'online' : 'offline'}`);
-              observer.next(newStatus);
-              observer.complete();
-            },
-            error: (err2) => {
-              console.error('Failed to update status:', err2);
-              this.setError('Unable to update online status. Please try again.');
-              observer.error(err2);
-            }
-          });
-        }
-      });
-    });
-  }
-
-  // Load stops
   loadStops(): Observable<any[]> {
     return this.http.get<any[]>(`${this.BASE_URL}/stops`);
   }
 
-  // Load source stops
   loadSourceStops(): Observable<Stop[]> {
     return new Observable(observer => {
       this.http.get<any[]>(`${this.BASE_URL}/route-stops/sources`).subscribe({
@@ -220,7 +174,6 @@ export class DriverService {
     });
   }
 
-  // Load destination stops
   loadDestinationStops(sourceStopId: string): Observable<Stop[]> {
     return new Observable(observer => {
       this.http.get<any>(`${this.BASE_URL}/route-stops/destinations`, {
@@ -241,7 +194,6 @@ export class DriverService {
             )
           );
 
-          // You'll need to pass stops data here or load it separately
           this.loadStops().subscribe(stops => {
             const destStops = uniqueDestIds.map((stopId: string) => {
               const stopInfo = stops.find(s => String(s.stop_id) === stopId);
@@ -263,19 +215,16 @@ export class DriverService {
     });
   }
 
-  // Get stop name utility
   getStopName(stopId: string, stops: any[]): string {
     const stop = stops.find(s => s.stop_id == stopId);
     return stop ? stop.stop_name : `Stop ${stopId}`;
   }
 
-  // Format time utility
   formatTime(timeString: string): string {
     const date = new Date(timeString);
     return date.toLocaleString();
   }
 
-  // Get relative time utility
   getRelativeTime(timeString: string): string {
     const now = new Date();
     const time = new Date(timeString);
@@ -287,7 +236,6 @@ export class DriverService {
     return `${Math.floor(diffInHours / 24)} days ago`;
   }
 
-  // Send notification to rider
   sendNotificationToRider(riderId: number, messageText: string): Observable<any> {
     const token = localStorage.getItem('token');
     const messageData = {
@@ -301,7 +249,6 @@ export class DriverService {
     });
   }
 
-  // Play notification sound
   playNotificationSound() {
     try {
       const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmUeBC+J2fPCdSYEK4DL8NiKOAkasKjm7bJgGgU7k9n0unEpBSl8yO3eizEHHnPI7eeXSQwOUqjn77BdGAU9jNrsx2wgBCl+x+3fjzQHG3DF8eeSSgwKTqHh5KVlGgc4mtv0v2kfBit82e7elEMNE1qi5O2eSgoKTqHj5ahVFgtIqd3v1W8aBC16zNzYijMHG3DL8OOaUgsEVKjo1nIpBy16kNvzunUqBSp9yOzfhzEKGW/G7eSXTQsIS6Hl7aNcGgU8jNnuyWwgBCh9x+7ghzIKGXPI7+aVSQsLUKfn76hZFQlHpta0MnkfBCt8xO3bgjMJGnDI8eiSUgwJVKvp3ZlMEAhOo+PqnlgLBzGN2fXKfScBJ33H8dyPQgwSTKDi6alpHgc2k9n0w2sfBSl7zOzeiTcJGG+97d6ONggZdMLx14xADAhRpuHpqVAKDlap2urHfSwEB1Wk5Om0X'); 

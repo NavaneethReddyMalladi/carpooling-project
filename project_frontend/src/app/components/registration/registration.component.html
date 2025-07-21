@@ -21,7 +21,6 @@
         <p class="subtitle">Join our <span style="color: rgb(0, 180, 225, 0.959);">CarConnect</span> platform</p>
 
         <form #registerForm="ngForm" (ngSubmit)="onSubmit(registerForm)">
-          <!-- Error Message Display -->
           <div class="error-message" *ngIf="errorMessage">
             {{ errorMessage }}
           </div>
@@ -90,7 +89,6 @@
             />
           </div>
 
-          <!-- Driver-only fields -->
           <div *ngIf="isDriver">
             <div class="input-group">
               <label for="license">Driver License Number</label>

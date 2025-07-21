@@ -2,7 +2,7 @@ from flask import jsonify
 from sqlalchemy.exc import SQLAlchemyError,IntegrityError
 from app.main.models.user import User
 from app.main.models.drivers import Drivers
-from app import db    #update based on ypur db file
+from app import db  
 from werkzeug.security import generate_password_hash,check_password_hash
 import re
 
@@ -11,13 +11,15 @@ def is_valid_email(email):
 
 def is_valid_phone(phone):
     return re.match(r"^\d{1,}$", phone)
+
+
+
 def get_user_by_id(user_id):
     try:
         user = User.query.get(user_id)
         if not user:
             return jsonify({"message": "User not found"}), 404
 
-        # Fetch driver details using user_id
         driver = Drivers.query.filter_by(user_id=user_id).first()
 
         user_data = {
@@ -29,7 +31,7 @@ def get_user_by_id(user_id):
             "gender": user.gender,
             "role_id": user.role_id,
             "create_datetime": user.create_datetime,
-            "driver_id": driver.driver_id if driver else None  # Add driver_id if exists
+            "driver_id": driver.driver_id if driver else None  
         }
 
         return jsonify(user_data), 200
@@ -58,6 +60,8 @@ def get_all_users():
     except Exception as e:
         print(e)
         return jsonify({"message": "Internal Server Error"}), 500
+    
+
 
 def update_user(user_id,data):
     try:
@@ -74,11 +78,6 @@ def update_user(user_id,data):
         
         user.user_name=data.get('user_name',user.user_name)
         user.email = email or user.email
-        # if email:
-        #     user.email=email
-        # else:
-        #     user.email=user.email
-
         user.phone_number = phone or user.phone_number
         user.gender = data.get('gender', user.gender)
         user.is_verified = data.get('is_verified', user.is_verified)
@@ -96,6 +95,8 @@ def update_user(user_id,data):
     except Exception as e:
         print(e)
         return jsonify({"message": "Internal Server Error"}), 500
+
+
 
 def delete_user(user_id):
     try:

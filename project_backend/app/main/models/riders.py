@@ -14,7 +14,8 @@
 #     create_datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 #     update_datetime = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
-#     # 🔗 Relationships
+
+
 #     # user = db.relationship('User', backref=db.backref('rider', uselist=False, lazy=True))
 #     # rides = db.relationship('Rides', backref='rider', lazy=True)
 

@@ -1,19 +1,7 @@
 <div class="main-container">
   <div class="container">
     <div class="form-box">
-      <!-- Back Button -->
-      <!-- <div class="back-button-container">
-        <button 
-          type="button" 
-          class="back-button" 
-          (click)="goToHome()"
-          title="Go to Home"
-        >
-          <span class="back-icon">←</span>
-          Back to Home
-        </button>
-      </div> -->
-      <!-- <img src="logo.png" alt="CarConnect" class="logo-img"> -->
+  
 
       <h2>Welcome Back</h2>
       <p class="subtitle">Login to your 
@@ -21,7 +9,7 @@
       </p>
 
       <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
-        <!-- Error Message Display -->
+
         <div class="error-message" *ngIf="errorMessage">
           {{ errorMessage }}
         </div>
@@ -48,7 +36,7 @@
           />
         </div>
 
-        <!-- Forgot Password Link -->
+
         <div class="forgot-password">
           <a href="#" (click)="onForgotPassword(); $event.preventDefault()">
             Forgot Password?

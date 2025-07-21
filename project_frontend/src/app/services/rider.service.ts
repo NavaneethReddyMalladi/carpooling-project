@@ -28,7 +28,6 @@ export interface Stop {
 export class RiderService {
   private readonly BASE_URL = 'http://127.0.0.1:42099';
   
-  // Shared state
   private riderDetailsSubject = new BehaviorSubject<RiderDetails>({
     rider_id: '',
     rider_name: '',
@@ -46,8 +45,7 @@ export class RiderService {
   private messageSubject = new BehaviorSubject<string>('');
   private messageTypeSubject = new BehaviorSubject<'success' | 'error'>('success');
   private stopsSubject = new BehaviorSubject<any[]>([]);
-  
-  // Public observables
+
   riderDetails$ = this.riderDetailsSubject.asObservable();
   message$ = this.messageSubject.asObservable();
   messageType$ = this.messageTypeSubject.asObservable();
@@ -55,13 +53,11 @@ export class RiderService {
 
   constructor(private http: HttpClient) {}
 
-  // Getters for current values
   get riderDetails() { return this.riderDetailsSubject.value; }
   get message() { return this.messageSubject.value; }
   get messageType() { return this.messageTypeSubject.value; }
   get stops() { return this.stopsSubject.value; }
 
-  // Message management
   showMessage(text: string, type: 'success' | 'error') {
     this.messageSubject.next(text);
     this.messageTypeSubject.next(type);
@@ -75,7 +71,7 @@ export class RiderService {
     this.messageSubject.next('');
   }
 
-  // Initialize rider data
+
   loadRiderData(): Promise<void> {
     return new Promise((resolve, reject) => {
       const token = localStorage.getItem('token');
@@ -134,7 +130,7 @@ export class RiderService {
     });
   }
 
-  // Load stops data
+
   loadStops(): Observable<any[]> {
     return new Observable(observer => {
       this.http.get<any[]>(`${this.BASE_URL}/stops`).subscribe({
@@ -153,7 +149,6 @@ export class RiderService {
     });
   }
 
-  // Load source stops
   loadSourceStops(): Observable<Stop[]> {
     return new Observable(observer => {
       this.http.get<any[]>(`${this.BASE_URL}/route-stops/sources`).subscribe({
@@ -174,7 +169,7 @@ export class RiderService {
     });
   }
 
-  // Update rider profile
+
   updateProfile(updateData: Partial<RiderDetails>): Observable<any> {
     const token = localStorage.getItem('token');
     const riderId = this.riderDetails.rider_id;
@@ -200,7 +195,6 @@ export class RiderService {
         }
       }).subscribe({
         next: (response) => {
-          // Update local state
           const updatedDetails = { ...this.riderDetails, ...updateData };
           this.riderDetailsSubject.next(updatedDetails);
           this.showMessage('Profile updated successfully!', 'success');
@@ -216,13 +210,12 @@ export class RiderService {
     });
   }
 
-  // Get stop name utility
   getStopName(stopId: string): string {
     const stop = this.stops.find(s => s.stop_id === stopId);
     return stop ? stop.stop_name : `Stop ${stopId}`;
   }
 
-  // Format date time utility
+
   formatDateTime(dateString: string): string {
     try {
       const date = new Date(dateString);
@@ -235,7 +228,7 @@ export class RiderService {
     }
   }
 
-  // Format message time utility
+
   formatMessageTime(dateString: string): string {
     try {
       const date = new Date(dateString);

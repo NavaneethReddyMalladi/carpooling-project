@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { Subscription, filter } from 'rxjs';
+
 import { DriverService } from '../../../services/driver.service';
 import { RideRequestService } from '../../../services/rideRequests.service';
-import { RideService } from '../../../services/ride.service'; // Add this import if available
+import { RideService } from '../../../services/ride.service';
 import { DriverSideBarComponent } from '../driver-side-bar/driver-side-bar.component';
 
 @Component({
@@ -20,156 +20,137 @@ export class DriverComponent implements OnInit, OnDestroy {
   isOnline = false;
   message = '';
   error = '';
-  showProfileMenu = false;
   activeRides: any[] = [];
   pendingRequests: any[] = [];
-  newRequestsCount = 0;
-  showRequestNotification = false;
 
-  private subscriptions: Subscription[] = [];
+  showProfileMenu = false;
+  showRequestNotification = false;
+  newRequestsCount = 0;
+  private previousRequestCount = 0;
+
+  private pollingInterval: any;
+  private messageTimeout: any;
+  private errorTimeout: any;
+  private notificationTimeout: any;
 
   constructor(
     private driverService: DriverService,
     private rideRequestService: RideRequestService,
-    private rideService: RideService, // Add this if available
+    private rideService: RideService,
     private router: Router,
     @Inject(PLATFORM_ID) private platformId: object
   ) {}
 
   ngOnInit() {
-    this.initializeComponent();
-    this.setupSubscriptions();
+    this.loadDriverData();
+    this.startDataPolling();
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.stopDataPolling();
+    this.clearTimeouts();
     this.rideRequestService.stopRequestPolling();
   }
 
-  private initializeComponent() {
-    // Load driver data
-    this.driverService.loadDriverData().then(() => {
-      // Start polling if online
-      if (this.driverService.isOnline) {
-        this.rideRequestService.startRequestPolling();
-      }
-      // Load active rides
-      this.loadActiveRides();
-    }).catch(error => {
-      console.error('Failed to load driver data:', error);
-      this.redirectToLogin();
-    });
+  private startDataPolling() {
+    this.pollingInterval = setInterval(() => {
+      this.updateAllData();
+    }, 1000);
   }
 
-  private setupSubscriptions() {
-    // Subscribe to driver details
-    this.subscriptions.push(
-      this.driverService.driverDetails$.subscribe(details => {
-        this.driverDetails = details;
-      })
-    );
+  private stopDataPolling() {
+    if (this.pollingInterval) {
+      clearInterval(this.pollingInterval);
+    }
+  }
 
-    // Subscribe to online status
-    this.subscriptions.push(
-      this.driverService.isOnline$.subscribe(isOnline => {
-        this.isOnline = isOnline;
-        if (isOnline) {
+  private clearTimeouts() {
+    if (this.messageTimeout) clearTimeout(this.messageTimeout);
+    if (this.errorTimeout) clearTimeout(this.errorTimeout);
+    if (this.notificationTimeout) clearTimeout(this.notificationTimeout);
+  }
+
+  private updateAllData() {
+    this.updateDriverDetails();
+    this.updateActiveRides();
+    this.handleNewRequests();
+    this.handleMessages();
+    this.handleErrors();
+  }
+
+  private updateDriverDetails() {
+    this.driverDetails = this.driverService.driverDetails;
+  }
+
+  private updateActiveRides() {
+    this.activeRides = this.rideService.activeRides;
+  }
+
+  private handleNewRequests() {
+    const currentRequests = this.rideRequestService.pendingRequests;
+    this.pendingRequests = currentRequests;
+
+    if (currentRequests.length > this.previousRequestCount && this.previousRequestCount > 0) {
+      this.newRequestsCount = currentRequests.length - this.previousRequestCount;
+      this.showRequestNotification = true;
+      this.driverService.playNotificationSound();
+
+      if (this.notificationTimeout) clearTimeout(this.notificationTimeout);
+      this.notificationTimeout = setTimeout(() => {
+        this.showRequestNotification = false;
+        this.newRequestsCount = 0;
+      }, 5000);
+    }
+    this.previousRequestCount = currentRequests.length;
+  }
+
+  private handleMessages() {
+    const currentMessage = this.driverService.message;
+    if (currentMessage && currentMessage !== this.message) {
+      this.message = currentMessage;
+      if (this.messageTimeout) clearTimeout(this.messageTimeout);
+      this.messageTimeout = setTimeout(() => {
+        this.driverService.setMessage('');
+        this.message = '';
+      }, 3000);
+    } else if (!currentMessage && this.message) {
+      this.message = '';
+    }
+  }
+
+  private handleErrors() {
+    const currentError = this.driverService.error;
+    if (currentError && currentError !== this.error) {
+      this.error = currentError;
+      if (this.errorTimeout) clearTimeout(this.errorTimeout);
+      this.errorTimeout = setTimeout(() => {
+        this.driverService.setError('');
+        this.error = '';
+      }, 5000);
+    } else if (!currentError && this.error) {
+      this.error = '';
+    }
+  }
+
+  private loadDriverData() {
+    this.driverService.loadDriverData()
+      .then(() => {
+        this.updateAllData();
+        if (this.driverService.isOnline) {
           this.rideRequestService.startRequestPolling();
-        } else {
-          this.rideRequestService.stopRequestPolling();
         }
+
+        this.rideService.loadDriverRides().subscribe({
+          next: rides => console.log('Active rides loaded:', rides),
+          error: err => console.error('Failed to load active rides:', err)
+        });
       })
-    );
-
-    // Subscribe to messages
-    this.subscriptions.push(
-      this.driverService.message$.subscribe(message => {
-        this.message = message;
-        if (message) {
-          setTimeout(() => this.driverService.setMessage(''), 3000);
-        }
-      })
-    );
-
-    // Subscribe to errors
-    this.subscriptions.push(
-      this.driverService.error$.subscribe(error => {
-        this.error = error;
-        if (error) {
-          setTimeout(() => this.driverService.setError(''), 5000);
-        }
-      })
-    );
-
-    // Subscribe to pending requests for badge count
-    this.subscriptions.push(
-      this.rideRequestService.pendingRequests$.subscribe(requests => {
-        const previousCount = this.pendingRequests.length;
-        this.pendingRequests = requests;
-        
-        // Show notification for new requests
-        if (requests.length > previousCount && previousCount > 0) {
-          this.newRequestsCount = requests.length - previousCount;
-          this.showRequestNotification = true;
-          this.driverService.playNotificationSound();
-          
-          setTimeout(() => {
-            this.showRequestNotification = false;
-            this.newRequestsCount = 0;
-          }, 5000);
-        }
-      })
-    );
-
-    // Subscribe to active rides if RideService is available
-    if (this.rideService) {
-      this.subscriptions.push(
-        this.rideService.activeRides$.subscribe(rides => {
-          this.activeRides = rides;
-        })
-      );
-    }
-  }
-
-  // Load active rides data
-  private loadActiveRides() {
-    if (this.rideService) {
-      this.rideService.loadDriverRides().subscribe({
-        next: (rides) => {
-          console.log('Active rides loaded:', rides);
-        },
-        error: (err) => {
-          console.error('Failed to load active rides:', err);
-        }
+      .catch(error => {
+        console.error('Failed to load driver data:', error);
+        this.redirectToLogin();
       });
-    }
   }
 
-  // Check if current route is active
-  isActiveRoute(route: string): boolean {
-    if (route === '/driver') {
-      return this.router.url === '/driver' || this.router.url === '/driver/';
-    }
-    return this.router.url.startsWith(route);
-  }
-
-  // Toggle online/offline status
-  toggleOnlineStatus() {
-    this.driverService.toggleOnlineStatus().subscribe({
-      next: (isOnline) => {
-        // Status updated successfully
-        if (!isOnline) {
-          // Clear requests when going offline
-          this.pendingRequests = [];
-        }
-      },
-      error: (err) => {
-        console.error('Failed to toggle online status:', err);
-      }
-    });
-  }
-
-  // Profile menu methods
   toggleProfileMenu() {
     this.showProfileMenu = !this.showProfileMenu;
   }
@@ -194,8 +175,14 @@ export class DriverComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Close notification
   closeRequestNotification() {
     this.showRequestNotification = false;
+  }
+
+  isActiveRoute(route: string): boolean {
+    if (route === '/driver') {
+      return this.router.url === '/driver' || this.router.url === '/driver/';
+    }
+    return this.router.url.startsWith(route);
   }
 }

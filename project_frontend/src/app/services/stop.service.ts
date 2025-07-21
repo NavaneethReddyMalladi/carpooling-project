@@ -11,7 +11,7 @@ export interface Stop {
   providedIn: 'root'
 })
 export class StopService {
-  private apiUrl = '/stops';  // Adjust base URL as needed
+  private apiUrl = '/stops';
 
   constructor(private http: HttpClient) { }
 

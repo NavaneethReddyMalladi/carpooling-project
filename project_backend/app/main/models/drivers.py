@@ -1,7 +1,5 @@
-from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
-# from app.main.models.rides import Rides
-# from app.main.models.user import User
+
 
 from app import db
 
@@ -16,6 +14,7 @@ class Drivers(db.Model):
     create_datetime = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     update_datetime = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
-    # 🔗 Relationships
-    # user = db.relationship('User', backref=db.backref('driver', uselist=False, lazy=True))
+ 
+
+
     rides = db.relationship('Rides', backref='driver', lazy=True)

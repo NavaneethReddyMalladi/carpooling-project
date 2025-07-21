@@ -31,13 +31,13 @@ export class RegistrationComponent implements OnInit {
 
   toggleRole(role: string) {
     this.isDriver = role === 'driver';
-    this.errorMessage = ''; // Clear error when switching roles
+    this.errorMessage = ''; 
   }
 
   onSubmit(form: any) {
     if (form.invalid) return;
 
-    this.errorMessage = ''; // Clear previous error
+    this.errorMessage = ''; 
     this.isLoading = true;
 
     const formData = form.value;
@@ -50,7 +50,7 @@ export class RegistrationComponent implements OnInit {
       role_id: this.isDriver ? 1 : 2
     };
 
-    // Include driver fields only if user is registering as driver
+ 
     if (this.isDriver) {
       payload.license_number = formData.license;
       payload.vehicle_type = formData.vehicle;
