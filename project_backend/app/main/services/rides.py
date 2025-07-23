@@ -190,7 +190,9 @@ def rider_search(origin_stop_id, destination_stop_id):
 
         result.append({
             "ride_id": ride.ride_id,
-            "driver_name": getattr(driver, 'driver_name', 'Unknown'),
+            "driver_name": ride.driver.driver_name if ride.driver else "Unknown",
+
+            "driver_id":ride.driver_id,
             "origin_stop_id": ride.origin_stop_id,
             "origin_name": origin.stop_name if origin else "Unknown",
             "destination_stop_id": ride.destination_stop_id,

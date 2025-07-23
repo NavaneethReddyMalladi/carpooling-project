@@ -21,10 +21,34 @@ export interface Stop {
   id: string;
   name: string;
 }
+export interface RideRequest {
+  request_id: number;
+  ride_id: number;
+  rider_id: string;
+  status: string;
+  requested_at: string;
+  ride: {
+    origin_stop_id: string;
+    destination_stop_id: string;
+    departure_time: string;
+    available_seats: number;
+    price?: number;
+  };
+  driver: {
+    driver_id: string;
+    driver_name: string;
+    phone?: string;
+  };
+}
 
 @Injectable({
   providedIn: 'root'
 })
+
+
+
+
+
 export class RiderService {
   private readonly BASE_URL = 'http://127.0.0.1:42099';
   
@@ -41,6 +65,7 @@ export class RiderService {
     start_stop_id: '',
     destination_stop_id: ''
   });
+  
   
   private messageSubject = new BehaviorSubject<string>('');
   private messageTypeSubject = new BehaviorSubject<'success' | 'error'>('success');
@@ -97,6 +122,7 @@ export class RiderService {
       }
     });
   }
+  
 
   private loadRiderDetails(riderId: string, token: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -119,6 +145,7 @@ export class RiderService {
           };
           
           this.riderDetailsSubject.next(riderDetails);
+          localStorage.setItem('riderDetails', JSON.stringify(riderDetails)); // ✅ Add this line
           resolve();
         },
         error: (err) => {
@@ -239,5 +266,110 @@ export class RiderService {
     } catch (error) {
       return dateString;
     }
+  }
+  
+  loadRiderRequests(): Observable<RideRequest[]> {
+    return new Observable(observer => {
+      const token = localStorage.getItem('token');
+      const riderId = this.riderDetails.rider_id;
+      
+      if (!token || !riderId) {
+        console.error('No token or rider ID found for ride requests');
+        observer.error('Authentication required');
+        return;
+      }
+  
+      const endpoint = `${this.BASE_URL}/ride-requests/rider/${riderId}`;
+      
+      this.http.get<RideRequest[]>(endpoint, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).subscribe({
+        next: (response) => {
+          console.log('Rider requests response:', response);
+          
+          let requests: RideRequest[] = [];
+          
+          if (Array.isArray(response)) {
+            requests = response;
+          } else if (response && Array.isArray((response as any).requests)) {
+            requests = (response as any).requests;
+          } else if (response && Array.isArray((response as any).data)) {
+            requests = (response as any).data;
+          } else {
+            console.log('Unexpected response format:', response);
+            requests = [];
+          }
+  
+          console.log('Processed ride requests:', {
+            total: requests.length,
+            requests: requests
+          });
+          
+          observer.next(requests);
+          observer.complete();
+        },
+        error: (err) => {
+          console.error('Failed to load ride requests:', err);
+          this.showMessage(`Failed to load ride requests: ${err.message || 'Unknown error'}`, 'error');
+          observer.error(err);
+        }
+      });
+    });
+  }
+  
+  /**
+   * Cancel a ride request
+   */
+  cancelRideRequest(requestId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    
+    return new Observable(observer => {
+      this.http.patch(`${this.BASE_URL}/ride-requests/${requestId}`,
+        { status: 'Cancelled' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      ).subscribe({
+        next: (response) => {
+          this.showMessage('Ride request cancelled successfully!', 'success');
+          observer.next(response);
+          observer.complete();
+        },
+        error: (err) => {
+          console.error('Failed to cancel ride request:', err);
+          this.showMessage('Failed to cancel ride request', 'error');
+          observer.error(err);
+        }
+      });
+    });
+  }
+  
+  /**
+   * Create a new ride request
+   */
+  createRideRequest(rideId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    const riderId = this.riderDetails.rider_id;
+    
+    return new Observable(observer => {
+      const payload = {
+        ride_id: rideId,
+        rider_id: riderId,
+        status: 'Pending'
+      };
+  
+      this.http.post(`${this.BASE_URL}/ride-requests`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).subscribe({
+        next: (response) => {
+          this.showMessage('Ride request sent successfully!', 'success');
+          observer.next(response);
+          observer.complete();
+        },
+        error: (err) => {
+          console.error('Failed to create ride request:', err);
+          this.showMessage('Failed to send ride request', 'error');
+          observer.error(err);
+        }
+      });
+    });
   }
 }

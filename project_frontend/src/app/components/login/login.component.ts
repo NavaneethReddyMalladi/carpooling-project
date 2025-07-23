@@ -46,8 +46,8 @@ export class LoginComponent {
   }
 
   onForgotPassword() {
-    // Navigate to forgot password page or implement forgot password logic
+
     this.router.navigate(['/forgot-password']);
-    // Alternative: You can implement a modal or inline forgot password functionality
+    
   }
 }

@@ -10,7 +10,7 @@
   }
   
   .profile-panel h2 {
-    color: #000000;
+    color: #3b82f6;
     margin-bottom: 1.5rem;
     font-size: 1.5rem;
     font-weight: 600;
@@ -31,7 +31,7 @@
     flex-direction: column;
     gap: 0.5rem;
     font-weight: 500;
-    color: #000000;
+    color: #3b82f6;
     font-size: 0.95rem;
   }
   
@@ -48,7 +48,7 @@
   .profile-panel input:focus,
   .profile-panel select:focus {
     outline: none;
-    border-color: #000000;
+    border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
   }
   
@@ -81,7 +81,7 @@
   }
   
   .profile-info strong {
-    color: #000000;
+    color: #3b82f6;
     font-weight: 500;
     margin-right: 0.5rem;
     display: inline-block;
@@ -97,9 +97,9 @@
   }
   
   .btn {
-    background: #000000;
+    background: #3b82f6;
     color: #ffffff;
-    border: 1px solid #000000;
+    border: 1px solid #3b82f6;
     padding: 0.75rem 1.5rem;
     border-radius: 4px;
     cursor: pointer;
@@ -132,8 +132,8 @@
   
   .btn.cancel:hover {
     background: #f8f9fa;
-    color: #000000;
-    border-color: #000000;
+    color: #3b82f6;
+    border-color: #3b82f6;
   }
   
   /* Form Button Container */
@@ -289,7 +289,7 @@
   .profile-panel input:focus,
   .profile-panel select:focus,
   .profile-panel .btn:focus {
-    outline: 2px solid #000000;
+    outline: 2px solid #3b82f6;
     outline-offset: 2px;
   }
   

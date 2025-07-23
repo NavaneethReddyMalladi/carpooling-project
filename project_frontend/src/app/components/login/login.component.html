@@ -5,7 +5,7 @@
 
       <h2>Welcome Back</h2>
       <p class="subtitle">Login to your 
-        <span style="color: rgba(0, 204, 255, 0.959);">CarConnect</span> account
+        <span style="color: #3b82f6;">CarConnect</span> account
       </p>
 
       <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
@@ -46,6 +46,7 @@
         <button 
           type="submit" 
           class="btn" 
+          style="color:  black"
           [disabled]="isLoading || !loginForm.valid"
         >
           {{ isLoading ? 'Logging in...' : 'Login' }}
@@ -56,7 +57,7 @@
           <a routerLink="/register">Sign up</a>
         </p>
       </form>
-      <div class="back-button-container">
+      <!-- <div class="back-button-container">
         <button 
           type="button" 
           class="back-button" 
@@ -66,7 +67,7 @@
           <span class="back-icon">←</span>
           Back to Home
         </button>
-      </div>
+      </div> -->
     </div>
 
     <div class="image-box">
