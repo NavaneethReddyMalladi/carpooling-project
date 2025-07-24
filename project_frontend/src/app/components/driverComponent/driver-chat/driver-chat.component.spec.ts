@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RiderSidebarComponent } from './rider-sidebar.component';
+import { DriverChatComponent } from './driver-chat.component';
 
-describe('RiderSidebarComponent', () => {
-  let component: RiderSidebarComponent;
-  let fixture: ComponentFixture<RiderSidebarComponent>;
+describe('DriverChatComponent', () => {
+  let component: DriverChatComponent;
+  let fixture: ComponentFixture<DriverChatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RiderSidebarComponent]
+      imports: [DriverChatComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RiderSidebarComponent);
+    fixture = TestBed.createComponent(DriverChatComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -20,5 +20,4 @@ describe('RiderSidebarComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-  
 });

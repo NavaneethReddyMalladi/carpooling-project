@@ -181,7 +181,7 @@ export class RiderService {
       this.http.get<any[]>(`${this.BASE_URL}/route-stops/sources`).subscribe({
         next: (sourcesData) => {
           const sourceStops = sourcesData.map(stop => ({
-            id: stop.stop_id,
+            id:stop.stop_id,
             name: stop.stop_name
           }));
           observer.next(sourceStops);

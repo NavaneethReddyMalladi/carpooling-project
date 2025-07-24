@@ -55,6 +55,12 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class DriverService {
+  formatMessageTime(dateString: string): string {
+    throw new Error('Method not implemented.');
+  }
+  showMessage(arg0: string, arg1: string) {
+      throw new Error('Method not implemented.');
+  }
   private readonly BASE_URL = 'http://127.0.0.1:42099';
   
   // Shared state

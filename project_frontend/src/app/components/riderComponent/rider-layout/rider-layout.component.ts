@@ -36,6 +36,7 @@ export class RiderLayoutComponent implements OnInit, OnDestroy {
     this.setupSubscriptions();
   }
 
+
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.chatService.stopChatPolling();

@@ -1,0 +1,88 @@
+<!-- Driver Chat Section -->
+<div class="chat-container">
+    <div class="chat-header-section">
+      <h2>Messages</h2>
+      <button class="back-btn" routerLink="/driver">
+        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+      </button>
+    </div>
+  
+    <div class="chat-content">
+      <!-- Chat Sessions List -->
+      <div class="chat-sessions" *ngIf="chatSessions.length > 0">
+        <h4>Active Conversations</h4>
+        <div class="chat-session-list">
+          <div
+            *ngFor="let session of chatSessions"
+            class="chat-session-item"
+            [class.active]="session.isActive"
+            (click)="selectChatSession(session)"
+          >
+            <div class="session-avatar">
+              <span>{{ session.rider_name[0] | uppercase }}</span>
+            </div>
+            <div class="session-info">
+              <h5>{{ session.rider_name }}</h5>
+              <p *ngIf="session.ride_id">Ride #{{ session.ride_id }}</p>
+              <p *ngIf="session.messages.length > 0" class="last-message">
+                {{ session.messages[session.messages.length - 1].message_text }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- No Chat Sessions Message -->
+      <div *ngIf="chatSessions.length === 0" class="no-chats">
+        <div class="no-chats-icon">💬</div>
+        <h3>No Active Conversations</h3>
+        <p>Start accepting rides to chat with riders!</p>
+        <button class="btn" routerLink="/driver">View Rides</button>
+      </div>
+  
+      <!-- Active Chat Session -->
+      <div *ngIf="activeChatSession" class="chat-conversation">
+        <div class="conversation-header">
+          <div class="conversation-avatar">
+            <span>{{ activeChatSession.rider_name[0] | uppercase }}</span>
+          </div>
+          <div class="conversation-info">
+            <h4>{{ activeChatSession.rider_name }}</h4>
+            <p *ngIf="activeChatSession.ride_id">Ride #{{ activeChatSession.ride_id }}</p>
+          </div>
+        </div>
+  
+        <div class="chat-messages" #chatMessages>
+          <div
+            *ngFor="let message of activeChatSession.messages"
+            class="message"
+            [class.sent]="isMessageFromCurrentUser(message)"
+            [class.received]="!isMessageFromCurrentUser(message)"
+          >
+            <div class="message-content">
+              <p>{{ message.message_text }}</p>
+              <span class="message-time">{{ formatMessageTime(message.sent_at) }}</span>
+            </div>
+          </div>
+        </div>
+  
+        <div class="chat-input">
+          <input
+            type="text"
+            [(ngModel)]="newMessage"
+            placeholder="Type a message..."
+            (keyup.enter)="sendMessage()"
+            (keyup)="onKeyUp($event)"
+            [disabled]="isSendingMessage"
+          >
+          <button
+            (click)="sendMessage()"
+            [disabled]="!newMessage.trim() || isSendingMessage"
+            class="send-btn"
+          >
+            {{ isSendingMessage ? '...' : 'Send' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

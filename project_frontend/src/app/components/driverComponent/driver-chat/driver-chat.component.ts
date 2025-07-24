@@ -3,30 +3,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ChatService, ChatSession, Message } from '../../../services/riderchat.service';
-import { RiderService } from '../../../services/rider.service';
+import { DriverChatService, ChatSession, Message } from '../../../services/driverchat.service';
+import { DriverService } from '../../../services/driver.service';
 
 @Component({
-  selector: 'app-rider-chat',
-  templateUrl: './rider-chat.component.html',
-  styleUrls: ['./rider-chat.component.css'],
+  selector: 'app-driver-chat',
+  templateUrl: './driver-chat.component.html',
+  styleUrls: ['./driver-chat.component.css'],
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule]
 })
-export class RiderChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class DriverChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+  addRiderToChat(riderId: number, riderName: string, rideId: number | undefined) {
+    throw new Error('Method not implemented.');
+  }
   @ViewChild('chatMessages') chatMessagesContainer!: ElementRef;
 
   chatSessions: ChatSession[] = [];
   activeChatSession: ChatSession | null = null;
   newMessage = '';
   isSendingMessage = false;
-  
   private subscriptions: Subscription[] = [];
   private shouldScrollToBottom = false;
 
   constructor(
-    private chatService: ChatService,
-    private riderService: RiderService
+    private chatService: DriverChatService,
+    private driverService: DriverService
   ) {}
 
   ngOnInit() {
@@ -108,7 +110,7 @@ export class RiderChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // Format message time
   formatMessageTime(dateString: string): string {
-    return this.riderService.formatMessageTime(dateString);
+    return this.driverService.formatMessageTime(dateString);
   }
 
   // Scroll chat to bottom
@@ -128,3 +130,12 @@ export class RiderChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 }
 
+
+
+
+// currentUser	{"id":4,"email":"dmittu@gmail.com","role":"Driver"}
+// riderDetails	{"rider_id":3,"rider_name":"rnavaneeth","gender":"Other","phone_number":"9908213185","start_stop_id":"","destination_stop_id":"","email":"rnavaneeth@gmail.com","is_verified":false,"role_id":2,"create_datetime":"Mon, 02 Jun 2025 06:28:37 GMT","driver_id":null}
+// role_id	1
+// role_name	Driver
+// token	eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MzM2MzA0OCwianRpIjoiODZiZGExYzMtZWM1Yy00MzE5LWE5YjQtMTU2M2IwYjI4YWY1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJ1c2VyX2lkIjo0LCJyb2xlX25hbWUiOiJEcml2ZXIifSwibmJmIjoxNzUzMzYzMDQ4LCJjc3JmIjoiMmIzOTZmMDYtZThmMC00NzEzLWJmODYtMmUwMGI5YjU5YmJkIiwiZXhwIjoxNzUzMzYzOTQ4fQ.GoDB9cHALo_QQ1gE1_cgbNA1HzKePH6RBsQ7wAd2si4
+// user_id	4

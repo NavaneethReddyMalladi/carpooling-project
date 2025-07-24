@@ -15,6 +15,13 @@
       Create Ride
     </button>
     <button 
+    class="menu-item" 
+    [class.active]="isActiveRoute('/driver/chat')"
+    routerLink="/driver/chat">
+    <span class="icon"><i class="fa-solid fa-comment"></i></span>
+    Chat
+  </button>
+    <button 
       class="menu-item" 
       [class.active]="isActiveRoute('/driver/myrides')"
       routerLink="/driver/myrides">

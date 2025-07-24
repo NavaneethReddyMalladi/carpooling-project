@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
 import { DriverService, DashboardStats } from '../../../services/driver.service';
 import { RideService } from '../../../services/ride.service';
+import { DriverChatService } from '../../../services/driverchat.service';
+import { Router } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-driver-dashboard',
@@ -18,7 +22,9 @@ export class DriverDashboardComponent implements OnInit {
 
   constructor(
     private driverService: DriverService,
-    private rideService: RideService
+    private rideService: RideService,
+    private driverChatService:DriverChatService,
+    private router: Router
   ) {
     this.driverDetails$ = this.driverService.driverDetails$;
     this.dashboardStats$ = this.rideService.dashboardStats$;
@@ -27,6 +33,11 @@ export class DriverDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.loadDashboardData();
+  }
+
+  startChatWithRider(riderId: number, riderName: string, rideId?: number) {
+    this.driverChatService.addRiderToChat(riderId, riderName, rideId);
+    this.router.navigate(['/driver/chat']);
   }
 
   private loadDashboardData() {
