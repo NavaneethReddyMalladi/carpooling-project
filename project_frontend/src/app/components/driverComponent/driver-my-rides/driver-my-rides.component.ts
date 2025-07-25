@@ -48,10 +48,11 @@ export class MyRidesComponent implements OnInit {
 
   completeRide(rideId: number) {
     if (!confirm('Mark this ride as completed?')) return;
-    
+
     this.rideService.completeRide(rideId).subscribe({
       next: () => {
         console.log('Ride completed successfully');
+        this.loadRides(); // refresh rides
       },
       error: (err) => {
         console.error('Failed to complete ride:', err);
@@ -61,10 +62,11 @@ export class MyRidesComponent implements OnInit {
 
   cancelRide(rideId: number) {
     if (!confirm('Are you sure you want to cancel this ride?')) return;
-    
+
     this.rideService.cancelRide(rideId).subscribe({
       next: () => {
         console.log('Ride cancelled successfully');
+        this.loadRides(); // refresh rides
       },
       error: (err) => {
         console.error('Failed to cancel ride:', err);

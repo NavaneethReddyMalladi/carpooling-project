@@ -15,6 +15,7 @@ export class RideRequestsComponent implements OnInit, OnDestroy {
   pendingRequests: RideRequest[] = [];
   allRequests: RideRequest[] = [];
   requestsSubTab = 'pending';
+  stops: any[] = [];
 
   private subscriptions: Subscription[] = [];
 
@@ -24,14 +25,35 @@ export class RideRequestsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadRequests();
-    this.setupSubscriptions();
+    this.setupSubscriptions();         // Setup subject subscriptions first
+    this.rideRequestService.loadRideRequests().subscribe();  // Just call once
+    this.loadStops();                  // Parallel loading of stops
   }
-
+  
+  
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
+  loadStops() {
+    this.driverService.loadStops().subscribe({
+      next: (stops) => {
+        this.stops = stops;
+        console.log('Stops loaded:', stops);
+      },
+      error: (err) => {
+        console.error('Failed to load stops:', err);
+      }
+    });
+  }
+  getStopName(stopId: number | undefined): string {
+    if (!stopId || !this.stops.length) {
+      return stopId ? `Stop ${stopId}` : 'Unknown Stop';
+    }
+    
+    const stop = this.stops.find(s => s.stop_id == stopId);
+    return stop ? stop.stop_name : `Stop ${stopId}`;
+  }
   private setupSubscriptions() {
     // Subscribe to pending requests
     this.subscriptions.push(

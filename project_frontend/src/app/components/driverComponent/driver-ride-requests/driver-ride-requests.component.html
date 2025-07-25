@@ -45,11 +45,17 @@
             
             <div class="request-details">
               <div class="ride-info" *ngIf="request.ride">
+   
                 <div class="route">
-                  <span class="origin">{{ request.ride.origin_name || 'Unknown Origin' }}</span>
+                  <span class="origin">
+                    {{ request.ride.origin_stop_id ? getStopName(request.ride.origin_stop_id) : 'N/A' }}
+                  </span>
                   <span class="arrow">→</span>
-                  <span class="destination">{{ request.ride.destination_name || 'Unknown Destination' }}</span>
+                  <span class="destination">
+                    {{ request.ride.destination_stop_id ? getStopName(request.ride.destination_stop_id) : 'N/A' }}
+                  </span>
                 </div>
+                
                 <div class="departure-time">
                   <!-- Departure time display -->
                 </div>
@@ -107,10 +113,15 @@
             <div class="request-details">
               <div class="ride-info" *ngIf="request.ride">
                 <div class="route">
-                  <span class="origin">{{ request.ride.origin_name || 'Unknown Origin' }}</span>
+                  <span class="origin">
+                    {{ request.ride.origin_stop_id ? getStopName(request.ride.origin_stop_id) : 'N/A' }}
+                  </span>
                   <span class="arrow">→</span>
-                  <span class="destination">{{ request.ride.destination_name || 'Unknown Destination' }}</span>
+                  <span class="destination">
+                    {{ request.ride.destination_stop_id ? getStopName(request.ride.destination_stop_id) : 'N/A' }}
+                  </span>
                 </div>
+                
                 <!-- <div class="departure-time">
                   🕐 {{ formatTime(request.ride.departure_time) }}
                 </div> -->
