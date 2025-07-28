@@ -33,6 +33,8 @@ export interface RideRequest {
     destination_name?: string;
     departure_time?: string;
     available_seats?: number;
+    origin_stop_id?: number;        
+    destination_stop_id?: number; 
   };
   rider?: {
     user_name?: string;

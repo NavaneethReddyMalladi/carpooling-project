@@ -1,7 +1,7 @@
 /* Rider Sidebar Component - Minimal Styles */
 
 /* Sidebar Overlay */
-.sidebar-overlay {
+/* .sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -11,28 +11,31 @@
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
-    z-index: 1001;
+
   }
-  
-  .sidebar-overlay.show {
+   */
+  /* .sidebar-overlay.show {
     opacity: 1;
     visibility: visible;
   }
-  
+   */
   /* Sidebar Container */
   .sidebar {
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px;
+    width: 340px;
     height: 100%;
-    background: #ffffff;
+    /* background: #b9ced1; */
+    background: linear-gradient(135deg, #8bb1ec 0%, #576992 100%);
+
     transform: translateX(-100%);
     transition: transform 0.3s ease;
-    z-index: 1002;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    /* z-index: 1002; */
+    /* box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); */
     overflow-y: auto;
     border-right: 1px solid #e0e0e0;
+    margin-top: 98px;
   }
   
   .sidebar.show {
@@ -173,6 +176,7 @@
   @media (max-width: 768px) {
     .sidebar {
       width: 260px;
+      margin-top: 90px;
     }
   
     .sidebar-header {

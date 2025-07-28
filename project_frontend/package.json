@@ -6,9 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:project_frontend": "node dist/project_frontend/server/server.mjs"
-  },
+    "test": "ng test"
+    },
   "private": true,
   "dependencies": {
     "@angular/common": "^20.0.0",
@@ -43,3 +42,5 @@
     "typescript": "~5.8.3"
   }
 }
+
+

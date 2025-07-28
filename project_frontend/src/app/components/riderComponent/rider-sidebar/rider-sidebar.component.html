@@ -3,18 +3,7 @@
 
 <!-- Sidebar Menu -->
 <div class="sidebar" [class.show]="isSidebarOpen">
-    <div class="sidebar-header">
-        <div class="sidebar-profile">
-            <div class="sidebar-avatar">
-                <span>{{ (riderDetails.rider_name || 'U')[0] | uppercase }}</span>
-            </div>
-            <div class="sidebar-user-info">
-                <h3>{{ riderDetails.rider_name || 'User' }}</h3>
-                <p>{{ riderDetails.email || 'No email provided' }}</p>
-                <p>+91{{ riderDetails.phone_number || '9908245918' }}</p>
-            </div>
-        </div>
-    </div>
+
     
     <div class="sidebar-menu">
         <div class="sidebar-menu-item" routerLink="/rider/profile" (click)="onMenuItemClick('profile')">
