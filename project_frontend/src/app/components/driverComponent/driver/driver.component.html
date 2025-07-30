@@ -16,7 +16,8 @@
         <span class="dropdown-arrow">▼</span>
       </button>
       <ul *ngIf="showProfileMenu" class="dropdown-menu">
-        <li><a href="#" (click)="viewProfile()">View Profile</a></li>
+        <li><a href="#" (click)="viewProfile($event)">View Profile</a></li>
+
         <li><a href="#" (click)="logout()">Logout</a></li>
       </ul>
     </div>

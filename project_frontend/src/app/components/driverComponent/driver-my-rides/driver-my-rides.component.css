@@ -215,14 +215,14 @@
   }
   
   .btn-success {
-    background: #000000;
+    background: #455d94;
     color: white;
-    border: 1px solid #000000;
+    /* border: 1px solid #000000; */
   }
   
   .btn-success:hover {
-    background: #333333;
-    border-color: #333333;
+    background: #576992;
+    /* border-color: #333333; */
   }
   
   .btn-danger {

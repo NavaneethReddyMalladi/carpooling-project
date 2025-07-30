@@ -30,11 +30,16 @@ export class DriverDashboardComponent implements OnInit {
     this.dashboardStats$ = this.rideService.dashboardStats$;
     this.recentRides$ = this.rideService.recentRides$;
   }
-
-  ngOnInit() {
-    this.loadDashboardData();
+  ngOnInit(): void {
+    this.driverService.loadDriverData().then(() => {
+      this.loadDashboardData();
+    }).catch((err: any) => {
+      console.error('Error loading driver data:', err);
+      this.router.navigate(['/login']);
+    });
   }
-
+  
+  
   startChatWithRider(riderId: number, riderName: string, rideId?: number) {
     this.driverChatService.addRiderToChat(riderId, riderName, rideId);
     this.router.navigate(['/driver/chat']);

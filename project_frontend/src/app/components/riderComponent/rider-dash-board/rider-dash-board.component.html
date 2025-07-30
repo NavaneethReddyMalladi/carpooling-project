@@ -21,7 +21,7 @@
         <p><strong>Departure:</strong> {{ formatDateTime(r.departure_time) }}</p>
         <p><strong>Seats:</strong> {{ r.available_seats || r.seats }}</p>
         <p *ngIf="r.price"><strong>Price:</strong> ₹{{ r.price }}</p>
-        <button (click)="bookRide(r)">Book</button>
+        <button class="book-btn" (click)="bookRide(r)">Book</button>
     </li>
 </ul>
 

@@ -44,12 +44,13 @@
 }
 
 .menu-item.active {
-  background: #000000;
+  background: #576992;
   color: white;
 }
 
 .menu-item .icon {
   font-size: 1.1rem;
+  /* color: #2563eb; */
 }
 
 /* Main Content */

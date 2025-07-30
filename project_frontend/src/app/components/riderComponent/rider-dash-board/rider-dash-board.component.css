@@ -74,7 +74,7 @@
   
   /* Search Button */
   .search-btn {
-    background: linear-gradient(135deg, #000000 0%, #333333 100%);
+    background:#576992;
     color: white !important;
     border: none;
     padding: 1rem 2rem;
@@ -95,7 +95,7 @@
   .search-btn:hover:not(:disabled) {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(135deg, #333333 0%, #000000 100%);
+    background: #395085;
   }
   
   .search-btn:disabled {

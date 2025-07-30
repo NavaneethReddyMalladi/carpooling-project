@@ -140,10 +140,12 @@ export class RiderLayoutComponent implements OnInit, OnDestroy {
         this.logout();
         break;
       default:
-        console.log('Unknown menu action:', action);
+        // Do nothing or navigate to dashboard
+        console.warn('Unknown sidebar action:', action);
+        break;
     }
-    this.closeSidebar();
   }
+  
 
   private redirectToLogin() {
     if (isPlatformBrowser(this.platformId)) {
