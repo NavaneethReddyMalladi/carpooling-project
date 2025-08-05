@@ -22,6 +22,7 @@ import { RiderActivityComponent } from './components/riderComponent/rider-activi
 import { AuthGuard } from '../app/components/gaurds/auth.guard';
 import { RoleGuard } from '../app/components/gaurds/role.guard';
 import { DriverChatComponent } from './components/driverComponent/driver-chat/driver-chat.component';
+import { DriverWalletComponent } from './components/driverComponent/driver-wallet/driver-wallet.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -40,6 +41,8 @@ export const routes: Routes = [
       { path: 'myrides', component: MyRidesComponent },
       { path: 'requests', component: RideRequestsComponent },
       { path: 'profile', component: DriverProfileComponent },
+      {path:'wallet',component:DriverWalletComponent
+      },
       {path:'chat',component:DriverChatComponent}
     ]
   },

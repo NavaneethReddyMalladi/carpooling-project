@@ -1,0 +1,294 @@
+<!-- Wallet Section -->
+<div class="wallet-container">
+    <div class="section-header">
+        <h2>Wallet</h2>
+        <div class="header-actions">
+            <button class="btn refresh-btn" (click)="refreshWallet()" [disabled]="isLoading">
+                <i class="fa-solid fa-refresh" [class.fa-spin]="isLoading"></i>
+                Refresh
+            </button>
+            <button class="back-btn" routerLink="/rider">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading && !walletData" class="loading-container">
+        <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+        <p>Loading wallet data...</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="wallet-content" *ngIf="!isLoading || walletData">
+        <!-- Wallet Balance -->
+        <div class="wallet-balance">
+            <div class="balance-card">
+                <div class="balance-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="balance-info">
+                    <h3>Current Balance</h3>
+                    <div class="balance-amount">{{ formatCurrency(walletBalance) }}</div>
+                    <p class="balance-subtitle">Available for rides</p>
+                    <div class="wallet-info" *ngIf="walletData">
+                        <small class="text-muted">
+                            Last updated: {{ formatDateTime(walletData.updated_at) }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            <div class="balance-actions">
+                <button class="btn add-money-btn" (click)="addMoney()" [disabled]="isLoading">
+                    <i class="fa-solid fa-plus"></i>
+                    Add Money
+                </button>
+                <button class="btn withdraw-btn" (click)="withdrawMoney()" [disabled]="walletBalance <= 0 || isLoading">
+                    <i class="fa-solid fa-minus"></i>
+                    Withdraw
+                </button>
+            </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="payment-methods">
+            <div class="section-title">
+                <h3>Payment Methods</h3>
+                <span class="section-count" *ngIf="paymentMethods.length > 0">
+                    ({{ paymentMethods.length }})
+                </span>
+            </div>
+            
+            <!-- Payment Methods List -->
+            <div class="payment-method-list" *ngIf="paymentMethods.length > 0">
+                <div *ngFor="let method of paymentMethods; trackBy: trackByPaymentMethodId" class="payment-method-item">
+                    <div class="payment-method-icon">
+                        <i [class]="getPaymentMethodIcon(method.type)"></i>
+                    </div>
+                    <div class="payment-method-info">
+                        <h4>{{ method.name }}</h4>
+                        <p>{{ method.details }}</p>
+                    </div>
+                    <div class="payment-method-actions">
+                        <span class="default-badge" *ngIf="method.isDefault">
+                            <i class="fa-solid fa-star"></i> Default
+                        </span>
+                        <button class="btn-small" (click)="editPaymentMethod(method)" [disabled]="isLoading">
+                            <i class="fa-solid fa-edit"></i> Edit
+                        </button>
+                        <button class="btn-small delete" (click)="deletePaymentMethod(method)" 
+                                [disabled]="isLoading || method.isDefault">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty Payment Methods -->
+            <div *ngIf="paymentMethods.length === 0" class="empty-payment-methods">
+                <div class="empty-icon">💳</div>
+                <h4>No Payment Methods</h4>
+                <p>Add a payment method to top up your wallet</p>
+            </div>
+
+            <button class="btn add-payment-btn" (click)="addPaymentMethod()" [disabled]="isLoading">
+                <i class="fa-solid fa-plus"></i>
+                Add Payment Method
+            </button>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="transaction-history">
+            <div class="section-title">
+                <h3>Recent Transactions</h3>
+                <span class="section-count" *ngIf="allTransactions.length > 0">
+                    ({{ filteredTransactions.length }} of {{ allTransactions.length }})
+                </span>
+            </div>
+            
+            <!-- Transaction Filters -->
+            <div class="transaction-filters" *ngIf="allTransactions.length > 0">
+                <select [(ngModel)]="selectedTransactionFilter" (change)="filterTransactions()" 
+                        [disabled]="isLoading">
+                    <option value="all">All Transactions</option>
+                    <option value="rides">Ride Payments</option>
+                    <option value="refunds">Refunds</option>
+                    <option value="wallet">Wallet Transactions</option>
+                </select>
+                <div class="filter-results" *ngIf="selectedTransactionFilter !== 'all'">
+                    Showing {{ filteredTransactions.length }} {{ selectedTransactionFilter }} transactions
+                </div>
+            </div>
+            
+            <!-- Transaction List -->
+            <div class="transaction-list" *ngIf="filteredTransactions.length > 0">
+                <div *ngFor="let transaction of filteredTransactions; trackBy: trackByTransactionId" 
+                     class="transaction-item">
+                    <div class="transaction-icon" [class]="transaction.type">
+                        <i [class]="getTransactionIcon(transaction.type)"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <h4>{{ transaction.description }}</h4>
+                        <p class="transaction-date">
+                            <i class="fa-solid fa-calendar-alt"></i>
+                            {{ formatDateTime(transaction.date) }}
+                        </p>
+                        <p class="transaction-method">
+                            <i class="fa-solid fa-credit-card"></i>
+                            {{ transaction.paymentMethod }}
+                        </p>
+                    </div>
+                    <div class="transaction-amount" [class]="transaction.type">
+                        <span class="amount">
+                            {{ transaction.type === 'credit' ? '+' : '-' }}{{ formatCurrency(transaction.amount) }}
+                        </span>
+                        <span class="status" [class]="getTransactionStatusClass(transaction.status)">
+                            <i class="fa-solid" 
+                               [class.fa-check-circle]="transaction.status === 'completed'"
+                               [class.fa-clock]="transaction.status === 'pending'"
+                               [class.fa-times-circle]="transaction.status === 'failed'"></i>
+                            {{ transaction.status | titlecase }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty Transactions -->
+            <div *ngIf="filteredTransactions.length === 0 && allTransactions.length === 0" class="empty-transactions">
+                <div class="empty-icon">💳</div>
+                <h3>No Transactions</h3>
+                <p>Your transaction history will appear here once you start using your wallet.</p>
+            </div>
+
+            <!-- Filtered Empty State -->
+            <div *ngIf="filteredTransactions.length === 0 && allTransactions.length > 0" class="empty-filtered">
+                <div class="empty-icon">🔍</div>
+                <h3>No {{ selectedTransactionFilter }} transactions</h3>
+                <p>No transactions found for the selected filter.</p>
+                <button class="btn-small" (click)="selectedTransactionFilter = 'all'; filterTransactions()">
+                    Show All Transactions
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Money Modal -->
+<div class="modal-overlay" *ngIf="showAddMoneyModal" (click)="closeAddMoneyModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Add Money to Wallet</h3>
+            <button class="close-btn" (click)="closeAddMoneyModal()" [disabled]="isProcessingPayment">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        
+        <form (ngSubmit)="processAddMoney()" #addMoneyForm="ngForm">
+            <div class="form-group">
+                <label for="amount">
+                    <i class="fa-solid fa-rupee-sign"></i>
+                    Amount:
+                </label>
+                <input 
+                    type="number" 
+                    id="amount"
+                    [(ngModel)]="addMoneyAmount" 
+                    name="amount" 
+                    min="1" 
+                    max="10000" 
+                    step="0.01"
+                    placeholder="Enter amount"
+                    required
+                    [disabled]="isProcessingPayment"
+                    #amountInput="ngModel">
+                <div class="input-error" *ngIf="amountInput.invalid && amountInput.touched">
+                    <span *ngIf="amountInput.errors?.['required']">Amount is required</span>
+                    <span *ngIf="amountInput.errors?.['min']">Minimum amount is ₹1</span>
+                    <span *ngIf="amountInput.errors?.['max']">Maximum amount is ₹10,000</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="paymentMethod">
+                    <i class="fa-solid fa-credit-card"></i>
+                    Payment Method:
+                </label>
+                <select 
+                    id="paymentMethod"
+                    [(ngModel)]="selectedPaymentMethod" 
+                    name="paymentMethod" 
+                    required
+                    [disabled]="isProcessingPayment || paymentMethods.length === 0"
+                    #paymentMethodSelect="ngModel">
+                    <option value="">Select Payment Method</option>
+                    <option *ngFor="let method of paymentMethods" [value]="method.id">
+                        {{ method.name }} - {{ method.details }}
+                    </option>
+                </select>
+                <div class="input-error" *ngIf="paymentMethodSelect.invalid && paymentMethodSelect.touched">
+                    <span *ngIf="paymentMethodSelect.errors?.['required']">Payment method is required</span>
+                </div>
+                <div class="input-info" *ngIf="paymentMethods.length === 0">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    No payment methods available. Please add one first.
+                </div>
+            </div>
+
+            <!-- Transaction Summary -->
+            <div class="transaction-summary" *ngIf="addMoneyAmount && selectedPaymentMethod">
+                <div class="summary-row">
+                    <span>Amount to add:</span>
+                    <span class="amount">{{ formatCurrency(addMoneyAmount) }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Current balance:</span>
+                    <span>{{ formatCurrency(walletBalance) }}</span>
+                </div>
+                <div class="summary-row total">
+                    <span>New balance:</span>
+                    <span class="amount">{{ formatCurrency(walletBalance + addMoneyAmount) }}</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button 
+                    type="submit" 
+                    class="btn primary" 
+                    [disabled]="!addMoneyForm.form.valid || isProcessingPayment || paymentMethods.length === 0">
+                    <span *ngIf="!isProcessingPayment">
+                        <i class="fa-solid fa-plus"></i>
+                        Add {{ addMoneyAmount ? formatCurrency(addMoneyAmount) : '₹0' }}
+                    </span>
+                    <span *ngIf="isProcessingPayment">
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        Processing...
+                    </span>
+                </button>
+                <button 
+                    type="button" 
+                    class="btn cancel" 
+                    (click)="closeAddMoneyModal()"
+                    [disabled]="isProcessingPayment">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Processing Overlay -->
+<div class="processing-overlay" *ngIf="isProcessingPayment">
+    <div class="processing-content">
+        <div class="processing-spinner">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        </div>
+        <h3>Processing Payment</h3>
+        <p>Please wait while we process your payment...</p>
+        <div class="processing-warning">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            Do not close this window or navigate away
+        </div>
+    </div>
+</div>

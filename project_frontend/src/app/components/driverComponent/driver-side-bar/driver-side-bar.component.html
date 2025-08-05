@@ -37,6 +37,12 @@
       Ride Requests
       <span class="badge" *ngIf="getPendingRequestsCount() > 0">{{ getPendingRequestsCount() }}</span>
     </button>
+
+    <button class="menu-item" routerLink="/driver/wallet" (click)="onMenuItemClick('wallet')">
+      <span class="sidebar-icon"><i class="fa-solid fa-wallet"></i></span>
+      <span>Wallet</span>
+    </button>
+
     <button 
       class="menu-item" 
       [class.active]="isActiveRoute('/driver/profile')"
