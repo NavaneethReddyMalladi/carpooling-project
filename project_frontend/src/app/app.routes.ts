@@ -9,6 +9,8 @@ import { CreateRideComponent } from './components/driverComponent/driver-create-
 import { MyRidesComponent } from './components/driverComponent/driver-my-rides/driver-my-rides.component';
 import { RideRequestsComponent } from './components/driverComponent/driver-ride-requests/driver-ride-requests.component';
 import { DriverProfileComponent } from './components/driverComponent/driver-profile/driver-profile.component';
+import { DriverChatComponent } from './components/driverComponent/driver-chat/driver-chat.component';
+import { DriverWalletComponent } from './components/driverComponent/driver-wallet/driver-wallet.component';
 
 import { RiderLayoutComponent } from './components/riderComponent/rider-layout/rider-layout.component'
 import { RiderDashboardComponent } from './components/riderComponent/rider-dash-board/rider-dash-board.component';
@@ -19,15 +21,21 @@ import { RiderHelpComponent } from './components/riderComponent/rider-help/rider
 import { RiderWalletComponent } from './components/riderComponent/rider-wallet/rider-wallet.component';
 import { RiderActivityComponent } from './components/riderComponent/rider-activity/rider-activity.component';
 
-import { AuthGuard } from '../app/components/gaurds/auth.guard';
-import { RoleGuard } from '../app/components/gaurds/role.guard';
-import { DriverChatComponent } from './components/driverComponent/driver-chat/driver-chat.component';
-import { DriverWalletComponent } from './components/driverComponent/driver-wallet/driver-wallet.component';
+import { AuthGuard } from './components/gaurds/auth.guard';
+import { RoleGuard } from './components/gaurds/role.guard';
+
+// Forgot/Reset Password Components
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegistrationComponent },
   { path: '', component: HomeComponent },
+
+  // Forgot/Reset Password
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent }, // token comes from email link
 
   {
     path: 'driver',
@@ -41,9 +49,8 @@ export const routes: Routes = [
       { path: 'myrides', component: MyRidesComponent },
       { path: 'requests', component: RideRequestsComponent },
       { path: 'profile', component: DriverProfileComponent },
-      {path:'wallet',component:DriverWalletComponent
-      },
-      {path:'chat',component:DriverChatComponent}
+      { path: 'wallet', component: DriverWalletComponent },
+      { path: 'chat', component: DriverChatComponent }
     ]
   },
   

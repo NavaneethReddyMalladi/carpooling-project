@@ -18,6 +18,7 @@ export class AuthService {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
+  // ---------------- LOGIN ----------------
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http
       .post<LoginResponse>(`${this.baseUrl}/login`, { email, password })
@@ -39,11 +40,13 @@ export class AuthService {
       );
   }
 
+  // ---------------- LOGOUT ----------------
   logout(): void {
     if (!this.isBrowser) return;
     localStorage.clear();
   }
 
+  // ---------------- AUTH CHECK ----------------
   isAuthenticated(): boolean {
     return this.isBrowser && !!localStorage.getItem('token');
   }
@@ -65,4 +68,19 @@ export class AuthService {
       return null;
     }
   }
-}
+
+  // ---------------- PASSWORD RESET ----------------
+  
+  // 1. Request password reset (send email with reset link)
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/forgot-password`, { email });
+  }
+
+  // 2. Reset password (via token in reset link)
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset-password`, { 
+      token: token, 
+      password: newPassword  // must match Flask key
+    });
+  }
+}  

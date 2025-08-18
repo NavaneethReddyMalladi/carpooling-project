@@ -5,6 +5,10 @@ import os
 from dotenv import load_dotenv
 
 from flask_cors import CORS
+from flask_mail import Mail
+
+mail = Mail()
+
 
 
 from app.main.config.dev_config import DevConfig  
@@ -17,6 +21,7 @@ CORS(app)
 
 app.config.from_object(DevConfig)  
 db = SQLAlchemy(app)
+mail.init_app(app)
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 jwt = JWTManager(app)

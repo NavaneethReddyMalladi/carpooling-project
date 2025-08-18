@@ -5,8 +5,17 @@ from app.main.models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 from sqlalchemy.exc import SQLAlchemyError,IntegrityError
+
 from app.main.models.drivers import Drivers
+
+from itsdangerous import URLSafeTimedSerializer
+from flask import current_app
+
+from app import mail   # 👈 import mail from your app/__init__.py
+
 auth_bp = Blueprint('auth', __name__)
+
+
 
 def is_valid_email(email):
     return re.match(r"[^@]+@[^@]+\.[^@]+", email)
@@ -107,3 +116,77 @@ def login():
 def protected():
     current_user = get_jwt_identity()
     return jsonify({"logged_in_as": current_user}), 200
+
+
+
+
+def generate_reset_token(email):
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt="password-reset-salt")
+
+def verify_reset_token(token, expiration=3600):  # 1 hour expiry
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    try:
+        email = serializer.loads(token, salt="password-reset-salt", max_age=expiration)
+    except Exception:
+        return None
+    return email
+
+
+
+from flask_mail import Message
+from app import mail   # import mail object
+
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    email = data.get("email")
+
+    if not email or not is_valid_email(email):
+        return jsonify({"message": "Valid email required"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    # Generate token
+    token = generate_reset_token(email)
+    reset_url = f"http://localhost:4200/reset-password?token={token}"  # frontend link
+
+    # Send email
+    try:
+        msg = Message(
+            subject="Password Reset Request - CarConnect",
+            recipients=[email],
+            body=f"Hi {user.user_name},\n\nClick the link below to reset your password:\n{reset_url}\n\nIf you didn't request this, please ignore this email."
+        )
+        mail.send(msg)
+    except Exception as e:
+        print("Email Error:", e)
+        return jsonify({"message": "Error sending email"}), 500
+
+    return jsonify({"message": "Password reset link sent to your email"}), 200
+
+
+
+@auth_bp.route('/reset-password', methods=['POST'])
+def reset_password():
+    data = request.get_json()
+    token = data.get("token")
+    new_password = data.get("password")
+
+    if not token or not new_password:
+        return jsonify({"message": "Token and new password required"}), 400
+
+    email = verify_reset_token(token)
+    if not email:
+        return jsonify({"message": "Invalid or expired token"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    user.password = generate_password_hash(new_password)
+    db.session.commit()
+
+    return jsonify({"message": "Password reset successful"}), 200

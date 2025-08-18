@@ -260,7 +260,7 @@
     <!-- Debug panel (remove in production) -->
     <div class="debug-panel" style="position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 10px; border-radius: 4px; font-size: 12px; max-width: 300px; z-index: 1000;">
       <div><strong>Debug Info:</strong></div>
-      <div>Sessions: {{ chatSessions?.length || 0 }}</div>
+      <div>Sessions: {{ chatSessions.length || 0 }}</div>
       <div>Loading: {{ isLoadingChats }}</div>
       <div>Active Session: {{ activeChatSession?.rider_name || 'None' }}</div>
       <div>Driver ID: {{ driverService.driverDetails?.driver_id || 'Not set' }}</div>
