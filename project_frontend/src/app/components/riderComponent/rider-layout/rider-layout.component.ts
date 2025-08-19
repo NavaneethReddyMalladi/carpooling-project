@@ -39,7 +39,7 @@ export class RiderLayoutComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(sub => sub.unsubscribe());
-    this.chatService.stopChatPolling();
+    // this.chatService.stopChatPolling();
   }
 
   private initializeComponent() {
@@ -104,7 +104,7 @@ export class RiderLayoutComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.chatService.stopChatPolling();
+    // this.chatService.stopChatPolling();
     this.closeProfileMenu();
     this.closeSidebar();
     

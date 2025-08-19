@@ -42,3 +42,13 @@ def get_conversation(sender_id, receiver_id):
 @message_bp.route('/messages/<int:message_id>', methods=['DELETE'])
 def remove_message(message_id):
     return delete_message(message_id)
+
+
+@message_bp.route('/create-chat-session', methods=['POST'])
+def create_chat_session():
+    data = request.get_json()
+    # Implement your chat session creation logic here
+    # For example, store session in DB or return a dummy response
+    return {"message": "Chat session created", "data": data}, 201
+
+

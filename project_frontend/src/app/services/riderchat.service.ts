@@ -7,7 +7,7 @@ export interface Message {
   message_id: number;
   sender_id: number;
   receiver_id: number;
-  ride_id?: number;
+  ride_id: number;
   message_text: string;
   sent_at: string;
 }
@@ -15,233 +15,154 @@ export interface Message {
 export interface ChatSession {
   driver_id: number;
   driver_name: string;
-  ride_id?: number;
+  rider_id?: number;
+  rider_name?: string;
+  ride_request_id: number;
+  request_status?: string;
+  pickup_location?: string;
+  dropoff_location?: string;
+  scheduled_time?: string;
+  ride_id: number;     
   messages: Message[];
   isActive: boolean;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ChatService {
   private readonly BASE_URL = 'http://127.0.0.1:42099';
 
-  // State subjects
   private chatSessionsSubject = new BehaviorSubject<ChatSession[]>([]);
   private activeChatSessionSubject = new BehaviorSubject<ChatSession | null>(null);
   private isSendingMessageSubject = new BehaviorSubject<boolean>(false);
-  
-  // Public observables
+
   chatSessions$ = this.chatSessionsSubject.asObservable();
   activeChatSession$ = this.activeChatSessionSubject.asObservable();
   isSendingMessage$ = this.isSendingMessageSubject.asObservable();
 
-  // Polling interval
-  private chatPollingInterval: any;
+  constructor(private http: HttpClient, private riderService: RiderService) {}
 
-  constructor(
-    private http: HttpClient,
-    private riderService: RiderService
-  ) {}
-
-  // Getters for current values
   get chatSessions() { return this.chatSessionsSubject.value; }
   get activeChatSession() { return this.activeChatSessionSubject.value; }
   get isSendingMessage() { return this.isSendingMessageSubject.value; }
 
-  // Load existing chat sessions
+  /** Load rider’s active ride requests and create chat sessions */
   loadChatSessions() {
-    // This would typically load from your backend based on the rider's bookings
-    // For now, we'll maintain the existing chat sessions
-    if (this.chatSessions.length === 0) {
-      console.log('Loading existing chat sessions...');
-      // You might want to load existing chat sessions from the backend here
-    }
-  }
+    const riderId = parseInt(this.riderService.riderDetails?.rider_id || '0');
+    if (!riderId) return;
 
-  // Add driver to chat sessions
-  addDriverToChat(driverId: number, driverName: string, rideId?: number) {
-    const existingSession = this.chatSessions.find(session => 
-      session.driver_id === driverId && session.ride_id === rideId
-    );
+    const token = localStorage.getItem('token');
+    this.http.get<any[]>(`${this.BASE_URL}/ride-requests/rider/${riderId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (requests) => {
+        const sessions = requests
+  .filter(r => ['accepted', 'in_progress'].includes((r.status || '').toLowerCase()))
+  .map(r => ({
+    driver_id: r.driver?.driver_id,            // <-- use nested field
+    driver_name: r.driver?.driver_name || `Driver ${r.driver?.driver_id}`,
+    rider_id: r.rider_id,
+    rider_name: r.rider_name,                  // optional if nested, adjust as needed
+    ride_request_id: r.request_id,
+    ride_id: r.ride_id,                        // include ride_id for sending messages
+    messages: [],
+    isActive: false
+  }));
 
-    if (!existingSession) {
-      const newSession: ChatSession = {
-        driver_id: driverId,
-        driver_name: driverName,
-        ride_id: rideId,
-        messages: [],
-        isActive: false
-      };
-      
-      const updatedSessions = [...this.chatSessions, newSession];
-      this.chatSessionsSubject.next(updatedSessions);
-      this.loadMessagesForSession(newSession);
-    }
-  }
-
-  // Select chat session
-  selectChatSession(session: ChatSession) {
-    // Deactivate all sessions
-    const updatedSessions = this.chatSessions.map(s => ({
-      ...s,
-      isActive: s.driver_id === session.driver_id && s.ride_id === session.ride_id
-    }));
-    
-    this.chatSessionsSubject.next(updatedSessions);
-    this.activeChatSessionSubject.next(session);
-    
-    // Load messages for this session
-    this.loadMessagesForSession(session);
-  }
-
-  // Load messages for a session
-  loadMessagesForSession(session: ChatSession) {
-    const riderId = parseInt(this.riderService.riderDetails.rider_id);
-    
-    this.http.get<Message[]>(`${this.BASE_URL}/messages/conversation/${riderId}/${session.driver_id}`).subscribe({
-      next: (messages) => {
-        const filteredMessages = messages.filter(msg => 
-          !session.ride_id || msg.ride_id === session.ride_id
-        );
-
-        // Update the session with messages
-        const updatedSessions = this.chatSessions.map(s => {
-          if (s.driver_id === session.driver_id && s.ride_id === session.ride_id) {
-            return { ...s, messages: filteredMessages };
-          }
-          return s;
-        });
-
-        this.chatSessionsSubject.next(updatedSessions);
-
-        // Update active session if it's the same
-        if (this.activeChatSession?.driver_id === session.driver_id && 
-            this.activeChatSession?.ride_id === session.ride_id) {
-          this.activeChatSessionSubject.next({ ...session, messages: filteredMessages });
-        }
+        this.chatSessionsSubject.next(sessions);
+        console.log("chat sessionssssssssss, " ,sessions)
       },
-      error: (err) => {
-        console.error('Failed to load messages:', err);
-        // Set empty messages for the session
-        const updatedSessions = this.chatSessions.map(s => {
-          if (s.driver_id === session.driver_id && s.ride_id === session.ride_id) {
-            return { ...s, messages: [] };
-          }
-          return s;
-        });
-        this.chatSessionsSubject.next(updatedSessions);
-      }
+      error: (err) => console.error('Failed to load chat sessions:', err)
     });
   }
 
-  // Send message
-  sendMessage(messageText: string): Observable<any> {
+  /** Select a session and load its messages once */
+  selectChatSession(session: ChatSession) {
+    this.chatSessionsSubject.next(
+      this.chatSessions.map(s => ({ ...s, isActive: s.ride_request_id === session.ride_request_id }))
+    );
+    this.activeChatSessionSubject.next({ ...session, isActive: true });
+    this.loadMessages(session);
+  }
+
+  /** Load messages once for a session without polling */
+  private loadMessages(session: ChatSession) {
+    const riderId = parseInt(this.riderService.riderDetails?.rider_id || '0');
+    const token = localStorage.getItem('token');
+
+    if (!riderId || !token) return;
+
+    this.http.get<Message[]>(`${this.BASE_URL}/messages/conversation/${riderId}/${session.driver_id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (messages) => this.updateSessionMessages(session, messages),
+      error: () => this.updateSessionMessages(session, []) // fallback empty
+    });
+  }
+
+  /** Update session messages and active session in UI */
+  private updateSessionMessages(session: ChatSession, messages: Message[]) {
+    const updated = this.chatSessions.map(s =>
+      s.ride_request_id === session.ride_request_id ? { ...s, messages } : s
+    );
+    this.chatSessionsSubject.next(updated);
+
+    if (this.activeChatSession?.ride_request_id === session.ride_request_id) {
+      this.activeChatSessionSubject.next({ ...this.activeChatSession, messages });
+    }
+  }
+
+  /** Send message and immediately append to active session */
+  sendMessage(messageData: { sender_id: number, receiver_id: number, ride_id: number, message_text: string }): Observable<any> {
     return new Observable(observer => {
-      if (!this.activeChatSession || !messageText.trim()) {
-        observer.error('No active session or empty message');
-        return;
-      }
-
-      this.isSendingMessageSubject.next(true);
       const token = localStorage.getItem('token');
-      const riderDetails = this.riderService.riderDetails;
-
       if (!token) {
-        this.riderService.showMessage('Authentication required. Please login again.', 'error');
-        this.isSendingMessageSubject.next(false);
-        observer.error('No authentication token');
+        observer.error('Authentication missing');
         return;
       }
-
-      const messageData = {
-        sender_id: parseInt(riderDetails.rider_id),
-        receiver_id: this.activeChatSession.driver_id,
-        ride_id: this.activeChatSession.ride_id,
-        message_text: messageText.trim()
-      };
-
-      this.http.post<any>(`${this.BASE_URL}/messages`, messageData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+  
+      this.isSendingMessageSubject.next(true); 
+  
+      this.http.post<Message>(`${this.BASE_URL}/messages`, messageData, {
+        headers: { Authorization: `Bearer ${token}` }
       }).subscribe({
-        next: (response) => {
-          // Add message to local session
-          const newMessage: Message = {
-            message_id: response.message_id,
-            sender_id: messageData.sender_id,
-            receiver_id: messageData.receiver_id,
-            ride_id: messageData.ride_id,
-            message_text: messageData.message_text,
-            sent_at: new Date().toISOString()
-          };
-          
-          // Update sessions with new message
+        next: (msg) => {
+          // append to active session
           if (this.activeChatSession) {
-            const updatedSessions = this.chatSessions.map(session => {
-              if (session.driver_id === this.activeChatSession!.driver_id && 
-                  session.ride_id === this.activeChatSession!.ride_id) {
-                return { ...session, messages: [...session.messages, newMessage] };
-              }
-              return session;
-            });
-
-            this.chatSessionsSubject.next(updatedSessions);
-            
-            // Update active session
-            const updatedActiveSession = {
-              ...this.activeChatSession,
-              messages: [...this.activeChatSession.messages, newMessage]
-            };
-            this.activeChatSessionSubject.next(updatedActiveSession);
+            const updatedMessages = [...(this.activeChatSession.messages || []), msg];
+            this.updateSessionMessages(this.activeChatSession, updatedMessages);
           }
-          
           this.isSendingMessageSubject.next(false);
-          observer.next(response);
+          observer.next(msg);
           observer.complete();
         },
         error: (err) => {
-          console.error('Failed to send message:', err);
-          this.riderService.showMessage('Failed to send message', 'error');
+          console.error('Send message failed:', err);
           this.isSendingMessageSubject.next(false);
           observer.error(err);
         }
       });
     });
   }
+  
 
-  // Check if message is from current user
+  /** Check if message is sent by current rider */
   isMessageFromCurrentUser(message: Message): boolean {
-    return message.sender_id === parseInt(this.riderService.riderDetails.rider_id);
+    return message.sender_id === parseInt(this.riderService.riderDetails?.rider_id || '0');
   }
 
-  // Start chat polling
-  startChatPolling() {
-    this.stopChatPolling(); // Clear any existing interval
-    
-    this.chatPollingInterval = setInterval(() => {
-      if (this.activeChatSession) {
-        this.loadMessagesForSession(this.activeChatSession);
-      }
-    }, 3000); // Poll every 3 seconds
-  }
-
-  // Stop chat polling
-  stopChatPolling() {
-    if (this.chatPollingInterval) {
-      clearInterval(this.chatPollingInterval);
-      this.chatPollingInterval = null;
-    }
-  }
-
-  // Clear active session
+  /** Clear active session */
   clearActiveSession() {
     this.activeChatSessionSubject.next(null);
-    
-    // Deactivate all sessions
-    const updatedSessions = this.chatSessions.map(s => ({ ...s, isActive: false }));
-    this.chatSessionsSubject.next(updatedSessions);
+    this.chatSessionsSubject.next(this.chatSessions.map(s => ({ ...s, isActive: false })));
   }
+
+addDriverToChat(riderId: number, driverIdOrName: string | number, rideRequestId?: number) {
+  const session = {
+    rider_id: riderId,
+    driver_id: driverIdOrName,   // can be number or string
+    ride_request_id: rideRequestId
+  };
+  return this.http.post<any>(`${this.BASE_URL}/create-chat-session`, session);
 }
+}
+

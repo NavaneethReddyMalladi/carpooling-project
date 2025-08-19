@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-reset-password',
-  imports:[CommonModule,RouterLink,FormsModule],
+  imports:[CommonModule,FormsModule],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.css']
 })
