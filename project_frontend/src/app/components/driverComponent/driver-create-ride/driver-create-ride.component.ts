@@ -17,6 +17,10 @@ export class CreateRideComponent implements OnInit, OnDestroy {
   sourceStops: Stop[] = [];
   destStops: Stop[] = [];
   isLoading = false;
+  
+  // Add these new properties
+  routeInfo: any = null;
+  loadingRouteInfo = false;
 
   ride = {
     origin_stop_id: '',
@@ -57,6 +61,7 @@ export class CreateRideComponent implements OnInit, OnDestroy {
   onOriginStopChange() {
     this.ride.destination_stop_id = '';
     this.destStops = [];
+    this.routeInfo = null; // Reset route info
 
     if (this.ride.origin_stop_id) {
       this.driverService.loadDestinationStops(this.ride.origin_stop_id).subscribe({
@@ -70,6 +75,34 @@ export class CreateRideComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  // Add this new method
+  onDestinationStopChange() {
+    this.routeInfo = null;
+    
+    if (this.ride.origin_stop_id && this.ride.destination_stop_id) {
+      this.loadRouteInfo();
+    }
+  }
+
+  // Add this new method
+  private loadRouteInfo() {
+    this.loadingRouteInfo = true;
+    
+    this.driverService.getRouteInfo(this.ride.origin_stop_id, this.ride.destination_stop_id).subscribe({
+      next: (data) => {
+        this.routeInfo = data;
+        this.ride.route_id = data.route_id?.toString() || '';
+        this.loadingRouteInfo = false;
+        console.log('Route info loaded:', data);
+      },
+      error: (err) => {
+        console.error('Failed to load route info:', err);
+        this.loadingRouteInfo = false;
+        this.routeInfo = null;
+      }
+    });
   }
 
   createRide() {
@@ -103,5 +136,6 @@ export class CreateRideComponent implements OnInit, OnDestroy {
       route_id: '',
     };
     this.destStops = [];
+    this.routeInfo = null; // Reset route info
   }
 }

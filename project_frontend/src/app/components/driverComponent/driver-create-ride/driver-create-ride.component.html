@@ -1,1 +1,114 @@
+<div class="content-section">
+  <div class="section-header">
+    <h2>Create a New Ride</h2>
+    <p>Share your ride and earn money!</p>
+  </div>
+  <div class="create-ride-form">
+    <form (ngSubmit)="createRide()" #rideForm="ngForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="origin">From</label>
+          <select 
+            id="origin"
+            [(ngModel)]="ride.origin_stop_id" 
+            name="origin_stop_id" 
+            required
+            class="form-control"
+            (change)="onOriginStopChange()">
+            <option value="">Select origin stop</option>
+            <option *ngFor="let stop of sourceStops" [value]="stop.id">
+              {{ stop.name }}
+            </option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="destination">To</label>
+          <select 
+            id="destination"
+            [(ngModel)]="ride.destination_stop_id" 
+            name="destination_stop_id" 
+            required
+            class="form-control"
+            [disabled]="!ride.origin_stop_id"
+            (change)="onDestinationStopChange()">
+            <option value="">
+              {{ !ride.origin_stop_id ? 'Select origin first' : 'Select destination stop' }}
+            </option>
+            <option *ngFor="let stop of destStops" [value]="stop.id">
+              {{ stop.name }}
+            </option>
+          </select>
+          
+          <!-- Loading indicator -->
+          <div *ngIf="loadingRouteInfo" class="route-loading">
+            Loading route info...
+          </div>
+        </div>
+      </div>
 
+      <!-- Route Information Display - Simple Box -->
+      <div *ngIf="routeInfo && !loadingRouteInfo" class="route-info">
+        <h4>Route Details</h4>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Distance:</span>
+            <span class="value">{{ routeInfo.distance }} km</span>
+          </div>
+          <div class="info-item">
+            <span class="label">Cost per passenger:</span>
+            <span class="value cost">₹{{ routeInfo.cost }}</span>
+          </div>
+          <div class="info-item" *ngIf="ride.available_seats > 0">
+            <span class="label">Max earnings:</span>
+            <span class="value earnings">₹{{ routeInfo.cost * ride.available_seats }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="departure">Departure Time</label>
+          <input 
+            type="datetime-local" 
+            id="departure"
+            [(ngModel)]="ride.departure_time" 
+            name="departure_time" 
+            placeholder="YYYY-MM-DDTHH:MM"
+            required
+            class="form-control" />
+        </div>
+        
+        <div class="form-group">
+          <label for="seats">Available Seats</label>
+          <input 
+            type="number" 
+            id="seats"
+            [(ngModel)]="ride.available_seats" 
+            name="available_seats" 
+            min="1" 
+            max="8"
+            required
+            class="form-control" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="route">Route ID (Auto-filled)</label>
+        <input 
+          type="text" 
+          id="route"
+          [(ngModel)]="ride.route_id" 
+          name="route_id"
+          class="form-control"
+          readonly
+          placeholder="Route ID will be auto-filled" />
+      </div>
+      <button 
+        type="submit" 
+        class="btn btn-primary"
+        [disabled]="isLoading || !rideForm.form.valid">
+        <span *ngIf="isLoading" class="spinner"></span>
+        {{ isLoading ? 'Creating...' : 'Create Ride' }}
+      </button>
+    </form>
+  </div>
+</div>

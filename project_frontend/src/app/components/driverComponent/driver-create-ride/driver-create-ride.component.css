@@ -217,3 +217,66 @@
       width: 100%;
     }
   }
+
+
+  /* Add these styles to your existing CSS */
+
+.route-loading {
+  margin-top: 8px;
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.route-info {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.route-info h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-item .label {
+  font-weight: 500;
+  color: #666;
+}
+
+.info-item .value {
+  font-weight: 600;
+  color: #333;
+}
+
+.info-item .value.cost {
+  color: #28a745;
+}
+
+.info-item .value.earnings {
+  color: #007bff;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}

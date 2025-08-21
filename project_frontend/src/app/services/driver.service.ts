@@ -8,6 +8,12 @@ export interface Stop {
   name: string;
 }
 
+export interface RouteInfo {
+  cost: number;
+  distance: number;
+  route_id: number;
+}
+
 export interface Ride {
   ride_id: number;
   origin_stop_id: number;
@@ -20,6 +26,9 @@ export interface Ride {
   passenger_count?: number;
   origin_name?: string;
   destination_name?: string;
+  cost?: number;        // Added for cost display
+  distance?: number;    // Added for distance display
+  route_id?: number;    // Added for route info
 }
 
 export interface RideRequest {
@@ -35,6 +44,8 @@ export interface RideRequest {
     available_seats?: number;
     origin_stop_id?: number;        
     destination_stop_id?: number; 
+    cost?: number;
+    distance?: number;
   };
   rider?: {
     user_name?: string;
@@ -94,7 +105,6 @@ export class DriverService {
   get isOnline() { return this.isOnlineSubject.value; }
   get message() { return this.messageSubject.value; }
   get error() { return this.errorSubject.value; }
-
 
   setMessage(message: string) { this.messageSubject.next(message); }
   setError(error: string) { this.errorSubject.next(error); }
@@ -223,6 +233,45 @@ export class DriverService {
     });
   }
 
+  // New method to get route information (cost, distance, route_id)
+// Replace your existing getRouteInfo method in driver.service.ts with this:
+
+getRouteInfo(startStopId: string, endStopId: string): Observable<RouteInfo> {
+  return new Observable(observer => {
+    // Fetch all routes without parameters since the API doesn't support filtering
+    this.http.get<any[]>(`${this.BASE_URL}/route-stops`).subscribe({
+      next: (allRoutes) => {
+        console.log('All routes received:', allRoutes);
+        console.log('Looking for route from', startStopId, 'to', endStopId);
+        
+        // Find the specific route that matches our start and end stops
+        const matchingRoute = allRoutes.find(route => 
+          route.start_stop_id.toString() === startStopId.toString() && 
+          route.end_stop_id.toString() === endStopId.toString()
+        );
+
+        console.log('Matching route found:', matchingRoute);
+
+        if (matchingRoute) {
+          observer.next({
+            cost: matchingRoute.cost,
+            distance: matchingRoute.distance,
+            route_id: matchingRoute.route_id
+          });
+          observer.complete();
+        } else {
+          console.error('No route found for the selected stops');
+          observer.error('Route not found between selected stops');
+        }
+      },
+      error: (err) => {
+        console.error('Failed to fetch routes:', err);
+        observer.error('Failed to fetch route information');
+      }
+    });
+  });
+}
+
   getStopName(stopId: string, stops: any[]): string {
     const stop = stops.find(s => s.stop_id == stopId);
     return stop ? stop.stop_name : `Stop ${stopId}`;
@@ -242,6 +291,16 @@ export class DriverService {
     if (diffInHours < 24) return `${diffInHours} hours ago`;
     if (diffInHours < 48) return 'Yesterday';
     return `${Math.floor(diffInHours / 24)} days ago`;
+  }
+
+  // Helper method to format currency
+  formatCurrency(amount: number): string {
+    return `₹${amount}`;
+  }
+
+  // Helper method to format distance
+  formatDistance(distance: number): string {
+    return `${distance} km`;
   }
 
   sendNotificationToRider(riderId: number, messageText: string): Observable<any> {
@@ -265,4 +324,5 @@ export class DriverService {
       console.log('Could not play notification sound');
     }
   }
+
 }
