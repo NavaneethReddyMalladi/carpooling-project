@@ -1,8 +1,9 @@
-import { Component, OnInit, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ElementRef, ViewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { DriverChatService, ChatSession, Message } from '../../../services/driverchat.service';
 import { DriverService } from '../../../services/driver.service';
 
@@ -11,78 +12,170 @@ import { DriverService } from '../../../services/driver.service';
   templateUrl: './driver-chat.component.html',
   styleUrls: ['./driver-chat.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterModule]
+  imports: [CommonModule, FormsModule, RouterLink, RouterModule],
+  changeDetection: ChangeDetectionStrategy.OnPush // Optimize change detection
 })
-export class DriverChatComponent implements OnInit, AfterViewChecked {
+export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('chatMessages') chatMessagesContainer!: ElementRef;
-
+  
   chatSessions: ChatSession[] = [];
   activeChatSession: ChatSession | null = null;
   newMessage = '';
   isSendingMessage = false;
-  isLoadingChats = true;
-
+  isLoadingChats = false;
+  
   private subscriptions: Subscription[] = [];
   private shouldScrollToBottom = false;
+  private lastMessageCount = 0;
+  private initializationComplete = false;
 
   constructor(
     private chatService: DriverChatService,
     public driverService: DriverService
   ) {}
 
-  ngOnInit() {
-    this.setupSubscriptions();
-    this.chatService.loadChatSessions(); // Load all sessions once
+  async ngOnInit() {
+    try {
+      console.log('DriverChatComponent initializing...');
+      
+      // Check if sessions are already loaded, if not load them
+      if (!this.chatService.isSessionsInitialized()) {
+        const sessions = await this.chatService.loadChatSessions();
+        console.log('Sessions loaded in component:', sessions.length);
+        
+        // Auto-select first session if available and none is active
+        if (sessions.length > 0 && !this.activeChatSession) {
+          console.log('Auto-selecting first session:', sessions[0].rider_name);
+          this.selectChatSession(sessions[0]);
+        }
+      } else {
+        // Sessions already loaded, get them synchronously
+        const existingSessions = this.chatService.getChatSessionsSync();
+        this.chatSessions = existingSessions;
+        if (existingSessions.length > 0 && !this.activeChatSession) {
+          this.selectChatSession(existingSessions[0]);
+        }
+      }
 
-    const riderInfo = this.chatService.getActiveChatRider();
-    if (riderInfo) console.log("Chatting with:", riderInfo.riderName);
+      this.setupSubscriptions();
+      
+      const riderInfo = this.chatService.getActiveChatRider();
+      if (riderInfo) {
+        console.log("Chatting with:", riderInfo.riderName);
+      }
+
+      this.initializationComplete = true;
+    } catch (error) {
+      console.error('Failed to initialize driver chat component:', error);
+    }
   }
 
   ngAfterViewChecked() {
+    // Only scroll if new messages were added
     if (this.shouldScrollToBottom) {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
   }
 
+  ngOnDestroy() {
+    // Clean up all subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+    this.chatService.clearActiveSession();
+  }
+
   private setupSubscriptions() {
+    // Subscribe to chat sessions with debounce to prevent excessive updates
     this.subscriptions.push(
-      this.chatService.chatSessions$.subscribe(sessions => {
+      this.chatService.chatSessions$.pipe(
+        debounceTime(100) // Debounce to prevent rapid successive updates
+      ).subscribe(sessions => {
+        const previousCount = this.chatSessions.length;
         this.chatSessions = sessions;
-        this.isLoadingChats = false;
-        if (sessions.length > 0 && !this.activeChatSession) {
+        
+        console.log(`Sessions updated: ${sessions.length} sessions available`);
+        
+        // Auto-select first session only if:
+        // 1. Initialization is complete
+        // 2. No session is currently active
+        // 3. We have sessions available
+        // 4. We're not currently loading
+        // 5. This is a new session load (not just an update)
+        if (this.initializationComplete && !this.activeChatSession && sessions.length > 0 && 
+            !this.isLoadingChats && previousCount === 0) {
+          console.log('Auto-selecting first session from subscription:', sessions[0].rider_name);
           this.selectChatSession(sessions[0]);
         }
       })
     );
 
+    // Subscribe to active chat session
     this.subscriptions.push(
       this.chatService.activeChatSession$.subscribe(session => {
-        this.activeChatSession = session;
-        if (session) this.shouldScrollToBottom = true;
+        const previousMessageCount = this.lastMessageCount;
+        
+        if (session && session.ride_id !== this.activeChatSession?.ride_id) {
+          console.log('Active session changed to:', session.ride_id);
+          this.activeChatSession = session;
+          
+          const currentMessageCount = session.messages?.length || 0;
+          // Only trigger scroll if messages were added
+          if (currentMessageCount > previousMessageCount) {
+            this.shouldScrollToBottom = true;
+          }
+          this.lastMessageCount = currentMessageCount;
+        } else if (!session) {
+          this.activeChatSession = null;
+          this.lastMessageCount = 0;
+        }
+      })
+    );
+
+    // Subscribe to loading states
+    this.subscriptions.push(
+      this.chatService.isLoadingSessions$.subscribe(isLoading => {
+        this.isLoadingChats = isLoading;
       })
     );
 
     this.subscriptions.push(
-      this.chatService.isSendingMessage$.subscribe(flag => this.isSendingMessage = flag)
+      this.chatService.isSendingMessage$.subscribe(flag => {
+        this.isSendingMessage = flag;
+      })
     );
   }
 
   selectChatSession(session: ChatSession) {
+    // Prevent unnecessary selection of the same session
+    if (this.activeChatSession?.ride_id === session.ride_id) {
+      console.log('Session already active, skipping selection');
+      return;
+    }
+    
+    console.log('Selecting chat session:', session.ride_id);
     this.chatService.selectChatSession(session);
   }
 
   sendMessage() {
-    if (!this.newMessage.trim() || !this.activeChatSession) return;
+    if (!this.newMessage.trim() || !this.activeChatSession || this.isSendingMessage) {
+      return;
+    }
 
-    const text = this.newMessage;
+    const messageText = this.newMessage.trim();
+    
+    // Clear input immediately for better UX
     this.newMessage = '';
-
-    this.chatService.sendMessage(text).subscribe({
-      next: () => this.shouldScrollToBottom = true,
+    
+    this.chatService.sendMessage(messageText).subscribe({
+      next: () => {
+        this.shouldScrollToBottom = true;
+        console.log('Message sent successfully');
+      },
       error: (err) => {
         console.error('Failed to send message:', err);
-        this.newMessage = text;
+        // Restore message text on error
+        this.newMessage = messageText;
       }
     });
   }
@@ -91,10 +184,17 @@ export class DriverChatComponent implements OnInit, AfterViewChecked {
     return this.chatService.isMessageFromCurrentUser(message);
   }
 
-  scrollToBottom() {
-    if (this.chatMessagesContainer?.nativeElement) {
-      const el = this.chatMessagesContainer.nativeElement;
-      el.scrollTop = el.scrollHeight;
+  private scrollToBottom() {
+    try {
+      if (this.chatMessagesContainer?.nativeElement) {
+        const element = this.chatMessagesContainer.nativeElement;
+        // Use setTimeout to ensure DOM is updated
+        setTimeout(() => {
+          element.scrollTop = element.scrollHeight;
+        }, 0);
+      }
+    } catch (err) {
+      console.warn('Failed to scroll to bottom:', err);
     }
   }
 
@@ -109,6 +209,73 @@ export class DriverChatComponent implements OnInit, AfterViewChecked {
     this.chatService.clearActiveSession();
   }
 
-  // trackByRideRequestId(index: number, item: ChatSession): number { return item.ride_request_id; }
-  trackByMessageId(index: number, item: Message): number { return item.message_id; }
+  // Helper method to track chat sessions by ID for better performance
+  trackByRideId(index: number, item: ChatSession): number { 
+    return item.ride_id; 
+  }
+
+  // Helper method to track messages by ID for better performance
+  trackByMessageId(index: number, item: Message): number { 
+    return item.message_id; 
+  }
+
+  formatMessageTime(sentAt: string): string {
+    try {
+      const date = new Date(sentAt);
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch (error) {
+      return '';
+    }
+  }
+
+  hasMessages(session: ChatSession): boolean {
+    return session.messages && session.messages.length > 0;
+  }
+
+  // Helper method to check if we have active sessions
+  hasActiveSessions(): boolean {
+    return this.chatSessions.length > 0;
+  }
+
+  // Helper method to get session status text
+  getSessionStatusText(): string {
+    if (this.isLoadingChats) {
+      return 'Loading chat sessions...';
+    }
+    if (this.chatSessions.length === 0) {
+      return 'No active chats available';
+    }
+    if (!this.activeChatSession) {
+      return 'Select a chat to start messaging';
+    }
+    return '';
+  }
+
+  // Method to refresh chat sessions if needed
+  async refreshSessions() {
+    console.log('Refreshing driver chat sessions...');
+    try {
+      const sessions = await this.chatService.refreshChatSessions();
+      console.log('Sessions refreshed:', sessions.length);
+      if (sessions.length > 0 && !this.activeChatSession) {
+        this.selectChatSession(sessions[0]);
+      }
+    } catch (error) {
+      console.error('Failed to refresh sessions:', error);
+    }
+  }
+
+  // Method to manually load sessions (useful for debugging)
+  async loadSessions() {
+    console.log('Manually loading driver sessions...');
+    try {
+      const sessions = await this.chatService.loadChatSessions(true);
+      console.log('Sessions loaded manually:', sessions.length);
+      if (sessions.length > 0) {
+        this.selectChatSession(sessions[0]);
+      }
+    } catch (error) {
+      console.error('Failed to load sessions manually:', error);
+    }
+  }
 }
