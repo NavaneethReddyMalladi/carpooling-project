@@ -24,7 +24,6 @@ import { RiderActivityComponent } from './components/riderComponent/rider-activi
 import { AuthGuard } from './components/gaurds/auth.guard';
 import { RoleGuard } from './components/gaurds/role.guard';
 
-// Forgot/Reset Password Components
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
@@ -33,9 +32,8 @@ export const routes: Routes = [
   { path: 'register', component: RegistrationComponent },
   { path: '', component: HomeComponent },
 
-  // Forgot/Reset Password
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'reset-password', component: ResetPasswordComponent }, // token comes from email link
+  { path: 'reset-password', component: ResetPasswordComponent }, 
 
   {
     path: 'driver',

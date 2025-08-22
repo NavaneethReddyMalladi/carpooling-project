@@ -1,9 +1,7 @@
-  <!-- home.component.html -->
 <header class="header">
   <div class="header-container">
     <div class="logo-section">
       <img src="logo.png" alt="CarConnect" class="logo-img">
-      <!-- <span class="logo-text">CarConnect</span> -->
     </div>
     
     <nav class="nav-menu">
@@ -12,7 +10,6 @@
       <a [routerLink]="['/safety']" class="nav-link">Safety</a>
     </nav>
 
- <!-- Profile Section -->
     <div class="profile-section">
       <div *ngIf="!isLoggedIn" class="auth-buttons">
         <button [routerLink]="['/login']" class="login-btn">Login</button>
@@ -22,7 +19,6 @@
 
     </div> 
 
-     <!-- Mobile Menu Toggle --> 
     <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
       <span></span>
       <span></span>
@@ -30,7 +26,6 @@
     </button>
   </div>
 
-  <!-- Mobile Menu -->
   <div class="mobile-menu" [class.show]="showMobileMenu">
     <a [routerLink]="['/']" class="mobile-nav-link" (click)="closeMobileMenu()">Home</a>
     <a [routerLink]="['/rides']" class="mobile-nav-link" (click)="closeMobileMenu()">Find Rides</a>

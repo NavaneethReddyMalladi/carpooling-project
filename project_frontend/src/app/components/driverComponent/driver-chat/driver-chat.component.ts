@@ -13,7 +13,7 @@ import { DriverService } from '../../../services/driver.service';
   styleUrls: ['./driver-chat.component.css'],
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, RouterModule],
-  changeDetection: ChangeDetectionStrategy.OnPush // Optimize change detection
+  changeDetection: ChangeDetectionStrategy.OnPush 
 })
 export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('chatMessages') chatMessagesContainer!: ElementRef;
@@ -49,7 +49,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
           this.selectChatSession(sessions[0]);
         }
       } else {
-        // Sessions already loaded, get them synchronously
         const existingSessions = this.chatService.getChatSessionsSync();
         this.chatSessions = existingSessions;
         if (existingSessions.length > 0 && !this.activeChatSession) {
@@ -71,7 +70,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
   }
 
   ngAfterViewChecked() {
-    // Only scroll if new messages were added
     if (this.shouldScrollToBottom) {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
@@ -79,29 +77,22 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
   }
 
   ngOnDestroy() {
-    // Clean up all subscriptions
     this.subscriptions.forEach(sub => sub.unsubscribe());
     this.subscriptions = [];
     this.chatService.clearActiveSession();
   }
 
   private setupSubscriptions() {
-    // Subscribe to chat sessions with debounce to prevent excessive updates
     this.subscriptions.push(
       this.chatService.chatSessions$.pipe(
-        debounceTime(100) // Debounce to prevent rapid successive updates
+        debounceTime(100) 
       ).subscribe(sessions => {
         const previousCount = this.chatSessions.length;
         this.chatSessions = sessions;
         
         console.log(`Sessions updated: ${sessions.length} sessions available`);
         
-        // Auto-select first session only if:
-        // 1. Initialization is complete
-        // 2. No session is currently active
-        // 3. We have sessions available
-        // 4. We're not currently loading
-        // 5. This is a new session load (not just an update)
+     
         if (this.initializationComplete && !this.activeChatSession && sessions.length > 0 && 
             !this.isLoadingChats && previousCount === 0) {
           console.log('Auto-selecting first session from subscription:', sessions[0].rider_name);
@@ -110,7 +101,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
       })
     );
 
-    // Subscribe to active chat session
     this.subscriptions.push(
       this.chatService.activeChatSession$.subscribe(session => {
         const previousMessageCount = this.lastMessageCount;
@@ -120,7 +110,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
           this.activeChatSession = session;
           
           const currentMessageCount = session.messages?.length || 0;
-          // Only trigger scroll if messages were added
           if (currentMessageCount > previousMessageCount) {
             this.shouldScrollToBottom = true;
           }
@@ -132,7 +121,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
       })
     );
 
-    // Subscribe to loading states
     this.subscriptions.push(
       this.chatService.isLoadingSessions$.subscribe(isLoading => {
         this.isLoadingChats = isLoading;
@@ -147,7 +135,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
   }
 
   selectChatSession(session: ChatSession) {
-    // Prevent unnecessary selection of the same session
     if (this.activeChatSession?.ride_id === session.ride_id) {
       console.log('Session already active, skipping selection');
       return;
@@ -164,7 +151,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
 
     const messageText = this.newMessage.trim();
     
-    // Clear input immediately for better UX
     this.newMessage = '';
     
     this.chatService.sendMessage(messageText).subscribe({
@@ -188,7 +174,6 @@ export class DriverChatComponent implements OnInit, AfterViewChecked, OnDestroy 
     try {
       if (this.chatMessagesContainer?.nativeElement) {
         const element = this.chatMessagesContainer.nativeElement;
-        // Use setTimeout to ensure DOM is updated
         setTimeout(() => {
           element.scrollTop = element.scrollHeight;
         }, 0);

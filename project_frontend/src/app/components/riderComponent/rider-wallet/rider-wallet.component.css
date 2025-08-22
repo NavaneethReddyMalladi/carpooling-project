@@ -17,7 +17,7 @@
   
   .section-header h2 {
     font-size: 1.8rem;
-    color: #000000;
+    color: #576992;
     margin: 0;
     font-weight: 600;
   }
@@ -39,8 +39,8 @@
   
   .back-btn:hover {
     background: #f8f9fa;
-    border-color: #000000;
-    color: #000000;
+    border-color: #576992;
+    color: #576992;
   }
   
   /* Wallet Content */
@@ -72,7 +72,7 @@
   .balance-icon {
     width: 60px;
     height: 60px;
-    background: #000000;
+    background: #576992;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -91,7 +91,7 @@
   
   .balance-amount {
     font-size: 2rem;
-    color: #000000;
+    color: #576992;
     font-weight: 700;
     margin-bottom: 0.25rem;
   }
@@ -118,7 +118,7 @@
   
   .payment-methods h3 {
     font-size: 1.2rem;
-    color: #000000;
+    color: #576992;
     margin: 0 0 1rem 0;
     font-weight: 600;
   }
@@ -143,7 +143,7 @@
   .payment-method-icon {
     width: 40px;
     height: 40px;
-    background: #000000;
+    background: #576992;
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -159,7 +159,7 @@
   
   .payment-method-info h4 {
     font-size: 1rem;
-    color: #000000;
+    color: #576992;
     margin: 0 0 0.25rem 0;
     font-weight: 500;
   }
@@ -178,7 +178,7 @@
   }
   
   .default-badge {
-    background: #28a745;
+    background: #576992;
     color: #ffffff;
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
@@ -196,7 +196,7 @@
   
   .transaction-history h3 {
     font-size: 1.2rem;
-    color: #000000;
+    color: #576992;
     margin: 0 0 1rem 0;
     font-weight: 600;
   }
@@ -243,7 +243,7 @@
   }
   
   .transaction-icon.credit {
-    background: #28a745;
+    background: #576992;
   }
   
   .transaction-icon.debit {
@@ -256,7 +256,7 @@
   
   .transaction-details h4 {
     font-size: 1rem;
-    color: #000000;
+    color: #576992;
     margin: 0 0 0.25rem 0;
     font-weight: 500;
   }
@@ -281,7 +281,7 @@
   }
   
   .transaction-amount.credit .amount {
-    color: #28a745;
+    color: #576992;
   }
   
   .transaction-amount.debit .amount {
@@ -325,7 +325,7 @@
   
   .empty-transactions h3 {
     font-size: 1.2rem;
-    color: #000000;
+    color: #576992;
     margin-bottom: 0.5rem;
     font-weight: 500;
   }
@@ -337,9 +337,9 @@
   
   /* Buttons */
   .btn {
-    background: #000000;
+    background: #576992;
     color: #ffffff;
-    border: 1px solid #000000;
+    border: 1px solid #576992;
     padding: 0.75rem 1.5rem;
     border-radius: 4px;
     cursor: pointer;
@@ -370,13 +370,13 @@
   
   .btn.cancel:hover {
     background: #f8f9fa;
-    color: #000000;
-    border-color: #000000;
+    color: #576992;
+    border-color: #576992;
   }
   
   .btn-small {
     background: #ffffff;
-    color: #000000;
+    color: #576992;
     border: 1px solid #e0e0e0;
     padding: 0.4rem 0.8rem;
     border-radius: 4px;
@@ -387,7 +387,7 @@
   
   .btn-small:hover {
     background: #f8f9fa;
-    border-color: #000000;
+    border-color: #576992;
   }
   
   .btn-small.delete {
@@ -401,8 +401,8 @@
   }
   
   .add-money-btn {
-    background: #28a745;
-    border-color: #28a745;
+    background: #576992;
+    border-color: #576992;
   }
   
   .add-money-btn:hover {
@@ -419,8 +419,8 @@
   }
   
   .add-payment-btn {
-    background: #007bff;
-    border-color: #007bff;
+    background: #576992;
+    border-color: #576992;
   }
   
   .add-payment-btn:hover {
@@ -453,7 +453,7 @@
   
   .modal h3 {
     font-size: 1.3rem;
-    color: #000000;
+    color: #576992;
     margin-bottom: 1.5rem;
     font-weight: 600;
   }
@@ -469,7 +469,7 @@
     flex-direction: column;
     gap: 0.5rem;
     font-weight: 500;
-    color: #000000;
+    color: #576992;
   }
   
   .modal input,
@@ -484,7 +484,7 @@
   .modal input:focus,
   .modal select:focus {
     outline: none;
-    border-color: #000000;
+    border-color: #576992;
   }
   
   .modal-actions {

@@ -55,6 +55,14 @@
                   <span class="label">Booked:</span>
                   <span class="value">{{ ride.passenger_count }} passengers</span>
                 </div>
+                <div class="detail-item" *ngIf="ride.cost">
+                  <span class="label">Cost:</span>
+                  <span class="value">₹{{ ride.cost }}</span>
+                </div>
+                <div class="detail-item" *ngIf="ride.distance">
+                  <span class="label">Distance:</span>
+                  <span class="value">{{ ride.distance }} km</span>
+                </div>
               </div>
               <div class="ride-actions">
                 <button class="btn btn-success" (click)="completeRide(ride.ride_id)">
@@ -111,6 +119,14 @@
                   <span class="label">Earnings:</span>
                   <span class="value">₹{{ ride.fare }}</span>
                 </div>
+                <div class="detail-item" *ngIf="ride.cost">
+                  <span class="label">Cost:</span>
+                  <span class="value">₹{{ ride.cost }}</span>
+                </div>
+                <div class="detail-item" *ngIf="ride.distance">
+                  <span class="label">Distance:</span>
+                  <span class="value">{{ ride.distance }} km</span>
+                </div>
               </div>
             </div>
           </div>
@@ -152,6 +168,14 @@
                   <span class="label">Seats:</span>
                   <span class="value">{{ ride.available_seats }}</span>
                 </div>
+                <div class="detail-item" *ngIf="ride.cost">
+                  <span class="label">Cost:</span>
+                  <span class="value">₹{{ ride.cost }}</span>
+                </div>
+                <div class="detail-item" *ngIf="ride.distance">
+                  <span class="label">Distance:</span>
+                  <span class="value">{{ ride.distance }} km</span>
+                </div>
               </div>
             </div>
           </div>
@@ -174,4 +198,3 @@
     </div>
   </div>
 </div>
- 

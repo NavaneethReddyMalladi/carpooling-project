@@ -20,7 +20,7 @@ export class ResetPasswordComponent {
   constructor(private route: ActivatedRoute, private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
-    this.token = this.route.snapshot.queryParamMap.get('token'); // read ?token= from URL
+    this.token = this.route.snapshot.queryParamMap.get('token'); 
   }
 
   onSubmit() {

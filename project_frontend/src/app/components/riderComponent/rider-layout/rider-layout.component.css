@@ -47,7 +47,7 @@
 .hamburger-line {
   width: 24px;
   height: 3px;
-  background: #3b82f6;
+  background: #576992;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
@@ -85,9 +85,9 @@
 }
 
 .header-btn {
-  background: #3b82f6;
+  background: #576992;
   color: #ffffff;
-  border: 1px solid #3b82f6;
+  border: 1px solid #576992;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   cursor: pointer;
@@ -110,7 +110,7 @@
 .profile-avatar {
   width: 40px;
   height: 40px;
-  background: #3b82f6;
+  background: #576992;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@
 
 .profile-header {
   padding: 1.5rem;
-  background: #3b82f6;
+  background: #576992;
   color: #ffffff;
   text-align: center;
 }

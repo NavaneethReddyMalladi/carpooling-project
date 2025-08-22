@@ -54,7 +54,7 @@ export interface AddMoneyRequest {
   providedIn: 'root'
 })
 export class WalletService {
-  private apiUrl = 'http://127.0.0.1:42099'; // Adjust base URL as needed
+  private apiUrl = 'http://127.0.0.1:42099'; 
   private walletSubject = new BehaviorSubject<WalletData | null>(null);
   public wallet$ = this.walletSubject.asObservable();
 
@@ -68,7 +68,6 @@ export class WalletService {
     };
   }
 
-  // Create wallet for user
   createWallet(userId: number, initialBalance: number = 0): Observable<any> {
     const body = {
       user_id: userId,
@@ -77,38 +76,34 @@ export class WalletService {
     return this.http.post(`${this.apiUrl}/wallets`, body, this.getHttpOptions());
   }
 
-  // Get wallet by ID
   getWalletById(walletId: number): Observable<WalletData> {
     return this.http.get<WalletData>(`${this.apiUrl}/wallets/${walletId}`, this.getHttpOptions());
   }
 
-  // Get wallet by user ID
   getWalletByUserId(userId: number): Observable<WalletData> {
     const url = `${this.apiUrl}/wallets/user/${userId}`;
-    console.log('Making API call to:', url); // Debug log
+    console.log('Making API call to:', url); 
     
     return this.http.get<WalletData>(url, this.getHttpOptions())
       .pipe(
         map(response => {
-          console.log('API Response received:', response); // Debug log
+          console.log('API Response received:', response); 
           console.log('Balance from API:', response.balance, 'Type:', typeof response.balance); // Debug log
           this.walletSubject.next(response);
           return response;
         }),
         catchError(error => {
-          console.error('API Error:', error); // Debug log
+          console.error('API Error:', error); 
           return this.handleError(error);
         })
       );
   }
 
-  // Update wallet balance
   updateWalletBalance(walletId: number, newBalance: number): Observable<any> {
     const body = { balance: newBalance };
     return this.http.put(`${this.apiUrl}/wallets/${walletId}`, body, this.getHttpOptions())
       .pipe(
         map(response => {
-          // Update local wallet data
           const currentWallet = this.walletSubject.value;
           if (currentWallet && currentWallet.wallet_id === walletId) {
             this.walletSubject.next({
@@ -122,7 +117,6 @@ export class WalletService {
       );
   }
 
-  // Add money to wallet
   addMoneyToWallet(walletId: number, amount: number): Observable<any> {
     return this.getWalletById(walletId).pipe(
       map(wallet => {
@@ -132,12 +126,10 @@ export class WalletService {
     );
   }
 
-  // Delete wallet
   deleteWallet(walletId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/wallets/${walletId}`, this.getHttpOptions());
   }
 
-  // Get real transactions from backend
   getTransactions(userId: number): Observable<Transaction[]> {
     const url = `${this.apiUrl}/users/${userId}/transactions/simple`;
     console.log('Fetching transactions from:', url);
@@ -146,22 +138,18 @@ export class WalletService {
       .pipe(
         map(response => {
           console.log('Transactions received:', response);
-          // Ensure the response matches our Transaction interface
           return response.map(transaction => ({
             ...transaction,
-            // Ensure status is lowercase for frontend consistency
             status: transaction.status.toLowerCase() as 'completed' | 'pending' | 'failed'
           }));
         }),
         catchError(error => {
           console.error('Error fetching transactions:', error);
-          // Return empty array on error instead of throwing
           return [];
         })
       );
   }
 
-  // Get detailed transactions with filtering
   getTransactionsDetailed(userId: number, type?: 'credit' | 'debit', limit?: number): Observable<any> {
     let url = `${this.apiUrl}/users/${userId}/transactions`;
     const params: string[] = [];
@@ -176,13 +164,11 @@ export class WalletService {
     return this.http.get<any>(url, this.getHttpOptions());
   }
 
-  // Get transaction summary
   getTransactionSummary(userId: number): Observable<TransactionSummary> {
     const url = `${this.apiUrl}/users/${userId}/transactions/summary`;
     return this.http.get<TransactionSummary>(url, this.getHttpOptions());
   }
 
-  // Create a payment (for testing)
   createPayment(driverWalletId: number, payerWalletId: number, amount: number, paymentMethod: string): Observable<any> {
     const body = {
       driver_wallet_id: driverWalletId,
@@ -194,9 +180,7 @@ export class WalletService {
     return this.http.post(`${this.apiUrl}/payments`, body, this.getHttpOptions());
   }
 
-  // Mock methods for payment methods (extend based on your backend implementation)
   getPaymentMethods(userId: number): Observable<PaymentMethod[]> {
-    // Mock data - replace with actual API call when backend is implemented
     return new Observable(observer => {
       const mockPaymentMethods: PaymentMethod[] = [
         {
@@ -219,9 +203,7 @@ export class WalletService {
     });
   }
 
-  // Process payment (mock implementation)
   processPayment(request: AddMoneyRequest): Observable<any> {
-    // Mock payment processing - replace with actual payment gateway integration
     return new Observable(observer => {
       setTimeout(() => {
         observer.next({
@@ -234,7 +216,6 @@ export class WalletService {
     });
   }
 
-  // Utility method to handle errors
   private handleError(error: any): Observable<never> {
     console.error('Wallet Service Error:', error);
     console.error('Error status:', error.status);

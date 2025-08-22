@@ -156,7 +156,7 @@ export class DriverComponent implements OnInit, OnDestroy {
   }
 
   viewProfile(event: Event): void {
-    event.preventDefault(); // ⛔ Prevents href="#" from reloading the page
+    event.preventDefault(); 
     this.router.navigate(['/driver/profile']);
     this.showProfileMenu = false;
   }

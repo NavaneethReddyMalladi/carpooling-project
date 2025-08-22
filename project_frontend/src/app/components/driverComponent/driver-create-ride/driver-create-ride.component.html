@@ -39,14 +39,12 @@
             </option>
           </select>
           
-          <!-- Loading indicator -->
           <div *ngIf="loadingRouteInfo" class="route-loading">
             Loading route info...
           </div>
         </div>
       </div>
 
-      <!-- Route Information Display - Simple Box -->
       <div *ngIf="routeInfo && !loadingRouteInfo" class="route-info">
         <h4>Route Details</h4>
         <div class="info-grid">

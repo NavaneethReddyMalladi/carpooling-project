@@ -9,7 +9,7 @@ import { DriverService } from './driver.service';
 })
 export class RideRequestService {
   private readonly BASE_URL = 'http://127.0.0.1:42099';
-  private readonly POLLING_INTERVAL = 30000; // 30 seconds
+  private readonly POLLING_INTERVAL = 30000;
 
   private pendingRequestsSubject = new BehaviorSubject<RideRequest[]>([]);
   private allRequestsSubject = new BehaviorSubject<RideRequest[]>([]);
@@ -27,65 +27,105 @@ export class RideRequestService {
   get pendingRequests() { return this.pendingRequestsSubject.value; }
   get allRequests() { return this.allRequestsSubject.value; }
 
-  loadRideRequests(): Observable<RideRequest[]> {
-    return new Observable(observer => {
-      const token = localStorage.getItem('token');
-      const driverId = this.driverService.driverDetails.driver_id;
-      
-      if (!token || !driverId) {
-        console.error('No token or driver ID found for ride requests');
-        observer.error('Authentication required');
-        return;
-      }
+loadRideRequests(): Observable<RideRequest[]> {
+  return new Observable(observer => {
+    const token = localStorage.getItem('token');
+    const driverId = this.driverService.driverDetails.driver_id;
+    
+    if (!token || !driverId) {
+      console.error('No token or driver ID found for ride requests');
+      observer.error('Authentication required');
+      return;
+    }
 
-      const endpoint = `${this.BASE_URL}/ride-requests/driver/${driverId}`;
-      
-      this.http.get<any>(endpoint, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).subscribe({
-        next: (response) => {
-          console.log('Ride requests response:', response);
-          
-          let requests: RideRequest[] = [];
-          
-          if (Array.isArray(response)) {
-            requests = response;
-          } else if (response && Array.isArray(response.requests)) {
-            requests = response.requests;
-          } else if (response && Array.isArray(response.data)) {
-            requests = response.data;
-          } else {
-            console.log('Unexpected response format:', response);
-            requests = [];
-          }
+    const endpoint = `${this.BASE_URL}/ride-requests/driver/${driverId}`;
+    
+    this.http.get<any>(endpoint, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (response) => {
+        console.log('Ride requests response:', response);
+        
+        let requests: RideRequest[] = [];
+        
+        if (Array.isArray(response)) {
+          requests = response;
+        } else if (response && Array.isArray(response.requests)) {
+          requests = response.requests;
+        } else if (response && Array.isArray(response.data)) {
+          requests = response.data;
+        } else {
+          console.log('Unexpected response format:', response);
+          requests = [];
+        }
 
-          this.allRequestsSubject.next(requests);
-          const pendingRequests = requests.filter(r => 
-            r.status === 'Pending' || r.status === 'pending' || r.status === 'PENDING'
-          );
-          this.pendingRequestsSubject.next(pendingRequests);
-          
-          console.log('Processed ride requests:', {
-            total: requests.length,
-            pending: pendingRequests.length
+        if (requests.length > 0) {
+          const enrichedRequestPromises = requests.map(request => {
+            return new Promise<RideRequest>((resolve) => {
+              if (request.ride && 
+                  request.ride.origin_stop_id && 
+                  request.ride.destination_stop_id) {
+                
+                this.driverService.getRouteInfo(
+                  request.ride.origin_stop_id.toString(),
+                  request.ride.destination_stop_id.toString()
+                ).subscribe({
+                  next: (routeInfo) => {
+                    resolve({
+                      ...request,
+                      ride: {
+                        ...request.ride,
+                        cost: routeInfo.cost,
+                        distance: routeInfo.distance
+                      }
+                    });
+                  },
+                  error: (err) => {
+                    console.warn('Could not get route info for request', request.request_id, err);
+                    resolve(request);
+                  }
+                });
+              } else {
+                resolve(request);
+              }
+            });
           });
-          
-          observer.next(requests);
-          observer.complete();
-        },
-        error: (err) => {
-          console.error('Failed to load ride requests:', err);
-          this.driverService.setError(`Failed to load ride requests: ${err.message || 'Unknown error'}`);
-          
+
+          Promise.all(enrichedRequestPromises).then(enrichedRequests => {
+            this.allRequestsSubject.next(enrichedRequests);
+            const pendingRequests = enrichedRequests.filter(r => 
+              r.status === 'Pending' || r.status === 'pending' || r.status === 'PENDING'
+            );
+            this.pendingRequestsSubject.next(pendingRequests);
+            
+            console.log('Processed ride requests with route info:', {
+              total: enrichedRequests.length,
+              pending: pendingRequests.length
+            });
+            
+            observer.next(enrichedRequests);
+            observer.complete();
+          });
+        } else {
           this.allRequestsSubject.next([]);
           this.pendingRequestsSubject.next([]);
-          observer.error(err);
+          observer.next([]);
+          observer.complete();
         }
-      });
+      },
+      error: (err) => {
+        console.error('Failed to load ride requests:', err);
+        this.driverService.setError(`Failed to load ride requests: ${err.message || 'Unknown error'}`);
+        
+        this.allRequestsSubject.next([]);
+        this.pendingRequestsSubject.next([]);
+        observer.error(err);
+      }
     });
-  }
+  });
+}
 
-  // Accept a ride request
+
   acceptRideRequest(requestId: number): Observable<any> {
     const token = localStorage.getItem('token');
     
@@ -122,7 +162,6 @@ export class RideRequestService {
     });
   }
 
-  // Reject a ride request
   rejectRideRequest(requestId: number): Observable<any> {
     const token = localStorage.getItem('token');
     

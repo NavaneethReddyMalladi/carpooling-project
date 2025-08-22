@@ -206,7 +206,7 @@
   }
   
   .ride-card button {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, #576992 0%, #2c447c 100%);
     color: #ffffff;
     border: none;
     padding: 0.75rem 2rem;
@@ -223,7 +223,7 @@
   .ride-card button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    background: linear-gradient(135deg, #576992 0%, #2c447c 100%);
   }
   
   .ride-card button:active {
@@ -347,14 +347,14 @@
   }
   
   .modal button:first-of-type {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background:linear-gradient(135deg, #576992 0%, #2c447c 100%);
     color: #ffffff;
   }
   
   .modal button:first-of-type:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    background: linear-gradient(135deg, #576992 0%, #2c447c 100%)
   }
   
   .modal button:first-of-type:disabled {

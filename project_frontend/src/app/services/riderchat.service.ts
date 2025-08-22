@@ -25,7 +25,7 @@ export interface ChatSession {
   ride_id: number;     
   messages: Message[];
   isActive: boolean;
-  messagesLoaded?: boolean; // Track if messages are loaded
+  messagesLoaded?: boolean; 
 }
 
 @Injectable({ providedIn: 'root' })
@@ -42,9 +42,9 @@ export class ChatService {
   isSendingMessage$ = this.isSendingMessageSubject.asObservable();
   isLoadingSessions$ = this.isLoadingSessionsSubject.asObservable();
 
-  private loadedSessions = new Set<number>(); // Track loaded sessions
+  private loadedSessions = new Set<number>(); 
   private isInitialized = false;
-  private loadingPromise: Promise<ChatSession[]> | null = null; // Prevent concurrent loads
+  private loadingPromise: Promise<ChatSession[]> | null = null; 
 
   constructor(private http: HttpClient, private riderService: RiderService) {}
 
@@ -53,14 +53,11 @@ export class ChatService {
   get isSendingMessage() { return this.isSendingMessageSubject.value; }
   get isLoadingSessions() { return this.isLoadingSessionsSubject.value; }
 
-  /** Load rider's active ride requests and create chat sessions */
   loadChatSessions(): Promise<ChatSession[]> {
-    // Return existing promise if already loading
     if (this.loadingPromise) {
       return this.loadingPromise;
     }
 
-    // Return existing sessions if already initialized
     if (this.isInitialized) {
       return Promise.resolve(this.chatSessions);
     }
@@ -122,14 +119,11 @@ export class ChatService {
     return this.loadingPromise;
   }
 
-  /** Select a session and load its messages only once */
   selectChatSession(session: ChatSession) {
-    // Prevent selecting the same session repeatedly
     if (this.activeChatSession?.ride_request_id === session.ride_request_id) {
       return;
     }
 
-    // Update active states
     const updatedSessions = this.chatSessions.map(s => ({ 
       ...s, 
       isActive: s.ride_request_id === session.ride_request_id 
@@ -138,13 +132,11 @@ export class ChatService {
     this.chatSessionsSubject.next(updatedSessions);
     this.activeChatSessionSubject.next({ ...session, isActive: true });
     
-    // Load messages only if not already loaded
     if (!session.messagesLoaded && !this.loadedSessions.has(session.ride_request_id)) {
       this.loadMessages(session);
     }
   }
 
-  /** Load messages once for a session without polling */
   private loadMessages(session: ChatSession) {
     const riderId = parseInt(this.riderService.riderDetails?.rider_id || '0');
     const token = localStorage.getItem('token');
@@ -154,7 +146,6 @@ export class ChatService {
       return;
     }
 
-    // Mark as loading to prevent duplicate requests
     this.loadedSessions.add(session.ride_request_id);
 
     this.http.get<Message[]>(`${this.BASE_URL}/messages/conversation/${riderId}/${session.driver_id}`, {
@@ -165,12 +156,11 @@ export class ChatService {
       },
       error: (err) => {
         console.error('Failed to load messages:', err);
-        this.updateSessionMessages(session, [], true); // Mark as loaded even on error
+        this.updateSessionMessages(session, [], true); 
       }
     });
   }
 
-  /** Update session messages and active session in UI */
   private updateSessionMessages(session: ChatSession, messages: Message[], markAsLoaded = false) {
     const updated = this.chatSessions.map(s =>
       s.ride_request_id === session.ride_request_id 
@@ -189,7 +179,6 @@ export class ChatService {
     }
   }
 
-  /** Send message and immediately append to active session */
   sendMessage(messageData: { sender_id: number, receiver_id: number, ride_id: number, message_text: string }): Observable<any> {
     return new Observable(observer => {
       const token = localStorage.getItem('token');
@@ -198,7 +187,6 @@ export class ChatService {
         return;
       }
 
-      // Prevent concurrent sends
       if (this.isSendingMessage) {
         observer.error('Already sending a message');
         return;
@@ -210,7 +198,6 @@ export class ChatService {
         headers: { Authorization: `Bearer ${token}` }
       }).subscribe({
         next: (msg) => {
-          // append to active session
           if (this.activeChatSession) {
             const updatedMessages = [...(this.activeChatSession.messages || []), msg];
             this.updateSessionMessages(this.activeChatSession, updatedMessages);
@@ -228,12 +215,10 @@ export class ChatService {
     });
   }
 
-  /** Check if message is sent by current rider */
   isMessageFromCurrentUser(message: Message): boolean {
     return message.sender_id === parseInt(this.riderService.riderDetails?.rider_id || '0');
   }
 
-  /** Clear active session */
   clearActiveSession() {
     this.activeChatSessionSubject.next(null);
     this.chatSessionsSubject.next(this.chatSessions.map(s => ({ ...s, isActive: false })));
@@ -248,7 +233,6 @@ export class ChatService {
     return this.http.post<any>(`${this.BASE_URL}/create-chat-session`, session);
   }
 
-  /** Reset service state */
   reset() {
     this.isInitialized = false;
     this.loadedSessions.clear();
@@ -259,13 +243,11 @@ export class ChatService {
     this.isLoadingSessionsSubject.next(false);
   }
 
-  /** Force refresh */
   refresh(): Promise<ChatSession[]> {
     this.reset();
     return this.loadChatSessions();
   }
 
-  /** Check if initialized */
   isInitialized_(): boolean {
     return this.isInitialized;
   }

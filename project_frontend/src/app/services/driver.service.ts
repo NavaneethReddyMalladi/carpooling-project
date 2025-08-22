@@ -26,9 +26,9 @@ export interface Ride {
   passenger_count?: number;
   origin_name?: string;
   destination_name?: string;
-  cost?: number;        // Added for cost display
-  distance?: number;    // Added for distance display
-  route_id?: number;    // Added for route info
+  cost?: number;        
+  distance?: number;    
+  route_id?: number;    
 }
 
 export interface RideRequest {
@@ -76,7 +76,6 @@ export class DriverService {
   }
   private readonly BASE_URL = 'http://127.0.0.1:42099';
   
-  // Shared state
   private driverDetailsSubject = new BehaviorSubject<any>({
     driver_id: '',
     driver_name: '',
@@ -92,7 +91,6 @@ export class DriverService {
   private messageSubject = new BehaviorSubject<string>('');
   private errorSubject = new BehaviorSubject<string>('');
   
-  // Public observables
   driverDetails$ = this.driverDetailsSubject.asObservable();
   isOnline$ = this.isOnlineSubject.asObservable();
   message$ = this.messageSubject.asObservable();
@@ -233,18 +231,13 @@ export class DriverService {
     });
   }
 
-  // New method to get route information (cost, distance, route_id)
-// Replace your existing getRouteInfo method in driver.service.ts with this:
-
 getRouteInfo(startStopId: string, endStopId: string): Observable<RouteInfo> {
   return new Observable(observer => {
-    // Fetch all routes without parameters since the API doesn't support filtering
     this.http.get<any[]>(`${this.BASE_URL}/route-stops`).subscribe({
       next: (allRoutes) => {
         console.log('All routes received:', allRoutes);
         console.log('Looking for route from', startStopId, 'to', endStopId);
         
-        // Find the specific route that matches our start and end stops
         const matchingRoute = allRoutes.find(route => 
           route.start_stop_id.toString() === startStopId.toString() && 
           route.end_stop_id.toString() === endStopId.toString()
@@ -293,12 +286,10 @@ getRouteInfo(startStopId: string, endStopId: string): Observable<RouteInfo> {
     return `${Math.floor(diffInHours / 24)} days ago`;
   }
 
-  // Helper method to format currency
   formatCurrency(amount: number): string {
     return `₹${amount}`;
   }
 
-  // Helper method to format distance
   formatDistance(distance: number): string {
     return `${distance} km`;
   }
@@ -323,6 +314,26 @@ getRouteInfo(startStopId: string, endStopId: string): Observable<RouteInfo> {
     } catch (e) {
       console.log('Could not play notification sound');
     }
+  }
+
+
+  updateDriverProfile(profileData: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+  
+    const driverId = this.driverDetails.driver_id;
+    if (!driverId) {
+      throw new Error('Driver ID not found');
+    }
+  
+    return this.http.put(`${this.BASE_URL}/users/${driverId}`, profileData, {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
   }
 
 }

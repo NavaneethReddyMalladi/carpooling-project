@@ -42,39 +42,68 @@ export class RideService {
   get recentRides() { return this.recentRidesSubject.value; }
   get dashboardStats() { return this.dashboardStatsSubject.value; }
 
-  loadDriverRides(): Observable<Ride[]> {
-    return new Observable(observer => {
-      const token = localStorage.getItem('token');
-      const driverId = this.driverService.driverDetails.driver_id;
-      
-      if (!token || !driverId) {
-        console.error('No token or driver ID found');
-        observer.error('Authentication required');
-        return;
-      }
+// Update the loadDriverRides method in ride.service.ts
+loadDriverRides(): Observable<Ride[]> {
+  return new Observable(observer => {
+    const token = localStorage.getItem('token');
+    const driverId = this.driverService.driverDetails.driver_id;
+    
+    if (!token || !driverId) {
+      console.error('No token or driver ID found');
+      observer.error('Authentication required');
+      return;
+    }
 
-      this.http.get<Ride[]>(`${this.BASE_URL}/rides/driver/${driverId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).subscribe({
-        next: (rides) => {
-          console.log('Received rides:', rides);
-          
-          this.driverService.loadStops().subscribe(stops => {
-            const ridesWithNames = rides.map(ride => ({
-              ...ride,
-              origin_name: this.driverService.getStopName(ride.origin_stop_id.toString(), stops),
-              destination_name: this.driverService.getStopName(ride.destination_stop_id.toString(), stops)
-            }));
+    this.http.get<Ride[]>(`${this.BASE_URL}/rides/driver/${driverId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (rides) => {
+        console.log('Received rides:', rides);
+        
+        // First get stops for names
+        this.driverService.loadStops().subscribe(stops => {
+          // Process each ride to get route info
+          const enrichedRidePromises = rides.map(ride => {
+            return new Promise<Ride>((resolve) => {
+              const rideWithNames = {
+                ...ride,
+                origin_name: this.driverService.getStopName(ride.origin_stop_id.toString(), stops),
+                destination_name: this.driverService.getStopName(ride.destination_stop_id.toString(), stops)
+              };
 
-            const activeRides = ridesWithNames.filter(r => r.status.toLowerCase() === 'active');
-            const completedRides = ridesWithNames.filter(r => r.status.toLowerCase() === 'completed');
-            const cancelledRides = ridesWithNames.filter(r => r.status.toLowerCase() === 'cancelled');
+              // Get route info (cost and distance)
+              this.driverService.getRouteInfo(
+                ride.origin_stop_id.toString(),
+                ride.destination_stop_id.toString()
+              ).subscribe({
+                next: (routeInfo) => {
+                  resolve({
+                    ...rideWithNames,
+                    cost: routeInfo.cost,
+                    distance: routeInfo.distance,
+                    route_id: routeInfo.route_id
+                  });
+                },
+                error: (err) => {
+                  console.warn('Could not get route info for ride', ride.ride_id, err);
+                  // Return ride without route info if API call fails
+                  resolve(rideWithNames);
+                }
+              });
+            });
+          });
+
+          // Wait for all route info requests to complete
+          Promise.all(enrichedRidePromises).then(enrichedRides => {
+            const activeRides = enrichedRides.filter(r => r.status.toLowerCase() === 'active');
+            const completedRides = enrichedRides.filter(r => r.status.toLowerCase() === 'completed');
+            const cancelledRides = enrichedRides.filter(r => r.status.toLowerCase() === 'cancelled');
 
             this.activeRidesSubject.next(activeRides);
             this.completedRidesSubject.next(completedRides);
             this.cancelledRidesSubject.next(cancelledRides);
 
-            const recentRides = ridesWithNames
+            const recentRides = enrichedRides
               .sort((a, b) => new Date(b.departure_time).getTime() - new Date(a.departure_time).getTime())
               .slice(0, 10)
               .map(ride => ({
@@ -83,30 +112,33 @@ export class RideService {
                 destination: ride.destination_name,
                 time: this.driverService.getRelativeTime(ride.departure_time),
                 fare: ride.fare || 0,
+                cost: ride.cost || 0,
+                distance: ride.distance || 0,
                 status: ride.status,
                 rating: 0 
               }));
 
             this.recentRidesSubject.next(recentRides);
             
-            console.log('Processed rides:', {
+            console.log('Processed rides with route info:', {
               active: activeRides.length,
               completed: completedRides.length,
               cancelled: cancelledRides.length
             });
 
-            observer.next(ridesWithNames);
+            observer.next(enrichedRides);
             observer.complete();
           });
-        },
-        error: (err) => {
-          console.error('Failed to load driver rides:', err);
-          this.driverService.setError('Failed to load rides data');
-          observer.error(err);
-        }
-      });
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load driver rides:', err);
+        this.driverService.setError('Failed to load rides data');
+        observer.error(err);
+      }
     });
-  }
+  });
+}
   loadDashboardStats(): Observable<DashboardStats> {
     return new Observable(observer => {
       const token = localStorage.getItem('token');

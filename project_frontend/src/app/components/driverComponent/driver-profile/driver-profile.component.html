@@ -4,6 +4,15 @@
     <p>Manage your profile information</p>
   </div>
   
+  <!-- Success/Error Messages -->
+  <div *ngIf="message" class="alert alert-success">
+    {{ message }}
+  </div>
+  
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+  
   <div class="profile-section">
     <div class="profile-header" *ngIf="driverDetails$ | async as driverDetails">
       <div class="profile-avatar large">{{ driverDetails.driver_name?.charAt(0) }}</div>
@@ -13,7 +22,6 @@
           <span class="stars">★★★★★</span>
           <span class="rating-text">{{ stats.rating != null ? stats.rating.toFixed(1) : '0.0' }}
           </span>
-          
         </div>
         <div class="status-badge" 
              *ngIf="isOnline$ | async as isOnline"
@@ -22,42 +30,179 @@
           {{ isOnline ? 'Online' : 'Offline' }}
         </div>
       </div>
+      
+      <!-- Edit Toggle Button -->
+      <div class="profile-actions-header">
+        <button 
+          type="button" 
+          class="btn btn-secondary"
+          (click)="toggleEditMode()"
+          [disabled]="isLoading">
+          {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
+        </button>
+      </div>
     </div>
     
     <div class="profile-details">
-      <ng-container *ngIf="driverDetails$ | async as driverDetails">
-        <div class="detail-item">
-          <span class="label">Driver ID:</span>
-          <span class="value">{{ driverDetails.driver_id }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Gender:</span>
-          <span class="value">{{ driverDetails.gender | titlecase }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Phone:</span>
-          <span class="value">{{ driverDetails.phone }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Email:</span>
-          <span class="value">{{ driverDetails.email }}</span>
-        </div>
-      </ng-container>
+      <!-- View Mode -->
+      <div *ngIf="!isEditMode">
+        <ng-container *ngIf="driverDetails$ | async as driverDetails">
+          <div class="detail-item">
+            <span class="label">Driver ID:</span>
+            <span class="value">{{ driverDetails.driver_id }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Name:</span>
+            <span class="value">{{ driverDetails.driver_name }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Gender:</span>
+            <span class="value">{{ driverDetails.gender | titlecase }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Phone:</span>
+            <span class="value">{{ driverDetails.phone }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ driverDetails.email }}</span>
+          </div>
+        </ng-container>
+        
+        <ng-container *ngIf="dashboardStats$ | async as stats">
+          <div class="detail-item">
+            <span class="label">Total Rides:</span>
+            <span class="value">{{ stats.totalRides }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Completed Rides:</span>
+            <span class="value">{{ stats.completedRides }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Success Rate:</span>
+            <span class="value">{{ calculateSuccessRate(stats.completedRides, stats.totalRides) }}%</span>
+          </div>
+        </ng-container>
+      </div>
       
-      <ng-container *ngIf="dashboardStats$ | async as stats">
-        <div class="detail-item">
-          <span class="label">Total Rides:</span>
-          <span class="value">{{ stats.totalRides }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Completed Rides:</span>
-          <span class="value">{{ stats.completedRides }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">Success Rate:</span>
-          <span class="value">{{ calculateSuccessRate(stats.completedRides, stats.totalRides) }}%</span>
-        </div>
-      </ng-container>
+      <!-- Edit Mode -->
+      <div *ngIf="isEditMode" class="profile-edit-section">
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <div class="form-section">
+            <h4>Personal Information</h4>
+            
+            <!-- Driver ID (Read-only) -->
+            <div class="form-group" *ngIf="driverDetails$ | async as driverDetails">
+              <label>Driver ID</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [value]="driverDetails.driver_id" 
+                readonly>
+            </div>
+            
+            <!-- Name -->
+            <div class="form-group">
+              <label for="driver_name">Name *</label>
+              <input 
+                type="text" 
+                id="driver_name"
+                class="form-control" 
+                formControlName="driver_name"
+                [class.invalid]="isFieldInvalid('driver_name')"
+                placeholder="Enter your full name">
+              <div *ngIf="isFieldInvalid('driver_name')" class="error-message">
+                {{ getFieldError('driver_name') }}
+              </div>
+            </div>
+            
+            <!-- Gender -->
+            <div class="form-group">
+              <label for="gender">Gender *</label>
+              <select 
+                id="gender"
+                class="form-control" 
+                formControlName="gender"
+                [class.invalid]="isFieldInvalid('gender')">
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              <div *ngIf="isFieldInvalid('gender')" class="error-message">
+                {{ getFieldError('gender') }}
+              </div>
+            </div>
+            
+            <!-- Phone -->
+            <div class="form-group">
+              <label for="phone">Phone *</label>
+              <input 
+                type="tel" 
+                id="phone"
+                class="form-control" 
+                formControlName="phone"
+                [class.invalid]="isFieldInvalid('phone')"
+                placeholder="Enter 10-digit phone number">
+              <div *ngIf="isFieldInvalid('phone')" class="error-message">
+                {{ getFieldError('phone') }}
+              </div>
+            </div>
+            
+            <!-- Email -->
+            <div class="form-group">
+              <label for="email">Email *</label>
+              <input 
+                type="email" 
+                id="email"
+                class="form-control" 
+                formControlName="email"
+                [class.invalid]="isFieldInvalid('email')"
+                placeholder="Enter your email address">
+              <div *ngIf="isFieldInvalid('email')" class="error-message">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+          </div>
+          
+          <!-- Statistics (Read-only in edit mode) -->
+          <div class="form-section" *ngIf="dashboardStats$ | async as stats">
+            <h4>Statistics</h4>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-number">{{ stats.totalRides }}</span>
+                <span class="stat-label">Total Rides</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">{{ stats.completedRides }}</span>
+                <span class="stat-label">Completed</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-number">{{ calculateSuccessRate(stats.completedRides, stats.totalRides) }}%</span>
+                <span class="stat-label">Success Rate</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="profileForm.invalid || isLoading">
+              <span *ngIf="isLoading" class="loading-spinner"></span>
+              {{ isLoading ? 'Saving...' : 'Save Changes' }}
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-secondary"
+              (click)="toggleEditMode()"
+              [disabled]="isLoading">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>

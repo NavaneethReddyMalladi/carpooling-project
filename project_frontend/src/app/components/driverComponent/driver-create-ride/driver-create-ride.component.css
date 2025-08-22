@@ -1,6 +1,10 @@
 /* Create Ride Content */
 .content-section {
     background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   
   /* Create Ride Form */
@@ -9,9 +13,13 @@
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    max-width: 800px;
+    max-width: 1000px;
+    min-width:800px;
     border: 1px solid #f0f0f0;
-  }
+    
+
+ 
+}
   
   .form-row {
     display: grid;
@@ -96,6 +104,7 @@
     opacity: 0.6;
     cursor: not-allowed;
     transform: none;
+    margin-top: 30px;
   }
   
   /* Spinner */
@@ -106,6 +115,7 @@
     border-top: 2px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
+
   }
   
   @keyframes spin {

@@ -28,15 +28,16 @@
         <div *ngIf="pendingRequests.length > 0" class="requests-list">
           <div *ngFor="let request of pendingRequests" class="request-card pending">
             <div class="request-header">
-              <div class="rider-info">
-                <div class="rider-avatar">{{ request.rider?.user_name?.charAt(0) || 'R' }}</div>
+              <div class="rider-info" *ngIf="request.rider as rider">
+                <div class="rider-avatar">{{ rider.user_name?.charAt(0) || 'R' }}</div>
                 <div class="rider-details">
-                  <h4>{{ request.rider?.user_name || 'Unknown Rider' }}</h4>
-                  <div class="rider-rating" *ngIf="request.rider?.rating">
-                    <!-- Rider rating display -->
+                  <h4>{{ rider.user_name || 'Unknown Rider' }}</h4>
+                  <div class="rider-rating" *ngIf="rider.rating">
+                    <span class="stars">★</span>
+                    <span>{{ rider.rating.toFixed(1) }}</span>
                   </div>
-                  <div class="rider-phone" *ngIf="request.rider?.phone">
-                    <!-- Rider phone display -->
+                  <div class="rider-phone" *ngIf="rider.phone">
+                    📞 {{ rider.phone }}
                   </div>
                 </div>
               </div>
@@ -45,7 +46,6 @@
             
             <div class="request-details">
               <div class="ride-info" *ngIf="request.ride">
-   
                 <div class="route">
                   <span class="origin">
                     {{ request.ride.origin_stop_id ? getStopName(request.ride.origin_stop_id) : 'N/A' }}
@@ -56,11 +56,23 @@
                   </span>
                 </div>
                 
-                <div class="departure-time">
-                  <!-- Departure time display -->
+                <div class="departure-time" *ngIf="request.ride.departure_time">
+                  🕐 {{ formatTime(request.ride.departure_time) }}
                 </div>
                 <div class="available-seats">
                   🪑 {{ request.ride.available_seats }} seats available
+                </div>
+                
+                <!-- Cost and Distance Information -->
+                <div class="ride-metrics">
+                  <div class="detail-item" *ngIf="request.ride.cost">
+                    <span class="label">💰 Cost:</span>
+                    <span class="value">₹{{ request.ride.cost }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="request.ride.distance">
+                    <span class="label">📏 Distance:</span>
+                    <span class="value">{{ request.ride.distance }} km</span>
+                  </div>
                 </div>
               </div>
               <div class="request-time">
@@ -92,17 +104,17 @@
         <div *ngIf="allRequests.length > 0" class="requests-list">
           <div *ngFor="let request of allRequests" class="request-card" [class]="request.status.toLowerCase()">
             <div class="request-header">
-              <div class="rider-info">
-                <div class="rider-avatar">{{ request.rider?.user_name?.charAt(0) || 'R' }}</div>
+              <div class="rider-info" *ngIf="request.rider as rider">
+                <div class="rider-avatar">{{ rider.user_name?.charAt(0) || 'R' }}</div>
                 <div class="rider-details">
-                  <h4>{{ request.rider?.user_name || 'Unknown Rider' }}</h4>
-                  <div class="rider-rating" *ngIf="request.rider?.rating">
+                  <h4>{{ rider.user_name || 'Unknown Rider' }}</h4>
+                  <div class="rider-rating" *ngIf="rider.rating">
                     <span class="stars">★</span>
-                    <!-- <span>{{ request.rider.rating.toFixed(1) }}</span> -->
+                    <span>{{ rider.rating.toFixed(1) }}</span>
                   </div>
-                  <!-- <div class="rider-phone" *ngIf="request.rider?.phone">
-                    📞 {{ request.rider.phone }}
-                  </div> -->
+                  <div class="rider-phone" *ngIf="rider.phone">
+                    📞 {{ rider.phone || 'Not available' }}
+                  </div>
                 </div>
               </div>
               <div class="request-status" [class]="request.status.toLowerCase()">
@@ -122,9 +134,21 @@
                   </span>
                 </div>
                 
-                <!-- <div class="departure-time">
+                <div class="departure-time" *ngIf="request.ride.departure_time">
                   🕐 {{ formatTime(request.ride.departure_time) }}
-                </div> -->
+                </div>
+                
+                <!-- Cost and Distance Information -->
+                <div class="ride-metrics">
+                  <div class="detail-item" *ngIf="request.ride.cost">
+                    <span class="label">💰 Cost:</span>
+                    <span class="value">₹{{ request.ride.cost }}</span>
+                  </div>
+                  <div class="detail-item" *ngIf="request.ride.distance">
+                    <span class="label">📏 Distance:</span>
+                    <span class="value">{{ request.ride.distance }} km</span>
+                  </div>
+                </div>
               </div>
               <div class="request-time">
                 <span class="label">Requested:</span>
